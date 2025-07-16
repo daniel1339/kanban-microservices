@@ -1,0 +1,166 @@
+databases:
+  - name: kanban-postgres
+    databaseName: kanban
+    user: kanban_user
+    plan: free
+
+services:
+  # API Gateway
+  - type: web
+    name: kanban-api-gateway
+    env: node
+    plan: free
+    buildCommand: cd backend/services/api-gateway && npm install && npm run build
+    startCommand: cd backend/services/api-gateway && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: kanban-postgres
+          property: connectionString
+      - key: JWT_SECRET
+        sync: false
+      - key: REDIS_URL
+        sync: false
+
+  # Auth Service
+  - type: web
+    name: kanban-auth-service
+    env: node
+    plan: free
+    buildCommand: cd backend/services/auth-service && npm install && npm run build
+    startCommand: cd backend/services/auth-service && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: DATABASE_URL
+        fromDatabase:
+          name: kanban-postgres
+          property: connectionString
+      - key: JWT_SECRET
+        sync: false
+      - key: REDIS_URL
+        sync: false
+
+  # User Service
+  - type: web
+    name: kanban-user-service
+    env: node
+    plan: free
+    buildCommand: cd backend/services/user-service && npm install && npm run build
+    startCommand: cd backend/services/user-service && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3002
+      - key: DATABASE_URL
+        fromDatabase:
+          name: kanban-postgres
+          property: connectionString
+      - key: JWT_SECRET
+        sync: false
+
+  # Board Service
+  - type: web
+    name: kanban-board-service
+    env: node
+    plan: free
+    buildCommand: cd backend/services/board-service && npm install && npm run build
+    startCommand: cd backend/services/board-service && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3003
+      - key: DATABASE_URL
+        fromDatabase:
+          name: kanban-postgres
+          property: connectionString
+      - key: JWT_SECRET
+        sync: false
+
+  # List Service
+  - type: web
+    name: kanban-list-service
+    env: node
+    plan: free
+    buildCommand: cd backend/services/list-service && npm install && npm run build
+    startCommand: cd backend/services/list-service && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3004
+      - key: DATABASE_URL
+        fromDatabase:
+          name: kanban-postgres
+          property: connectionString
+      - key: JWT_SECRET
+        sync: false
+
+  # Card Service
+  - type: web
+    name: kanban-card-service
+    env: node
+    plan: free
+    buildCommand: cd backend/services/card-service && npm install && npm run build
+    startCommand: cd backend/services/card-service && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3005
+      - key: DATABASE_URL
+        fromDatabase:
+          name: kanban-postgres
+          property: connectionString
+      - key: JWT_SECRET
+        sync: false
+
+  # Notification Service
+  - type: web
+    name: kanban-notification-service
+    env: node
+    plan: free
+    buildCommand: cd backend/services/notification-service && npm install && npm run build
+    startCommand: cd backend/services/notification-service && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3006
+      - key: DATABASE_URL
+        fromDatabase:
+          name: kanban-postgres
+          property: connectionString
+      - key: JWT_SECRET
+        sync: false
+      - key: REDIS_URL
+        sync: false
+
+  # File Service
+  - type: web
+    name: kanban-file-service
+    env: node
+    plan: free
+    buildCommand: cd backend/services/file-service && npm install && npm run build
+    startCommand: cd backend/services/file-service && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3007
+      - key: DATABASE_URL
+        fromDatabase:
+          name: kanban-postgres
+          property: connectionString
+      - key: JWT_SECRET
+        sync: false
+      - key: CLOUDINARY_URL
+        sync: false 
