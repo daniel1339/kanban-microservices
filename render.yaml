@@ -10,8 +10,8 @@ services:
     name: kanban-api-gateway
     env: node
     plan: free
-    buildCommand: cd backend/services/api-gateway && npm install && npm run build
-    startCommand: cd backend/services/api-gateway && npm start
+    buildCommand: cd backend && npm install && npm run build:gateway
+    startCommand: cd backend/services/api-gateway && npm run start:prod
     envVars:
       - key: NODE_ENV
         value: production
@@ -33,8 +33,8 @@ services:
     name: kanban-auth-service
     env: node
     plan: free
-    buildCommand: cd backend/services/auth-service && npm install && npm run build
-    startCommand: cd backend/services/auth-service && npm start
+    buildCommand: cd backend && npm install && npm run build:auth
+    startCommand: cd backend/services/auth-service && npm run start:prod
     envVars:
       - key: NODE_ENV
         value: production
@@ -56,8 +56,8 @@ services:
     name: kanban-user-service
     env: node
     plan: free
-    buildCommand: cd backend/services/user-service && npm install && npm run build
-    startCommand: cd backend/services/user-service && npm start
+    buildCommand: cd backend && npm install && npm run build:user
+    startCommand: cd backend/services/user-service && npm run start:prod
     envVars:
       - key: NODE_ENV
         value: production
@@ -77,8 +77,8 @@ services:
     name: kanban-board-service
     env: node
     plan: free
-    buildCommand: cd backend/services/board-service && npm install && npm run build
-    startCommand: cd backend/services/board-service && npm start
+    buildCommand: cd backend && npm install && npm run build:board
+    startCommand: cd backend/services/board-service && npm run start:prod
     envVars:
       - key: NODE_ENV
         value: production
@@ -98,8 +98,8 @@ services:
     name: kanban-list-service
     env: node
     plan: free
-    buildCommand: cd backend/services/list-service && npm install && npm run build
-    startCommand: cd backend/services/list-service && npm start
+    buildCommand: cd backend && npm install && npm run build:list
+    startCommand: cd backend/services/list-service && npm run start:prod
     envVars:
       - key: NODE_ENV
         value: production
@@ -119,8 +119,8 @@ services:
     name: kanban-card-service
     env: node
     plan: free
-    buildCommand: cd backend/services/card-service && npm install && npm run build
-    startCommand: cd backend/services/card-service && npm start
+    buildCommand: cd backend && npm install && npm run build:card
+    startCommand: cd backend/services/card-service && npm run start:prod
     envVars:
       - key: NODE_ENV
         value: production
@@ -140,8 +140,8 @@ services:
     name: kanban-notification-service
     env: node
     plan: free
-    buildCommand: cd backend/services/notification-service && npm install && npm run build
-    startCommand: cd backend/services/notification-service && npm start
+    buildCommand: cd backend && npm install && npm run build:notification
+    startCommand: cd backend/services/notification-service && npm run start:prod
     envVars:
       - key: NODE_ENV
         value: production
@@ -163,8 +163,8 @@ services:
     name: kanban-file-service
     env: node
     plan: free
-    buildCommand: cd backend/services/file-service && npm install && npm run build
-    startCommand: cd backend/services/file-service && npm start
+    buildCommand: cd backend && npm install && npm run build:file
+    startCommand: cd backend/services/file-service && npm run start:prod
     envVars:
       - key: NODE_ENV
         value: production
