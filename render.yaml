@@ -25,6 +25,8 @@ services:
         sync: false
       - key: REDIS_URL
         sync: false
+      - key: CORS_ORIGIN
+        value: "*"
 
   # Auth Service
   - type: web
@@ -46,6 +48,8 @@ services:
         sync: false
       - key: REDIS_URL
         sync: false
+      - key: CORS_ORIGIN
+        value: "*"
 
   # User Service
   - type: web
@@ -65,6 +69,8 @@ services:
           property: connectionString
       - key: JWT_SECRET
         sync: false
+      - key: CORS_ORIGIN
+        value: "*"
 
   # Board Service
   - type: web
@@ -84,6 +90,8 @@ services:
           property: connectionString
       - key: JWT_SECRET
         sync: false
+      - key: CORS_ORIGIN
+        value: "*"
 
   # List Service
   - type: web
@@ -103,6 +111,8 @@ services:
           property: connectionString
       - key: JWT_SECRET
         sync: false
+      - key: CORS_ORIGIN
+        value: "*"
 
   # Card Service
   - type: web
@@ -122,6 +132,8 @@ services:
           property: connectionString
       - key: JWT_SECRET
         sync: false
+      - key: CORS_ORIGIN
+        value: "*"
 
   # Notification Service
   - type: web
@@ -143,6 +155,8 @@ services:
         sync: false
       - key: REDIS_URL
         sync: false
+      - key: CORS_ORIGIN
+        value: "*"
 
   # File Service
   - type: web
@@ -163,4 +177,6 @@ services:
       - key: JWT_SECRET
         sync: false
       - key: CLOUDINARY_URL
-        sync: false 
+        sync: false
+      - key: CORS_ORIGIN
+        value: "*" 
