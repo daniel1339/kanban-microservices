@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException, ConflictException, BadRequestException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ConflictException, BadRequestException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
@@ -205,6 +205,16 @@ export class AuthService implements IAuthService {
     await this.refreshTokenRepository.save(refreshTokenEntity);
 
     return { accessToken, refreshToken };
+  }
+
+  async getProfile(userId: string): Promise<UserResponse> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    
+    if (!user) {
+      throw new NotFoundException('Usuario no encontrado');
+    }
+
+    return this.mapUserToResponse(user);
   }
 
   private mapUserToResponse(user: User): UserResponse {
