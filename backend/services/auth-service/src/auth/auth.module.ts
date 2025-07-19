@@ -1,16 +1,22 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { User, RefreshToken } from './entities';
-import { JwtAuthGuard, RolesGuard } from '../common/guards';
+import { JwtStrategy } from './strategies/jwt.strategy';
+import { LocalStrategy } from './strategies/local.strategy';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { RolesGuard } from './guards/roles.guard';
+import { CacheService } from '../common/services/cache.service';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, RefreshToken]),
+    PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -27,6 +33,9 @@ import { JwtAuthGuard, RolesGuard } from '../common/guards';
     AuthService,
     JwtAuthGuard,
     RolesGuard,
+    JwtStrategy,
+    LocalStrategy,
+    CacheService,
   ],
   exports: [AuthService, JwtAuthGuard, RolesGuard],
 })
