@@ -13,7 +13,11 @@ export default new DataSource({
   password: configService.get('DB_PASSWORD', 'password'),
   database: configService.get('DB_NAME', 'auth_service'),
   entities: [User, RefreshToken],
-  migrations: ['src/database/migrations/*.ts'],
+  migrations: [
+    configService.get('NODE_ENV') === 'production'
+      ? 'dist/src/database/migrations/*.js'
+      : 'src/database/migrations/*.ts'
+  ],
   synchronize: false, // Deshabilitado para producción
   logging: configService.get('NODE_ENV') === 'development',
   ssl: configService.get('NODE_ENV') === 'production' ? { rejectUnauthorized: false } : false,
