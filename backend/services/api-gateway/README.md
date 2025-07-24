@@ -1,98 +1,471 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🚀 API Gateway - Kanban Microservices
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## 📋 **PROJECT OVERVIEW**
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+The API Gateway serves as the **single entry point** for all client applications in the Kanban microservices architecture. It handles routing, authentication, rate limiting, and provides a unified interface for all microservices.
 
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
-
-```bash
-$ npm install
+### **🏗️ Architecture Role**
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    FRONTEND (React/Vue)                     │
+└─────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────┐
+│                   API GATEWAY (Port 3000)                  │
+│  • Routing • Rate Limiting • CORS • Authentication         │
+│  • Service Discovery • Load Balancing • Health Checks      │
+└─────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐
+│ Auth Service│ │User Service │ │Project Svc  │ │Board Service│
+│   Port 3001 │ │  Port 3002  │ │  Port 3003  │ │  Port 3004  │
+│ ✅ COMPLETE │ │ ✅ COMPLETE │ │ 📋 PENDING  │ │ 📋 PENDING  │
+└─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘
 ```
 
-## Compile and run the project
+---
 
-```bash
-# development
-$ npm run start
+## 🎯 **CURRENT STATUS**
 
-# watch mode
-$ npm run start:dev
+### **✅ COMPLETED (0%)**
+- [x] **Basic NestJS project** - Initial setup
+- [x] **Project structure** - Standardized folders
+- [x] **Configuration files** - TypeScript and Jest setup
 
-# production mode
-$ npm run start:prod
+### **🔄 IN PROGRESS (DÍA 6)**
+- [ ] **Service Discovery** - Dynamic service routing
+- [ ] **Authentication Middleware** - JWT validation
+- [ ] **Rate Limiting** - Request throttling
+- [ ] **Health Checks** - Service monitoring
+- [ ] **Documentation** - Swagger and README
+- [ ] **Testing** - 90% coverage target
+
+### **📋 NEXT STEPS**
+1. **Core Implementation** - Service discovery and routing
+2. **Middleware Stack** - Auth, rate limiting, CORS
+3. **Health Monitoring** - Service health checks
+4. **Documentation** - Complete API documentation
+5. **Testing** - Unit, integration, and E2E tests
+
+---
+
+## 🏗️ **ARCHITECTURE & FEATURES**
+
+### **🔗 Service Routing Map**
+```yaml
+# Authentication & User Management
+/api/auth/* → auth-service:3001
+/api/users/* → user-service:3002
+
+# Project & Board Management (Future)
+/api/projects/* → project-service:3003
+/api/boards/* → board-service:3004
+/api/cards/* → card-service:3005
+/api/lists/* → list-service:3006
+
+# Infrastructure Services (Future)
+/api/notifications/* → notification-service:3007
+/api/files/* → file-service:3008
 ```
 
-## Run tests
+### **🛡️ Middleware Stack**
+1. **CORS** - Cross-origin resource sharing
+2. **Rate Limiting** - Request throttling per IP/user
+3. **Authentication** - JWT token validation
+4. **Logging** - Request/response logging
+5. **Error Handling** - Global error management
+6. **Request Transformation** - Data format conversion
 
+### **📊 Health Monitoring**
+- **Service Health Checks** - Individual service monitoring
+- **Circuit Breaker** - Fault tolerance pattern
+- **Load Balancing** - Request distribution
+- **Metrics Collection** - Performance monitoring
+
+---
+
+## 🚀 **QUICK START**
+
+### **1. Installation**
 ```bash
-# unit tests
-$ npm run test
+# Install dependencies
+npm install
 
-# e2e tests
-$ npm run test:e2e
+# Configure environment variables
+cp .env.example .env.development
 
-# test coverage
-$ npm run test:cov
+# Start development server
+npm run start:dev
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
+### **2. Development**
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+# Run in development mode
+npm run start:dev
+
+# Run tests
+npm run test:all
+
+# View API documentation
+# http://localhost:3000/api/docs
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### **3. Testing**
+```bash
+# Unit tests
+npm run test:unit
 
-## Resources
+# Integration tests
+npm run test:integration
 
-Check out a few resources that may come in handy when working with NestJS:
+# All tests with coverage
+npm run test:all
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+---
 
-## Support
+## 📚 **API DOCUMENTATION**
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### **🔗 Main Endpoints**
+- **Health Check**: `GET /health`
+- **API Documentation**: `GET /api/docs`
+- **Service Status**: `GET /api/status`
 
-## Stay in touch
+### **🔐 Authentication**
+All protected endpoints require JWT Bearer Token:
+```bash
+Authorization: Bearer <your-jwt-token>
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### **📖 Swagger Documentation**
+- **URL**: http://localhost:3000/api/docs
+- **Interactive API**: Try endpoints directly
+- **Authentication**: JWT Bearer Token support
+- **Examples**: Request/response examples
 
-## License
+---
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## 🧪 **TESTING STANDARDS**
+
+### **📊 Coverage Requirements**
+- **Statements**: 90%
+- **Branches**: 85%
+- **Functions**: 90%
+- **Lines**: 90%
+
+### **🧪 Test Types**
+1. **Unit Tests** - Individual components
+2. **Integration Tests** - Service communication
+3. **E2E Tests** - Complete routing flows
+4. **Performance Tests** - Load testing
+
+### **🔧 Test Commands**
+```bash
+# Run all tests
+npm run test:all
+
+# Unit tests only
+npm run test:unit
+
+# Integration tests
+npm run test:integration
+
+# Coverage report
+npm run test:cov
+```
+
+---
+
+## 🔧 **CONFIGURATION**
+
+### **Environment Variables**
+```env
+# Server Configuration
+NODE_ENV=development
+PORT=3000
+
+# Service URLs
+AUTH_SERVICE_URL=http://localhost:3001
+USER_SERVICE_URL=http://localhost:3002
+PROJECT_SERVICE_URL=http://localhost:3003
+BOARD_SERVICE_URL=http://localhost:3004
+
+# JWT Configuration
+JWT_SECRET=your-jwt-secret
+
+# Rate Limiting
+RATE_LIMIT_TTL=60000
+RATE_LIMIT_LIMIT=100
+
+# CORS Configuration
+CORS_ORIGIN=*
+```
+
+### **Service Discovery Configuration**
+```typescript
+// config/services.config.ts
+export const servicesConfig = {
+  auth: {
+    url: process.env.AUTH_SERVICE_URL || 'http://localhost:3001',
+    healthCheck: '/health',
+    timeout: 5000,
+  },
+  user: {
+    url: process.env.USER_SERVICE_URL || 'http://localhost:3002',
+    healthCheck: '/health',
+    timeout: 5000,
+  },
+  // ... other services
+};
+```
+
+---
+
+## 📁 **PROJECT STRUCTURE**
+
+```
+api-gateway/
+├── src/
+│   ├── docs/                     # Swagger Documentation
+│   │   ├── swagger.config.ts
+│   │   ├── examples/
+│   │   ├── schemas/
+│   │   └── responses/
+│   ├── common/                   # Shared code
+│   │   ├── filters/
+│   │   ├── guards/
+│   │   ├── interceptors/
+│   │   ├── middleware/
+│   │   └── services/
+│   ├── gateway/                  # Gateway logic
+│   │   ├── controllers/
+│   │   ├── services/
+│   │   └── gateway.module.ts
+│   ├── config/                   # Configuration
+│   ├── app.controller.ts
+│   ├── app.service.ts
+│   ├── app.module.ts
+│   └── main.ts
+├── test/                         # E2E Tests
+│   ├── helpers/
+│   ├── *.e2e-spec.ts
+│   └── jest-e2e.json
+├── docs/                         # Additional documentation
+├── README.md                     # This file
+├── package.json
+└── .env.example
+```
+
+---
+
+## 🔐 **SECURITY FEATURES**
+
+### **Authentication & Authorization**
+- **JWT Token Validation** - Centralized authentication
+- **Token Refresh** - Automatic token renewal
+- **Role-based Access** - Service-level permissions
+
+### **Rate Limiting**
+- **IP-based Limiting** - Prevent abuse
+- **User-based Limiting** - Per-user quotas
+- **Service-specific Limits** - Different limits per service
+
+### **CORS Configuration**
+- **Configurable Origins** - Environment-based
+- **Method Restrictions** - HTTP method control
+- **Header Management** - Custom headers support
+
+---
+
+## 📊 **MONITORING & HEALTH**
+
+### **Health Check Endpoints**
+```bash
+# Overall gateway health
+GET /health
+
+# Individual service health
+GET /health/services
+
+# Detailed service status
+GET /health/services/auth
+GET /health/services/user
+```
+
+### **Metrics Collection**
+- **Request Count** - Total requests per service
+- **Response Time** - Average response times
+- **Error Rates** - Error percentages
+- **Service Availability** - Uptime monitoring
+
+---
+
+## 🚀 **DEPLOYMENT**
+
+### **Production Configuration**
+```bash
+# Build the application
+npm run build
+
+# Start production server
+npm run start:prod
+
+# Environment variables
+NODE_ENV=production
+PORT=3000
+```
+
+### **Docker Deployment**
+```dockerfile
+# Dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+COPY dist ./dist
+EXPOSE 3000
+CMD ["node", "dist/src/main"]
+```
+
+---
+
+## 🔗 **SERVICE INTEGRATION**
+
+### **Current Services**
+- ✅ **Auth Service** (Port 3001) - Authentication and user management
+- ✅ **User Service** (Port 3002) - User profiles and avatars
+
+### **Future Services**
+- 📋 **Project Service** (Port 3003) - Project management
+- 📋 **Board Service** (Port 3004) - Kanban boards
+- 📋 **Card Service** (Port 3005) - Card management
+- 📋 **List Service** (Port 3006) - List management
+- 📋 **Notification Service** (Port 3007) - Notifications
+- 📋 **File Service** (Port 3008) - File management
+
+---
+
+## 📈 **PERFORMANCE METRICS**
+
+### **Target Performance**
+- **Requests per second**: 1000+
+- **Response time**: < 100ms average
+- **Uptime**: 99.9%
+- **Error rate**: < 0.1%
+
+### **Load Balancing**
+- **Round-robin** - Default distribution
+- **Health-based** - Skip unhealthy services
+- **Circuit breaker** - Fault tolerance
+
+---
+
+## 🛠️ **DEVELOPMENT WORKFLOW**
+
+### **1. Setup Development Environment**
+```bash
+# Clone repository
+git clone <repository-url>
+cd api-gateway
+
+# Install dependencies
+npm install
+
+# Configure environment
+cp .env.example .env.development
+
+# Start development
+npm run start:dev
+```
+
+### **2. Adding New Services**
+1. **Update service configuration** in `config/services.config.ts`
+2. **Add routing rules** in `gateway/services/routing.service.ts`
+3. **Update health checks** in `gateway/services/health-check.service.ts`
+4. **Add tests** for new service integration
+5. **Update documentation** with new endpoints
+
+### **3. Testing New Features**
+```bash
+# Run tests for specific feature
+npm run test -- --testNamePattern="feature-name"
+
+# Run integration tests
+npm run test:integration
+
+# Check coverage
+npm run test:cov
+```
+
+---
+
+## 📞 **SUPPORT & TROUBLESHOOTING**
+
+### **Common Issues**
+1. **Service Unavailable** - Check service health endpoints
+2. **Authentication Errors** - Verify JWT token validity
+3. **Rate Limiting** - Check request limits
+4. **CORS Errors** - Verify origin configuration
+
+### **Debugging**
+```bash
+# Enable debug logging
+DEBUG=* npm run start:dev
+
+# Check service health
+curl http://localhost:3000/health
+
+# Test specific service
+curl http://localhost:3000/api/auth/health
+```
+
+---
+
+## 📚 **ADDITIONAL RESOURCES**
+
+### **Documentation**
+- **[API Documentation](http://localhost:3000/api/docs)** - Interactive Swagger UI
+- **[Health Check](http://localhost:3000/health)** - Service status
+- **[Project Documentation](../README.md)** - Main project docs
+
+### **Related Services**
+- **[Auth Service](../auth-service/README.md)** - Authentication service
+- **[User Service](../user-service/README.md)** - User management service
+
+---
+
+## 🎯 **ROADMAP**
+
+### **Phase 1: Core Gateway (Current)**
+- [x] Basic project setup
+- [ ] Service discovery implementation
+- [ ] Routing and proxy functionality
+- [ ] Authentication middleware
+- [ ] Rate limiting
+- [ ] Health checks
+- [ ] Documentation and testing
+
+### **Phase 2: Advanced Features (Future)**
+- [ ] Load balancing algorithms
+- [ ] Circuit breaker patterns
+- [ ] Metrics and monitoring
+- [ ] Performance optimization
+- [ ] AWS integration
+
+### **Phase 3: Production Ready (Future)**
+- [ ] High availability setup
+- [ ] Auto-scaling configuration
+- [ ] Advanced monitoring
+- [ ] Security hardening
+
+---
+
+## 📄 **LICENSE**
+
+This project is part of the Kanban Microservices system.
+
+---
+
+**Ready to build the central nervous system of our microservices architecture! 🚀**
