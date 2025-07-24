@@ -3,12 +3,12 @@
 ## 📋 **ENDPOINTS SUMMARY**
 
 ### **🔐 Authentication**
-- `POST /auth/register` - User registration
-- `POST /auth/login` - User login
-- `POST /auth/refresh` - Token renewal
-- `POST /auth/logout` - User logout
-- `POST /auth/validate` - Credential validation
-- `GET /auth/profile` - User profile
+- `POST /api/auth/register` - User registration
+- `POST /api/auth/login` - User login
+- `POST /api/auth/refresh` - Token renewal
+- `POST /api/auth/logout` - User logout
+- `POST /api/auth/validate` - Credential validation
+- `GET /api/auth/profile` - User profile
 
 ### **🏥 Health & Status**
 - `GET /health` - Service health check
@@ -18,7 +18,7 @@
 
 ## 🔐 **AUTHENTICATION ENDPOINTS**
 
-### **POST /auth/register**
+### **POST /api/auth/register**
 **Description**: New user registration
 
 **Request Body:**
@@ -52,7 +52,7 @@
 
 ---
 
-### **POST /auth/login**
+### **POST /api/auth/login**
 **Description**: Login for existing users
 
 **Request Body:**
@@ -84,7 +84,7 @@
 
 ---
 
-### **POST /auth/refresh**
+### **POST /api/auth/refresh**
 **Description**: Access token renewal
 
 **Request Body:**
@@ -108,7 +108,7 @@
 
 ---
 
-### **POST /auth/logout**
+### **POST /api/auth/logout**
 **Description**: User logout and token invalidation
 
 **Headers:**
@@ -136,7 +136,7 @@ Authorization: Bearer <access-token>
 
 ---
 
-### **POST /auth/validate**
+### **POST /api/auth/validate**
 **Description**: Credential validation
 
 **Request Body:**
@@ -172,7 +172,7 @@ Authorization: Bearer <access-token>
 
 ---
 
-### **GET /auth/profile**
+### **GET /api/auth/profile**
 **Description**: Get user profile information
 
 **Headers:**
@@ -390,7 +390,7 @@ Authorization: Bearer <access-token>
 ### **Test Data**
 ```bash
 # Create test user
-curl -X POST http://localhost:3001/auth/register \
+curl -X POST http://localhost:3001/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "email": "test@example.com",
@@ -400,7 +400,7 @@ curl -X POST http://localhost:3001/auth/register \
   }'
 
 # Login with test user
-curl -X POST http://localhost:3001/auth/login \
+curl -X POST http://localhost:3001/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "emailOrUsername": "test@example.com",
@@ -412,7 +412,7 @@ curl -X POST http://localhost:3001/auth/login \
 ```bash
 # Test rate limiting
 for i in {1..10}; do
-  curl -X POST http://localhost:3001/auth/login \
+  curl -X POST http://localhost:3001/api/auth/login \
     -H "Content-Type: application/json" \
     -d '{"emailOrUsername": "test@example.com", "password": "wrong"}'
 done

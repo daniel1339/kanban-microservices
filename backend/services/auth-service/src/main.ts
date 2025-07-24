@@ -17,8 +17,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 
-  // LOG HERE
   
+
+  app.setGlobalPrefix('api');
 
   // Security: Helmet.js for security headers
   app.use(helmet({

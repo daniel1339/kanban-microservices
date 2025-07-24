@@ -195,12 +195,12 @@ service-name/
 ## 🔗 **MAIN ENDPOINTS**
 
 ### **Authentication**
-- `POST /auth/register` - User registration
-- `POST /auth/login` - User login
-- `POST /auth/refresh` - Token renewal
-- `POST /auth/logout` - User logout
-- `POST /auth/validate` - Credential validation
-- `GET /auth/profile` - User profile
+- `POST /api/auth/register` - User registration
+- `POST /api/auth/login` - User login
+- `POST /api/auth/refresh` - Token renewal
+- `POST /api/auth/logout` - User logout
+- `POST /api/auth/validate` - Credential validation
+- `GET /api/auth/profile` - User profile
 
 ### **Health & Status**
 - `GET /health` - Service health check
@@ -300,7 +300,7 @@ npm run test:cov       # Tests with coverage
 
 ### **User registration**
 ```bash
-curl -X POST http://localhost:3001/auth/register \
+curl -X POST http://localhost:3001/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "email": "user@example.com",
@@ -328,7 +328,7 @@ curl -X POST http://localhost:3001/auth/register \
 
 ### **Login**
 ```bash
-curl -X POST http://localhost:3001/auth/login \
+curl -X POST http://localhost:3001/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "emailOrUsername": "user@example.com",
@@ -347,7 +347,7 @@ curl -X POST http://localhost:3001/auth/login \
 
 ### **Get profile**
 ```bash
-curl -X GET http://localhost:3001/auth/profile \
+curl -X GET http://localhost:3001/api/auth/profile \
   -H "Authorization: Bearer <jwt-access-token>"
 ```
 **Response:**

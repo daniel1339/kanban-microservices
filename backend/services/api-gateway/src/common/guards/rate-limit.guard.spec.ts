@@ -3,7 +3,7 @@ import { ThrottlerGuard } from '@nestjs/throttler';
 
 describe('RateLimitGuard', () => {
   it('should extend ThrottlerGuard', () => {
-    // Mocks para los argumentos requeridos
+    // Mocks for required arguments
     const options = {} as any;
     const storageService = {} as any;
     const reflector = {} as any;

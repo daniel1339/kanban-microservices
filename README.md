@@ -396,7 +396,7 @@ A complete Kanban board application built with microservices architecture using 
 
 ## 🎯 **CURRENT PROJECT STATUS**
 
-### **✅ COMPLETED (40%)**
+### **✅ COMPLETED (60%)**
 - [x] **Auth Service** - 100% functional and documented
   - JWT Authentication with refresh tokens
   - Rate limiting and security enhancements
@@ -417,6 +417,16 @@ A complete Kanban board application built with microservices architecture using 
   - Improved E2E tests with real JWTs
   - Edge case and security tests
   - Unified error structure
+
+- [x] **API Gateway** - 100% planned and documented
+  - Complete architecture design
+  - Service routing configuration
+  - Middleware stack planning
+  - Health monitoring strategy
+  - Professional documentation
+  - Testing strategy (90% coverage target)
+  - Security features planning
+  - Performance metrics definition
 
 ### **🔄 IN PROGRESS**
 - [ ] **Project Service** - Project management
@@ -1339,6 +1349,13 @@ npm run test:all
 - **[docs/examples/](backend/services/user-service/src/docs/examples/)** - API Examples
 - **[docs/swagger.config.ts](backend/services/user-service/src/docs/swagger.config.ts)** - Swagger Configuration
 
+### **�� API Gateway**
+- **[README.md](backend/services/api-gateway/README.md)** - Complete Documentation
+- **[docs/api/](backend/services/api-gateway/docs/api/)** - API Documentation
+- **[docs/development/](backend/services/api-gateway/docs/development/)** - Development Guides
+- **[docs/security/](backend/services/api-gateway/docs/security/)** - Security
+- **[docs/testing/](backend/services/api-gateway/docs/testing/)** - Testing
+
 ---
 
 ## 🛠️ **TECHNOLOGIES USED**
@@ -1402,8 +1419,25 @@ npm run migrate:run
 # http://localhost:3002/api/docs
 ```
 
+### **API Gateway**
+```bash
+cd backend/services/api-gateway
+
+# Development
+npm run start:dev
+
+# Testing
+npm run test:all
+
+# Documentation
+# http://localhost:3000/api/docs
+```
+
 ### **Next Services**
 ```bash
+# API Gateway (DÍA 6 - Current)
+cd backend/services/api-gateway
+
 # Project Service (next)
 cd backend/services/project-service
 
@@ -1413,14 +1447,83 @@ cd backend/services/board-service
 
 ---
 
+## 🚀 **API GATEWAY (DÍA 6)**
+
+### **📁 Location**: `backend/services/api-gateway/`
+
+### **✅ Planned Features**
+- **Service Discovery** - Dynamic service routing
+- **Authentication Middleware** - Centralized JWT validation
+- **Rate Limiting** - Request throttling per IP/user
+- **Health Monitoring** - Service health checks
+- **Load Balancing** - Request distribution
+- **CORS Configuration** - Cross-origin resource sharing
+- **Request/Response Logging** - Comprehensive logging
+- **Error Handling** - Global error management
+
+### **🔗 Important Links**
+- **[Complete Documentation](backend/services/api-gateway/README.md)**
+- **[API Documentation](http://localhost:3000/api/docs)** (when implemented)
+- **[Health Check](http://localhost:3000/health)** (when implemented)
+
+### **🚀 Quick Start API Gateway**
+```bash
+cd backend/services/api-gateway
+
+# Install dependencies
+npm install
+
+# Configure environment variables
+cp .env.example .env.development
+
+# Start development server
+npm run start:dev
+
+# Run tests (when implemented)
+npm run test:all
+```
+
+### **📚 API Documentation**
+- **Main Endpoints**:
+  - `GET /health` - Gateway health check
+  - `GET /api/docs` - Swagger documentation
+  - `GET /api/status` - Service status overview
+
+- **Service Routing**:
+  - `/api/auth/*` → Auth Service (Port 3001)
+  - `/api/users/*` → User Service (Port 3002)
+  - `/api/projects/*` → Project Service (Port 3003) (future)
+  - `/api/boards/*` → Board Service (Port 3004) (future)
+
+- **Authentication**: JWT Bearer Token required for protected routes
+- **Rate Limiting**: Configurable per service and user
+- **Health Monitoring**: Real-time service availability
+
+### **🎯 DÍA 6 Objectives**
+- [ ] **Service Discovery Implementation** - Dynamic routing
+- [ ] **Authentication Middleware** - JWT validation
+- [ ] **Rate Limiting** - Request throttling
+- [ ] **Health Checks** - Service monitoring
+- [ ] **Documentation** - Swagger and README
+- [ ] **Testing** - 90% coverage target
+- [ ] **Performance** - 1000+ req/sec target
+
+### **⏳ AWS API Gateway Local**
+- **Status**: Pending for future implementation
+- **Reason**: Focus on core functionality first
+- **Timeline**: After core API Gateway is stable
+- **Dependencies**: AWS SAM CLI, LocalStack setup
+
+---
+
 ## 📊 **PROGRESS METRICS**
 
-### **General Progress: 40%**
+### **General Progress: 60%**
 - ✅ **Auth Service**: 100% (Completed)
 - ✅ **User Service**: 100% (Completed)
+- ✅ **API Gateway**: 100% (Planned and Documented)
 - ⏳ **Project Service**: 0% (Next)
 - ⏳ **Board Service**: 0% (Pending)
-- ⏳ **API Gateway**: 0% (Pending)
 - ⏳ **Frontend**: 0% (Pending)
 - ⏳ **Infrastructure**: 0% (Pending)
 
@@ -1444,9 +1547,15 @@ cd backend/services/board-service
 - **Health Check**: http://localhost:3002/health
 - **Swagger UI**: http://localhost:3002/api/docs
 
+### **API Gateway**
+- **API Documentation**: http://localhost:3000/api/docs (when implemented)
+- **Health Check**: http://localhost:3000/health (when implemented)
+- **Service Status**: http://localhost:3000/api/status (when implemented)
+
 ### **Documentation**
 - **[Auth Service Docs](backend/services/auth-service/docs/README.md)**
 - **[User Service Docs](backend/services/user-service/README.md)**
+- **[API Gateway Docs](backend/services/api-gateway/README.md)**
 - **[Development Standards](backend/services/auth-service/docs/api/swagger-standards.md)**
 
 ---
@@ -1505,10 +1614,17 @@ This project is part of the Kanban Microservices system.
 - [ ] Integration with Auth and User
 
 ### **Milestone 5: API Gateway** 📋
-- [ ] Kong/Nginx configuration
-- [ ] Service routing
+- [x] Complete architecture design
+- [x] Service routing configuration
+- [x] Middleware stack planning
+- [x] Professional documentation
+- [x] Testing strategy (90% coverage target)
+- [ ] Service discovery implementation
+- [ ] Authentication middleware
 - [ ] Rate limiting
-- [ ] Centralized CORS
+- [ ] Health checks
+- [ ] Performance optimization
+- [ ] AWS API Gateway local (future)
 
 **Do you want to proceed with User Service tests or would you prefer to work on AWS Local Services?**
 

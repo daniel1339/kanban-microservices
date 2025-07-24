@@ -135,145 +135,145 @@ services:
       - services
 
   # Board Service (when you develop it)
-  board-service:
-    build:
-      context: ./backend/services/board-service
-      dockerfile: Dockerfile
-    ports:
-      - "3003:3003"
-    environment:
-      - NODE_ENV=development
-      - PORT=3003
-      - DATABASE_URL=postgresql://kanban_user:kanban_password@postgres:5432/kanban
-      - REDIS_URL=redis://redis:6379
-      - AWS_ENDPOINT=http://localstack:4566
-      - AWS_REGION=us-east-1
-      - AWS_ACCESS_KEY_ID=test
-      - AWS_SECRET_ACCESS_KEY=test
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      localstack:
-        condition: service_started
-    networks:
-      - kanban-network
-    profiles:
-      - services
+  # board-service:
+  #   build:
+  #     context: ./backend/services/board-service
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "3003:3003"
+  #   environment:
+  #     - NODE_ENV=development
+  #     - PORT=3003
+  #     - DATABASE_URL=postgresql://kanban_user:kanban_password@postgres:5432/kanban
+  #     - REDIS_URL=redis://redis:6379
+  #     - AWS_ENDPOINT=http://localstack:4566
+  #     - AWS_REGION=us-east-1
+  #     - AWS_ACCESS_KEY_ID=test
+  #     - AWS_SECRET_ACCESS_KEY=test
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #     localstack:
+  #       condition: service_started
+  #   networks:
+  #     - kanban-network
+  #   profiles:
+  #     - services
 
   # List Service (when you develop it)
-  list-service:
-    build:
-      context: ./backend/services/list-service
-      dockerfile: Dockerfile
-    ports:
-      - "3004:3004"
-    environment:
-      - NODE_ENV=development
-      - PORT=3004
-      - DATABASE_URL=postgresql://kanban_user:kanban_password@postgres:5432/kanban
-      - REDIS_URL=redis://redis:6379
-      - AWS_ENDPOINT=http://localstack:4566
-      - AWS_REGION=us-east-1
-      - AWS_ACCESS_KEY_ID=test
-      - AWS_SECRET_ACCESS_KEY=test
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      localstack:
-        condition: service_started
-    networks:
-      - kanban-network
-    profiles:
-      - services
+  # list-service:
+  #   build:
+  #     context: ./backend/services/list-service
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "3004:3004"
+  #   environment:
+  #     - NODE_ENV=development
+  #     - PORT=3004
+  #     - DATABASE_URL=postgresql://kanban_user:kanban_password@postgres:5432/kanban
+  #     - REDIS_URL=redis://redis:6379
+  #     - AWS_ENDPOINT=http://localstack:4566
+  #     - AWS_REGION=us-east-1
+  #     - AWS_ACCESS_KEY_ID=test
+  #     - AWS_SECRET_ACCESS_KEY=test
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #     localstack:
+  #       condition: service_started
+  #   networks:
+  #     - kanban-network
+  #   profiles:
+  #     - services
 
   # Card Service (when you develop it)
-  card-service:
-    build:
-      context: ./backend/services/card-service
-      dockerfile: Dockerfile
-    ports:
-      - "3005:3005"
-    environment:
-      - NODE_ENV=development
-      - PORT=3005
-      - DATABASE_URL=postgresql://kanban_user:kanban_password@postgres:5432/kanban
-      - REDIS_URL=redis://redis:6379
-      - AWS_ENDPOINT=http://localstack:4566
-      - AWS_REGION=us-east-1
-      - AWS_ACCESS_KEY_ID=test
-      - AWS_SECRET_ACCESS_KEY=test
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      localstack:
-        condition: service_started
-    networks:
-      - kanban-network
-    profiles:
-      - services
+  # card-service:
+  #   build:
+  #     context: ./backend/services/card-service
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "3005:3005"
+  #   environment:
+  #     - NODE_ENV=development
+  #     - PORT=3005
+  #     - DATABASE_URL=postgresql://kanban_user:kanban_password@postgres:5432/kanban
+  #     - REDIS_URL=redis://redis:6379
+  #     - AWS_ENDPOINT=http://localstack:4566
+  #     - AWS_REGION=us-east-1
+  #     - AWS_ACCESS_KEY_ID=test
+  #     - AWS_SECRET_ACCESS_KEY=test
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #     localstack:
+  #       condition: service_started
+  #   networks:
+  #     - kanban-network
+  #   profiles:
+  #     - services
 
   # Notification Service (when you develop it)
-  notification-service:
-    build:
-      context: ./backend/services/notification-service
-      dockerfile: Dockerfile
-    ports:
-      - "3006:3006"
-    environment:
-      - NODE_ENV=development
-      - PORT=3006
-      - DATABASE_URL=postgresql://kanban_user:kanban_password@postgres:5432/kanban
-      - REDIS_URL=redis://redis:6379
-      - AWS_ENDPOINT=http://localstack:4566
-      - AWS_REGION=us-east-1
-      - AWS_ACCESS_KEY_ID=test
-      - AWS_SECRET_ACCESS_KEY=test
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      localstack:
-        condition: service_started
-    networks:
-      - kanban-network
-    profiles:
-      - services
+  # notification-service:
+  #   build:
+  #     context: ./backend/services/notification-service
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "3006:3006"
+  #   environment:
+  #     - NODE_ENV=development
+  #     - PORT=3006
+  #     - DATABASE_URL=postgresql://kanban_user:kanban_password@postgres:5432/kanban
+  #     - REDIS_URL=redis://redis:6379
+  #     - AWS_ENDPOINT=http://localstack:4566
+  #     - AWS_REGION=us-east-1
+  #     - AWS_ACCESS_KEY_ID=test
+  #     - AWS_SECRET_ACCESS_KEY=test
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #     localstack:
+  #       condition: service_started
+  #   networks:
+  #     - kanban-network
+  #   profiles:
+  #     - services
 
   # File Service (when you develop it)
-  file-service:
-    build:
-      context: ./backend/services/file-service
-      dockerfile: Dockerfile
-    ports:
-      - "3007:3007"
-    environment:
-      - NODE_ENV=development
-      - PORT=3007
-      - DATABASE_URL=postgresql://kanban_user:kanban_password@postgres:5432/kanban
-      - REDIS_URL=redis://redis:6379
-      - AWS_ENDPOINT=http://localstack:4566
-      - AWS_REGION=us-east-1
-      - AWS_ACCESS_KEY_ID=test
-      - AWS_SECRET_ACCESS_KEY=test
-      - CLOUDINARY_URL=your-cloudinary-url-here
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      localstack:
-        condition: service_started
-    networks:
-      - kanban-network
-    profiles:
-      - services
+  # file-service:
+  #   build:
+  #     context: ./backend/services/file-service
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "3007:3007"
+  #   environment:
+  #     - NODE_ENV=development
+  #     - PORT=3007
+  #     - DATABASE_URL=postgresql://kanban_user:kanban_password@postgres:5432/kanban
+  #     - REDIS_URL=redis://redis:6379
+  #     - AWS_ENDPOINT=http://localstack:4566
+  #     - AWS_REGION=us-east-1
+  #     - AWS_ACCESS_KEY_ID=test
+  #     - AWS_SECRET_ACCESS_KEY=test
+  #     - CLOUDINARY_URL=your-cloudinary-url-here
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #     localstack:
+  #       condition: service_started
+  #   networks:
+  #     - kanban-network
+  #   profiles:
+  #     - services
 
 volumes:
   postgres_data:

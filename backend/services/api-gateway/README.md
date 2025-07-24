@@ -1,4 +1,172 @@
+# 🌐 Language Policy: English Only
+
+**All code, documentation, comments, error responses, and examples in this microservice must be written in English.**
+
+- This is a mandatory standard for the API Gateway and all microservices in this monorepo.
+- All new features, bug fixes, and documentation updates must be in English.
+- All error structures, Swagger/OpenAPI documentation, and README files must use English.
+- This ensures consistency, professionalism, and global collaboration.
+
+---
+
 # 🚀 API Gateway - Kanban Microservices
+
+## 🛑 Circuit Breaker (Resilience Pattern)
+
+The API Gateway uses a circuit breaker for all proxied microservice requests:
+
+- **Failure tracking**: If a service instance fails 3 times in a row, the circuit opens for that instance.
+- **Open circuit**: While open, no requests are sent to that instance for 30 seconds.
+- **Automatic recovery**: After 30 seconds, the circuit closes and requests are retried.
+- **Success resets**: A successful request immediately closes the circuit for that instance.
+
+**Example error response when all instances are open (circuit open):**
+```json
+{
+  "statusCode": 503,
+  "message": "All instances for service 'auth' are unavailable (circuit open or unhealthy)",
+  "error": "Service Unavailable",
+  "timestamp": "2024-01-01T12:00:00.000Z",
+  "path": "/api/auth/login",
+  "method": "POST"
+}
+```
+
+**How it works:**
+- The gateway tracks failures and opens the circuit for failing instances.
+- While open, those instances are skipped by the load balancer.
+- After a timeout, the circuit closes and the instance is retried.
+- This prevents cascading failures and improves system resilience.
+
+---
+
+## ⚖️ Advanced Load Balancer (Round-Robin + Health Check)
+
+The API Gateway uses an advanced load balancer for all proxied microservice requests:
+
+- **Round-robin**: Requests are distributed evenly across all healthy instances of a service.
+- **Health check**: Only healthy instances are selected. If all instances are unhealthy, the gateway returns a 503 error.
+- **Automatic failover**: If an instance fails, it is marked as unhealthy and skipped until it recovers.
+
+**Example error response when no healthy instance is available:**
+```json
+{
+  "statusCode": 503,
+  "message": "No healthy instance available for service 'auth'",
+  "error": "Service Unavailable",
+  "timestamp": "2024-01-01T12:00:00.000Z",
+  "path": "/api/auth/login",
+  "method": "POST"
+}
+```
+
+**How it works:**
+- The gateway maintains a list of instances for each service (simulated in local/dev).
+- Each request is routed to the next healthy instance in round-robin order.
+- If an instance fails, it is marked as unhealthy and skipped.
+- Health status can be updated automatically (future) or manually (for testing).
+
+---
+
+## 📦 Unified Error Structure (Standard)
+
+All error responses from the API Gateway follow this unified format:
+
+```json
+{
+  "statusCode": 400,
+  "message": "Clear error description",
+  "error": "Bad Request",
+  "timestamp": "2024-01-01T12:00:00.000Z",
+  "path": "/endpoint/path",
+  "method": "POST",
+  "requestId": "optional-request-id"
+}
+```
+- `statusCode`: HTTP status code (400, 401, 404, 409, 422, 429, 500, etc.)
+- `message`: Descriptive error message (string or array)
+- `error`: Error type ("Bad Request", "Unauthorized", etc.)
+- `timestamp`: ISO date/time
+- `path`: Endpoint path
+- `method`: HTTP method
+- `requestId`: Optional request ID for tracking
+
+## 🚦 Rate Limiting Example
+
+If you exceed the allowed number of requests, you will receive:
+
+```json
+{
+  "statusCode": 429,
+  "message": "Rate limit exceeded. Please try again later.",
+  "error": "Too Many Requests",
+  "timestamp": "2024-01-01T12:00:00.000Z",
+  "path": "/api/auth/login",
+  "method": "POST"
+}
+```
+- Rate limiting is per IP/user and configurable via environment variables.
+
+## 🔐 JWT Authentication Example
+
+All protected endpoints require a JWT Bearer token:
+
+```
+Authorization: Bearer <your-jwt-token>
+```
+- You must include this header in your requests to access protected resources.
+
+## 🧪 Testing & Coverage Guide
+
+- **Run all tests:**
+  ```bash
+  npm run test:all
+  ```
+- **Run unit tests only:**
+  ```bash
+  npm run test:unit
+  ```
+- **Run integration tests only:**
+  ```bash
+  npm run test:integration
+  ```
+- **View coverage report:**
+  ```bash
+  npm run test:cov
+  ```
+- **Minimum required coverage:**
+  - Statements: 90%
+  - Branches: 85%
+  - Functions: 90%
+  - Lines: 90%
+- If coverage drops, add more unit/E2E tests for error cases, edge cases, and middleware.
+
+## 📖 Swagger & Health Endpoints
+
+- **Swagger UI:** [http://localhost:3000/api/docs](http://localhost:3000/api/docs)
+  - Interactive API documentation, try endpoints directly, see request/response examples.
+- **Health Check:**
+  - `GET /health` — Gateway health
+  - `GET /health/services` — Microservices health
+
+## ⚙️ Environment Variables Example
+
+See `.env.example` for all available configuration options:
+
+```env
+NODE_ENV=development
+PORT=3000
+AUTH_SERVICE_URL=http://localhost:3001
+USER_SERVICE_URL=http://localhost:3002
+PROJECT_SERVICE_URL=http://localhost:3003
+BOARD_SERVICE_URL=http://localhost:3004
+JWT_SECRET=your-jwt-secret
+RATE_LIMIT_TTL=60000
+RATE_LIMIT_LIMIT=100
+CORS_ORIGIN=*
+```
+
+---
 
 ## 📋 **PROJECT OVERVIEW**
 

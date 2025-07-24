@@ -22,6 +22,7 @@ describe('AppController (e2e)', () => {
   it('/hello (GET)', () => {
     return request(app.getHttpServer())
       .get('/hello')
+      .set('Authorization', 'Bearer valid-jwt-token')
       .expect(200)
       .expect('Hello World!');
   });

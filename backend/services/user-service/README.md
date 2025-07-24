@@ -225,12 +225,12 @@ user-service/
 ## 🔗 **MAIN ENDPOINTS**
 
 ### **User Profiles**
-- `GET /profile` - Get authenticated user profile
-- `PUT /profile` - Update user profile
-- `GET /users/:userId` - Get public user profile
+- `GET /api/profile` - Get authenticated user profile
+- `PUT /api/profile` - Update user profile
+- `GET /api/users/:userId` - Get public user profile
 
 ### **Avatar Management**
-- `POST /avatar/upload` - Upload user avatar
+- `POST /api/avatar/upload` - Upload user avatar
 
 ### **Health & Status**
 - `GET /health` - Service health check
@@ -329,7 +329,7 @@ npm run test:cov       # Tests with coverage
 
 ### **Get profile**
 ```bash
-curl -X GET http://localhost:3002/profile \
+curl -X GET http://localhost:3002/api/profile \
   -H "Authorization: Bearer <your-jwt-token>"
 ```
 **Response:**
@@ -348,7 +348,7 @@ curl -X GET http://localhost:3002/profile \
 
 ### **Update profile**
 ```bash
-curl -X PUT http://localhost:3002/profile \
+curl -X PUT http://localhost:3002/api/profile \
   -H "Authorization: Bearer <your-jwt-token>" \
   -H "Content-Type: application/json" \
   -d '{
@@ -372,7 +372,7 @@ curl -X PUT http://localhost:3002/profile \
 
 ### **Upload avatar**
 ```bash
-curl -X POST http://localhost:3002/avatar/upload \
+curl -X POST http://localhost:3002/api/avatar/upload \
   -H "Authorization: Bearer <your-jwt-token>" \
   -F "file=@avatar.png"
 ```

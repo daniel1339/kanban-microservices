@@ -5,7 +5,7 @@ import { ServiceDiscoveryService } from '../../common/services/service-discovery
 export class RoutingService {
   constructor(private readonly serviceDiscovery: ServiceDiscoveryService) {}
 
-  // Mapea rutas base a servicios
+  // Maps base routes to services
   private readonly routeMap: Record<string, string> = {
     '/api/auth': 'auth',
     '/api/users': 'user',
@@ -18,7 +18,7 @@ export class RoutingService {
   };
 
   resolveServiceByPath(path: string): string | undefined {
-    // Busca la ruta base más larga que coincida
+    // Finds the longest matching base route
     const match = Object.keys(this.routeMap)
       .sort((a, b) => b.length - a.length)
       .find((base) => path.startsWith(base));
