@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from '../../src/auth/auth.controller';
 import { AuthService } from '../../src/auth/auth.service';
-import { RegisterDto, LoginDto, RefreshTokenDto } from '../../src/auth/dto';
 import { UnauthorizedException, ConflictException, BadRequestException } from '@nestjs/common';
+import { RegisterDto, LoginDto, RefreshTokenDto } from '../../src/auth/dto';
 import { CurrentUser } from '../../src/auth/decorators/current-user.decorator';
 
 describe('AuthController', () => {
@@ -73,7 +73,7 @@ describe('AuthController', () => {
         passwordConfirmation: 'Password123!',
       };
 
-      authService.register.mockRejectedValue(new ConflictException('El email ya está registrado'));
+      authService.register.mockRejectedValue(new ConflictException('Email already registered'));
 
       await expect(controller.register(registerDto)).rejects.toThrow(ConflictException);
     });
@@ -86,7 +86,7 @@ describe('AuthController', () => {
         passwordConfirmation: 'DifferentPassword123!',
       };
 
-      authService.register.mockRejectedValue(new BadRequestException('Las contraseñas no coinciden'));
+      authService.register.mockRejectedValue(new BadRequestException('Passwords do not match'));
 
       await expect(controller.register(registerDto)).rejects.toThrow(BadRequestException);
     });
@@ -113,7 +113,7 @@ describe('AuthController', () => {
         password: 'WrongPassword123!',
       };
 
-      authService.login.mockRejectedValue(new UnauthorizedException('Credenciales inválidas'));
+      authService.login.mockRejectedValue(new UnauthorizedException('Invalid credentials'));
 
       await expect(controller.login(loginDto)).rejects.toThrow(UnauthorizedException);
     });
@@ -138,7 +138,7 @@ describe('AuthController', () => {
         refreshToken: 'invalid-refresh-token',
       };
 
-      authService.refreshToken.mockRejectedValue(new UnauthorizedException('Refresh token inválido'));
+      authService.refreshToken.mockRejectedValue(new UnauthorizedException('Invalid refresh token'));
 
       await expect(controller.refreshToken(refreshTokenDto)).rejects.toThrow(UnauthorizedException);
     });
@@ -200,38 +200,38 @@ describe('AuthController', () => {
         username: 'testuser' 
       };
 
-      authService.getProfile.mockRejectedValue(new UnauthorizedException('Usuario no encontrado'));
+      authService.getProfile.mockRejectedValue(new UnauthorizedException('User not found'));
 
       await expect(controller.getProfile(mockUser)).rejects.toThrow(UnauthorizedException);
     });
   });
 
   describe('validateUser', () => {
-    it('should validate user successfully', async () => {
+    it('should validate user credentials successfully', async () => {
       const loginDto = {
         emailOrUsername: 'test@example.com',
         password: 'Password123!',
       };
 
-      authService.validateUser.mockResolvedValue(mockUser);
+      authService.validateUser.mockResolvedValue({ isValid: true, user: mockUser });
 
       const result = await controller.validateUser(loginDto);
 
-      expect(result).toEqual({ isValid: true });
+      expect(result).toEqual({ isValid: true, user: mockUser });
       expect(authService.validateUser).toHaveBeenCalledWith(loginDto.emailOrUsername, loginDto.password);
     });
 
-    it('should return invalid for non-existent user', async () => {
+    it('should return invalid credentials', async () => {
       const loginDto = {
-        emailOrUsername: 'nonexistent@example.com',
-        password: 'Password123!',
+        emailOrUsername: 'test@example.com',
+        password: 'WrongPassword123!',
       };
 
-      authService.validateUser.mockResolvedValue(null);
+      authService.validateUser.mockResolvedValue({ isValid: false, message: 'Invalid credentials' });
 
       const result = await controller.validateUser(loginDto);
 
-      expect(result).toEqual({ isValid: false });
+      expect(result).toEqual({ isValid: false, message: 'Invalid credentials' });
     });
   });
 }); 

@@ -12,12 +12,12 @@ export const CurrentUser = createParamDecorator(
     const request = ctx.switchToHttp().getRequest();
     const user = request.user;
 
-    // Si se especifica una propiedad específica, retornarla
+    // If a specific property is specified, return it
     if (data) {
       return user?.[data];
     }
 
-    // Retornar el usuario completo
+    // Return the complete user
     return user;
   },
 ); 

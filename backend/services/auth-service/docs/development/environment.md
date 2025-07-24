@@ -1,20 +1,20 @@
-# Variables de Entorno - Auth Service
+# Environment Variables - Auth Service
 
-## 📋 Variables Requeridas
+## 📋 Required Variables
 
-### **🔧 Configuración de Aplicación**
+### **🔧 Application Configuration**
 ```bash
 NODE_ENV=development          # development, production, test
-PORT=3001                     # Puerto del servicio
-API_PREFIX=api/v1            # Prefijo de la API
+PORT=3001                     # Service port
+API_PREFIX=api/v1            # API prefix
 ```
 
-### **🗄️ Base de Datos**
+### **🗄️ Database**
 ```bash
-# Opción 1: URL completa (recomendado)
+# Option 1: Complete URL (recommended)
 DATABASE_URL=postgresql://kanban_user:kanban_password@localhost:5432/kanban
 
-# Opción 2: Variables individuales
+# Option 2: Individual variables
 DB_HOST=localhost
 DB_PORT=5432
 DB_USERNAME=kanban_user
@@ -30,7 +30,7 @@ JWT_EXPIRES_IN=15m
 JWT_REFRESH_EXPIRES_IN=7d
 ```
 
-### **📧 Email (para verificación de usuarios)**
+### **📧 Email (for user verification)**
 ```bash
 EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=587
@@ -45,14 +45,14 @@ CORS_ORIGIN=http://localhost:3000
 CORS_CREDENTIALS=true
 ```
 
-### **🔒 Seguridad**
+### **🔒 Security**
 ```bash
 BCRYPT_ROUNDS=12
 RATE_LIMIT_WINDOW=15m
 RATE_LIMIT_MAX=100
 ```
 
-## 🚀 Configuración por Entorno
+## 🚀 Environment Configuration
 
 ### **Development (.env.development)**
 ```bash
@@ -83,111 +83,186 @@ JWT_SECRET=test-secret-key
 JWT_REFRESH_SECRET=test-refresh-secret
 ```
 
-## 📁 Próximos Pasos
+## 📁 Next Steps
 
-### **1. Crear archivos .env**
+### **1. Create .env files**
 ```bash
-# Copiar y configurar
+# Copy and configure
 cp .env.example .env.development
 cp .env.example .env.production
 cp .env.example .env.test
 ```
 
-### **2. Configurar base de datos**
+### **2. Configure database**
 ```bash
-# Crear usuario y base de datos
+# Create user and database
 CREATE USER kanban_user WITH PASSWORD 'kanban_password';
 CREATE DATABASE kanban OWNER kanban_user;
-CREATE DATABASE kanban_test OWNER kanban_user;
 ```
 
-### **3. Ejecutar migraciones**
+### **3. Run migrations**
 ```bash
 npm run migrate:run
 ```
 
-### **4. Verificar configuración**
+### **4. Seed database**
 ```bash
-npm run test:all
+npm run db:seed
 ```
 
-## 🔄 Siguientes Servicios a Implementar
+## 🔧 Configuration Details
 
-### **1. User Service** (Próximo)
-- Gestión de perfiles de usuario
-- Subida de avatares
-- Preferencias de usuario
-- Historial de actividad
+### **Database Configuration**
+The service supports both PostgreSQL and MySQL databases. The recommended setup is PostgreSQL for better performance and features.
 
-### **2. Project Service**
-- Creación y gestión de proyectos
-- Roles y permisos
-- Configuración de proyectos
+**PostgreSQL Setup:**
+```bash
+# Install PostgreSQL
+sudo apt-get install postgresql postgresql-contrib
 
-### **3. Board Service**
-- Tableros Kanban
-- Columnas y tarjetas
-- Drag & drop
-
-### **4. Notification Service**
-- Notificaciones en tiempo real
-- Email notifications
-- Push notifications
-
-### **5. File Service**
-- Subida de archivos
-- Gestión de imágenes
-- Almacenamiento en AWS S3
-
-## 🏗️ Arquitectura Completa
-
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Frontend      │    │   API Gateway   │    │   Load Balancer │
-│   (React/Vue)   │◄──►│   (Kong/Nginx)  │◄──►│   (Nginx)       │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-                                │
-                                ▼
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Auth Service  │    │   User Service  │    │ Project Service │
-│   (Port 3001)   │    │   (Port 3002)   │    │   (Port 3003)   │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-                                │
-                                ▼
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│  Board Service  │    │ Notification    │    │   File Service  │
-│   (Port 3004)   │    │   (Port 3005)   │    │   (Port 3006)   │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-                                │
-                                ▼
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   PostgreSQL    │    │     Redis       │    │   AWS S3        │
-│   (Database)    │    │   (Cache/Queue) │    │   (Files)       │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
+# Create database and user
+sudo -u postgres psql
+CREATE USER kanban_user WITH PASSWORD 'kanban_password';
+CREATE DATABASE kanban OWNER kanban_user;
+GRANT ALL PRIVILEGES ON DATABASE kanban TO kanban_user;
 ```
 
-## 🎯 Estado Actual vs Próximos Pasos
+**MySQL Setup:**
+```bash
+# Install MySQL
+sudo apt-get install mysql-server
 
-### **✅ COMPLETADO (Auth Service)**
-- [x] Autenticación JWT
-- [x] Registro y login
-- [x] Refresh tokens
-- [x] Validación de usuarios
-- [x] Tests unitarios y e2e
-- [x] Documentación Swagger
-- [x] Configuración de base de datos
+# Create database and user
+mysql -u root -p
+CREATE USER 'kanban_user'@'localhost' IDENTIFIED BY 'kanban_password';
+CREATE DATABASE kanban;
+GRANT ALL PRIVILEGES ON kanban.* TO 'kanban_user'@'localhost';
+FLUSH PRIVILEGES;
+```
 
-### **🔄 EN PROGRESO**
-- [ ] Configuración de variables de entorno
-- [ ] Dockerización
-- [ ] CI/CD pipeline
+### **JWT Configuration**
+JWT tokens are used for authentication and authorization. The service uses two types of tokens:
 
-### **📋 PRÓXIMOS PASOS**
-1. **Configurar variables de entorno**
-2. **Dockerizar el servicio**
-3. **Implementar User Service**
-4. **Configurar comunicación entre servicios**
-5. **Implementar API Gateway**
-6. **Configurar monitoreo y logging**
+- **Access Token**: Short-lived (15 minutes) for API access
+- **Refresh Token**: Long-lived (7 days) for token renewal
 
-¿Quieres que procedamos con la configuración de variables de entorno o prefieres continuar con otro servicio? 
+**Security Recommendations:**
+- Use strong, unique secrets for each environment
+- Rotate secrets regularly in production
+- Store secrets securely (use environment variables or secret management systems)
+
+### **Email Configuration**
+Email functionality is used for user verification and password reset. The service supports SMTP providers like Gmail, SendGrid, or AWS SES.
+
+**Gmail Setup:**
+1. Enable 2-factor authentication
+2. Generate an app password
+3. Use the app password in EMAIL_PASSWORD
+
+**SendGrid Setup:**
+```bash
+EMAIL_HOST=smtp.sendgrid.net
+EMAIL_PORT=587
+EMAIL_USER=apikey
+EMAIL_PASSWORD=your-sendgrid-api-key
+```
+
+### **CORS Configuration**
+CORS (Cross-Origin Resource Sharing) is configured to allow requests from specific origins.
+
+**Development:**
+```bash
+CORS_ORIGIN=http://localhost:3000
+```
+
+**Production:**
+```bash
+CORS_ORIGIN=https://yourdomain.com
+```
+
+**Multiple Origins:**
+```bash
+CORS_ORIGIN=https://yourdomain.com,https://www.yourdomain.com
+```
+
+## 🚨 Security Considerations
+
+### **Production Security**
+1. **Never commit .env files** to version control
+2. **Use strong secrets** for JWT keys
+3. **Enable HTTPS** in production
+4. **Configure proper CORS** origins
+5. **Use environment-specific** configurations
+6. **Regularly rotate** secrets and keys
+
+### **Database Security**
+1. **Use strong passwords** for database users
+2. **Limit database access** to necessary privileges
+3. **Enable SSL** for database connections
+4. **Regular backups** of production data
+5. **Monitor database** access and performance
+
+### **JWT Security**
+1. **Use strong secrets** (at least 32 characters)
+2. **Set appropriate expiration** times
+3. **Implement token refresh** mechanism
+4. **Store refresh tokens** securely
+5. **Implement token blacklisting** for logout
+
+## 🔍 Troubleshooting
+
+### **Common Issues**
+
+**Database Connection Error:**
+```bash
+# Check if database is running
+sudo systemctl status postgresql
+
+# Check connection
+psql -h localhost -U kanban_user -d kanban
+```
+
+**JWT Secret Error:**
+```bash
+# Ensure JWT_SECRET is set
+echo $JWT_SECRET
+
+# Check environment file
+cat .env.development | grep JWT_SECRET
+```
+
+**CORS Error:**
+```bash
+# Check CORS configuration
+echo $CORS_ORIGIN
+
+# Verify frontend origin matches
+```
+
+**Email Configuration Error:**
+```bash
+# Test email configuration
+npm run test:email
+
+# Check email credentials
+echo $EMAIL_USER
+echo $EMAIL_PASSWORD
+```
+
+### **Environment Validation**
+The service includes environment validation to ensure all required variables are set:
+
+```bash
+# Validate environment
+npm run validate:env
+
+# Check configuration
+npm run config:check
+```
+
+## 📚 Additional Resources
+
+- **NestJS Configuration**: https://docs.nestjs.com/techniques/configuration
+- **TypeORM Configuration**: https://typeorm.io/#/using-ormconfig
+- **JWT Best Practices**: https://auth0.com/blog/a-look-at-the-latest-draft-for-jwt-bcp/
+- **CORS Configuration**: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS 

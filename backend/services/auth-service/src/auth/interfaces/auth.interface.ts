@@ -1,4 +1,4 @@
-// Interfaces para respuestas de autenticación
+// Interfaces for authentication responses
 export interface AuthResponse {
   user: UserResponse;
   accessToken: string;
@@ -15,7 +15,7 @@ export interface UserResponse {
   updatedAt: Date;
 }
 
-// Interfaces para tokens
+// Interfaces for tokens
 export interface TokenPayload {
   sub: string; // user id
   email: string;
@@ -31,7 +31,7 @@ export interface RefreshTokenPayload {
   exp?: number;
 }
 
-// Interfaces para servicios
+// Interfaces for services
 export interface IAuthService {
   register(registerDto: any): Promise<AuthResponse>;
   login(loginDto: any): Promise<AuthResponse>;
@@ -41,14 +41,14 @@ export interface IAuthService {
   generateTokens(user: any): Promise<{ accessToken: string; refreshToken: string }>;
 }
 
-// Interfaces para respuestas de error
+// Interfaces for error responses
 export interface AuthError {
   message: string;
   code: string;
   statusCode: number;
 }
 
-// Interfaces para validación
+// Interfaces for validation
 export interface ValidationResult {
   isValid: boolean;
   errors?: string[];

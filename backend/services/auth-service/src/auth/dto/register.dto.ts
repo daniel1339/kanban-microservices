@@ -4,45 +4,45 @@ import { IsStrongPassword, IsNotCommonPassword } from '../../common/validators/p
 
 export class RegisterDto {
   @ApiProperty({
-    example: 'usuario@ejemplo.com',
-    description: 'Email válido del usuario',
+    example: 'user@example.com',
+    description: 'Valid user email. Must be unique and in email format.',
     pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$',
   })
-  @IsEmail({}, { message: 'El email debe ser válido' })
-  @MaxLength(255, { message: 'El email no puede tener más de 255 caracteres' })
+  @IsEmail({}, { message: 'Email must be valid' })
+  @MaxLength(255, { message: 'Email cannot be longer than 255 characters' })
   email: string;
 
   @ApiProperty({
-    example: 'usuario123',
-    description: 'Nombre de usuario único (3-100 caracteres, solo letras, números y guiones bajos)',
+    example: 'user123',
+    description: 'Unique username (3-100 characters, only letters, numbers, and underscores). Must be unique.',
     minLength: 3,
     maxLength: 100,
     pattern: '^[a-zA-Z0-9_]+$',
   })
-  @IsString({ message: 'El username debe ser una cadena de texto' })
-  @MinLength(3, { message: 'El username debe tener al menos 3 caracteres' })
-  @MaxLength(100, { message: 'El username no puede tener más de 100 caracteres' })
-  @Matches(/^[a-zA-Z0-9_]+$/, { 
-    message: 'El username solo puede contener letras, números y guiones bajos' 
+  @IsString({ message: 'Username must be a string' })
+  @MinLength(3, { message: 'Username must be at least 3 characters' })
+  @MaxLength(100, { message: 'Username cannot be longer than 100 characters' })
+  @Matches(/^[a-zA-Z0-9_]+$/, {
+    message: 'Username can only contain letters, numbers, and underscores'
   })
   username: string;
 
   @ApiProperty({
-    example: 'Contraseña123!',
-    description: 'Contraseña segura (mínimo 8 caracteres, incluir mayúsculas, minúsculas, números y símbolos)',
+    example: 'Password123!',
+    description: 'Secure password (minimum 8 characters, include uppercase, lowercase, numbers, and symbols).',
     minLength: 8,
     maxLength: 255,
   })
-  @IsString({ message: 'La contraseña debe ser una cadena de texto' })
-  @MaxLength(255, { message: 'La contraseña no puede tener más de 255 caracteres' })
+  @IsString({ message: 'Password must be a string' })
+  @MaxLength(255, { message: 'Password cannot be longer than 255 characters' })
   @IsStrongPassword()
   @IsNotCommonPassword()
   password: string;
 
   @ApiProperty({
-    example: 'Contraseña123!',
-    description: 'Confirmación de la contraseña (debe coincidir con password)',
+    example: 'Password123!',
+    description: 'Password confirmation (must match password).',
   })
-  @IsString({ message: 'La confirmación de contraseña debe ser una cadena de texto' })
+  @IsString({ message: 'Password confirmation must be a string' })
   passwordConfirmation: string;
 } 

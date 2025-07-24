@@ -1,38 +1,38 @@
-# Estructura de Tests - Auth Service
+# Test Structure - Auth Service
 
-Este documento explica la organización de los tests en el Auth Service.
+This document explains the organization of tests in the Auth Service.
 
-## 📁 Estructura de Carpetas
+## 📁 Folder Structure
 
 ```
 test/
-├── fixtures/           # Datos de prueba reutilizables
-│   ├── index.ts       # Exportaciones de fixtures
-│   └── users.fixture.ts # Fixtures para usuarios
-├── e2e/               # Tests de integración (end-to-end)
-│   └── auth.e2e-spec.ts # Tests e2e para autenticación
-├── jest-e2e.json      # Configuración de Jest para e2e
-└── README.md          # Este archivo
+├── fixtures/           # Reusable test data
+│   ├── index.ts       # Fixture exports
+│   └── users.fixture.ts # User fixtures
+├── e2e/               # Integration tests (end-to-end)
+│   └── auth.e2e-spec.ts # E2E tests for authentication
+├── jest-e2e.json      # Jest configuration for e2e
+└── README.md          # This file
 ```
 
-## 🧪 Tipos de Tests
+## 🧪 Test Types
 
 ### **Fixtures (`test/fixtures/`)**
-- **Propósito**: Datos de prueba reutilizables
-- **Contenido**: Mock data, DTOs, respuestas esperadas
-- **Uso**: Importar en tests unitarios y e2e
+- **Purpose**: Reusable test data
+- **Content**: Mock data, DTOs, expected responses
+- **Usage**: Import in unit and e2e tests
 
-### **Tests E2E (`test/e2e/`)**
-- **Propósito**: Tests de integración con base de datos real
-- **Contenido**: Flujos completos de endpoints
-- **Ejecución**: `npm run test:integration`
+### **E2E Tests (`test/e2e/`)**
+- **Purpose**: Integration tests with real database
+- **Content**: Complete endpoint flows
+- **Execution**: `npm run test:integration`
 
-### **Tests Unitarios (`src/**/*.spec.ts`)**
-- **Propósito**: Tests de funciones individuales
-- **Contenido**: Tests de servicios y controladores
-- **Ejecución**: `npm run test:unit`
+### **Unit Tests (`src/**/*.spec.ts`)**
+- **Purpose**: Individual function tests
+- **Content**: Service and controller tests
+- **Execution**: `npm run test:unit`
 
-## 🔧 Fixtures Disponibles
+## 🔧 Available Fixtures
 
 ### **Users Fixture**
 ```typescript
@@ -45,134 +45,134 @@ import {
 } from '../../test/fixtures';
 ```
 
-### **Datos Incluidos**
-- ✅ Usuarios válidos e inválidos
-- ✅ DTOs de registro y login
-- ✅ Respuestas de autenticación
-- ✅ Payloads de JWT
-- ✅ Tokens de ejemplo
-- ✅ Errores de validación
+### **Included Data**
+- ✅ Valid and invalid users
+- ✅ Registration and login DTOs
+- ✅ Authentication responses
+- ✅ JWT payloads
+- ✅ Example tokens
+- ✅ Validation errors
 
-## 🚀 Comandos de Testing
+## 🚀 Testing Commands
 
-### **Ejecutar Tests Específicos**
+### **Run Specific Tests**
 ```bash
-# Tests unitarios
+# Unit tests
 npm run test:unit
 
-# Tests de integración (incluye setup de DB)
+# Integration tests (includes DB setup)
 npm run test:integration
 
-# Setup de base de datos de test
+# Test database setup
 npm run test:setup
 
-# Todos los tests
+# All tests
 npm run test:all
 
-# Tests con coverage
+# Tests with coverage
 npm run test:cov
 ```
 
-### **Configuración de Base de Datos**
-Los tests e2e requieren una base de datos PostgreSQL de test:
+### **Database Configuration**
+E2E tests require a PostgreSQL test database:
 - **URL**: `postgresql://kanban_user:kanban_password@localhost:5432/kanban_test`
-- **Setup automático**: Se ejecuta automáticamente con `npm run test:integration`
-- **Manual**: `npm run test:setup` para crear la DB de test
+- **Automatic setup**: Runs automatically with `npm run test:integration`
+- **Manual**: `npm run test:setup` to create test DB
 
-### **Configuración de Jest**
-- **Unit Tests**: `jest.config.js` (raíz del proyecto)
+### **Jest Configuration**
+- **Unit Tests**: `jest.config.js` (project root)
 - **E2E Tests**: `test/jest-e2e.json`
 
-## 📝 Escribir Nuevos Tests
+## 📝 Writing New Tests
 
-### **1. Crear Fixtures**
+### **1. Create Fixtures**
 ```typescript
-// test/fixtures/nuevo.fixture.ts
-export const mockNuevoData = {
-  // Datos de prueba
+// test/fixtures/new.fixture.ts
+export const mockNewData = {
+  // Test data
 };
 ```
 
-### **2. Crear Test Unitario**
+### **2. Create Unit Test**
 ```typescript
-// src/nuevo/nuevo.service.spec.ts
-import { mockNuevoData } from '../../test/fixtures';
+// src/new/new.service.spec.ts
+import { mockNewData } from '../../test/fixtures';
 
-describe('NuevoService', () => {
+describe('NewService', () => {
   it('should do something', () => {
-    // Usar mockNuevoData
+    // Use mockNewData
   });
 });
 ```
 
-### **3. Crear Test E2E**
+### **3. Create E2E Test**
 ```typescript
-// test/e2e/nuevo.e2e-spec.ts
-import { mockNuevoData } from '../fixtures';
+// test/e2e/new.e2e-spec.ts
+import { mockNewData } from '../fixtures';
 
-describe('NuevoController (e2e)', () => {
-  it('/nuevo (POST)', () => {
+describe('NewController (e2e)', () => {
+  it('/new (POST)', () => {
     return request(app.getHttpServer())
-      .post('/nuevo')
-      .send(mockNuevoData)
+      .post('/new')
+      .send(mockNewData)
       .expect(201);
   });
 });
 ```
 
-## 🎯 Mejores Prácticas
+## 🎯 Best Practices
 
-### **1. Usar Fixtures**
-- ✅ Reutilizar datos de prueba
-- ✅ Mantener consistencia
-- ✅ Fácil mantenimiento
+### **1. Use Fixtures**
+- ✅ Reuse test data
+- ✅ Maintain consistency
+- ✅ Easy maintenance
 
-### **2. Organización Clara**
-- ✅ Tests unitarios en `src/`
-- ✅ Tests e2e en `test/e2e/`
-- ✅ Fixtures en `test/fixtures/`
+### **2. Clear Organization**
+- ✅ Unit tests in `src/`
+- ✅ E2E tests in `test/e2e/`
+- ✅ Fixtures in `test/fixtures/`
 
-### **3. Nombres Descriptivos**
-- ✅ `auth.e2e-spec.ts` para tests de auth
-- ✅ `users.fixture.ts` para datos de usuarios
-- ✅ Nombres de tests claros
+### **3. Descriptive Names**
+- ✅ `auth.e2e-spec.ts` for auth tests
+- ✅ `users.fixture.ts` for user data
+- ✅ Clear test names
 
-### **4. Limpieza**
-- ✅ Limpiar mocks después de cada test
-- ✅ Usar `beforeEach` y `afterEach`
-- ✅ Cerrar conexiones en `afterAll`
+### **4. Cleanup**
+- ✅ Clean mocks after each test
+- ✅ Use `beforeEach` and `afterEach`
+- ✅ Close connections in `afterAll`
 
-## 🔄 Mantenimiento
+## 🔄 Maintenance
 
-### **Actualizar Fixtures**
-1. Modificar archivo de fixture
-2. Actualizar tests que usen esos datos
-3. Verificar que todos los tests pasen
+### **Update Fixtures**
+1. Modify fixture file
+2. Update tests that use that data
+3. Verify all tests pass
 
-### **Agregar Nuevos Tests**
-1. Crear archivo de test
-2. Importar fixtures necesarios
-3. Seguir estructura AAA (Arrange, Act, Assert)
-4. Ejecutar tests para verificar
+### **Add New Tests**
+1. Create test file
+2. Import necessary fixtures
+3. Follow AAA structure (Arrange, Act, Assert)
+4. Run tests to verify
 
 ### **Debugging**
 ```bash
-# Debug tests unitarios
+# Debug unit tests
 npm run test:debug
 
-# Ver coverage
+# View coverage
 npm run test:cov
-# Abrir coverage/lcov-report/index.html
+# Open coverage/lcov-report/index.html
 ```
 
-## 📊 Métricas
+## 📊 Metrics
 
-### **Cobertura Actual**
+### **Current Coverage**
 - **AuthService**: 100%
 - **AuthController**: 100%
-- **E2E Tests**: 100% de endpoints
+- **E2E Tests**: 100% of endpoints
 
-### **Tiempo de Ejecución**
-- **Unit Tests**: ~2-3 segundos
-- **E2E Tests**: ~10-15 segundos
-- **Total**: ~15-20 segundos 
+### **Execution Time**
+- **Unit Tests**: ~2-3 seconds
+- **E2E Tests**: ~10-15 seconds
+- **Total**: ~15-20 seconds 

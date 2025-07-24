@@ -3,16 +3,21 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+import { getDataSourceToken } from '@nestjs/typeorm';
+import { cleanDatabase } from '../utils/db-cleaner';
+import { DataSource } from 'typeorm';
 
 import { AppModule } from '../../src/app.module';
 import { User, RefreshToken } from '../../src/auth/entities';
 import { mockUsers, mockRegisterDto, mockLoginDto, mockRefreshTokenDto } from '../fixtures';
+import { ValidationPipe as CustomValidationPipe } from '../../src/common/pipes/validation.pipe';
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
   let accessToken: string;
   let refreshToken: string;
   let userId: string;
+  let dataSource: DataSource;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -21,32 +26,43 @@ describe('AuthController (e2e)', () => {
           isGlobal: true,
           envFilePath: '.env.test',
         }),
-        TypeOrmModule.forRoot({
-          type: 'postgres',
-          url: process.env.DATABASE_URL,
-          entities: [User, RefreshToken],
-          synchronize: true, // Solo para tests
-          logging: false,
-          ssl: false,
-        }),
         AppModule,
       ],
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(new CustomValidationPipe());
     await app.init();
-  }, 30000); // Timeout de 30 segundos
+    dataSource = app.get(getDataSourceToken());
+    await cleanDatabase(dataSource); // Clean database only at start
+  }, 30000); // 30 second timeout
 
-  beforeEach(async () => {
-    // Limpiar variables entre tests
-    accessToken = '';
-    refreshToken = '';
-    userId = '';
-  });
+  // Remove or comment the beforeEach that cleans the database
+  // beforeEach(async () => {
+  //   await cleanDatabase(dataSource);
+  //   // Clear variables between tests
+  //   accessToken = '';
+  //   refreshToken = '';
+  //   userId = '';
+  // });
 
   afterAll(async () => {
     if (app) {
       await app.close();
+      // Close DynamoDBService if it exists
+      try {
+        const dynamoService = app.get(
+          require('../../src/common/services/dynamodb.service').DynamoDBService
+        );
+        if (dynamoService && typeof dynamoService.close === 'function') {
+          await dynamoService.close();
+        }
+      } catch (e) {
+        // Ignore if not registered
+      }
+    }
+    if (dataSource && dataSource.isInitialized) {
+      await dataSource.destroy();
     }
   }, 10000);
 
@@ -54,8 +70,8 @@ describe('AuthController (e2e)', () => {
     it('should register a new user successfully', () => {
       const uniqueRegisterDto = {
         ...mockRegisterDto,
-        email: `test-${Date.now()}@example.com`,
-        username: `testuser-${Date.now()}`,
+        email: `test_${Date.now()}@example.com`,
+        username: `testuser_${Date.now()}`,
       };
 
       return request(app.getHttpServer())
@@ -80,8 +96,8 @@ describe('AuthController (e2e)', () => {
     it('should fail when passwords do not match', () => {
       const invalidData = { 
         ...mockRegisterDto, 
-        email: `test-${Date.now()}@example.com`,
-        username: `testuser-${Date.now()}`,
+        email: `test_${Date.now()}@example.com`,
+        username: `testuser_${Date.now()}`,
         passwordConfirmation: 'different' 
       };
       
@@ -94,12 +110,12 @@ describe('AuthController (e2e)', () => {
           expect(res.body).toHaveProperty('message');
           expect(res.body).toHaveProperty('statusCode');
           expect(res.body.statusCode).toBe(400);
-          expect(res.body.message).toContain('Las contraseñas no coinciden');
+          expect(res.body.message).toContain('Passwords do not match');
         });
     });
 
     it('should fail when email already exists', () => {
-      const existingEmail = `existing-${Date.now()}@example.com`;
+      const existingEmail = `existing_${Date.now()}@example.com`;
       
       // Primero crear un usuario
       return request(app.getHttpServer())
@@ -107,7 +123,7 @@ describe('AuthController (e2e)', () => {
         .send({
           ...mockRegisterDto,
           email: existingEmail,
-          username: `user1-${Date.now()}`,
+          username: `user1_${Date.now()}`,
         })
         .expect(201)
         .then(() => {
@@ -117,7 +133,7 @@ describe('AuthController (e2e)', () => {
             .send({
               ...mockRegisterDto,
               email: existingEmail,
-              username: `user2-${Date.now()}`,
+              username: `user2_${Date.now()}`,
             })
             .expect(409)
             .expect((res) => {
@@ -125,20 +141,20 @@ describe('AuthController (e2e)', () => {
               expect(res.body).toHaveProperty('message');
               expect(res.body).toHaveProperty('statusCode');
               expect(res.body.statusCode).toBe(409);
-              expect(res.body.message).toContain('El email ya está registrado');
+              expect(res.body.message).toContain('Email is already registered');
             });
         });
     });
 
     it('should fail when username already exists', () => {
-      const existingUsername = `existinguser-${Date.now()}`;
+      const existingUsername = `existinguser_${Date.now()}`;
       
       // Primero crear un usuario
       return request(app.getHttpServer())
         .post('/auth/register')
         .send({
           ...mockRegisterDto,
-          email: `email1-${Date.now()}@example.com`,
+          email: `email1_${Date.now()}@example.com`,
           username: existingUsername,
         })
         .expect(201)
@@ -148,7 +164,7 @@ describe('AuthController (e2e)', () => {
             .post('/auth/register')
             .send({
               ...mockRegisterDto,
-              email: `email2-${Date.now()}@example.com`,
+              email: `email2_${Date.now()}@example.com`,
               username: existingUsername,
             })
             .expect(409)
@@ -157,7 +173,7 @@ describe('AuthController (e2e)', () => {
               expect(res.body).toHaveProperty('message');
               expect(res.body).toHaveProperty('statusCode');
               expect(res.body.statusCode).toBe(409);
-              expect(res.body.message).toContain('El username ya está en uso');
+              expect(res.body.message).toContain('Username is already in use');
             });
         });
     });
@@ -165,8 +181,8 @@ describe('AuthController (e2e)', () => {
 
   describe('/auth/login (POST)', () => {
     it('should login successfully with email', () => {
-      const loginEmail = `login-${Date.now()}@example.com`;
-      const loginUsername = `loginuser-${Date.now()}`;
+      const loginEmail = `login_${Date.now()}@example.com`;
+      const loginUsername = `loginuser_${Date.now()}`;
       
       // Primero registrar un usuario
       return request(app.getHttpServer())
@@ -201,8 +217,8 @@ describe('AuthController (e2e)', () => {
     });
 
     it('should login successfully with username', () => {
-      const loginEmail = `login2-${Date.now()}@example.com`;
-      const loginUsername = `loginuser2-${Date.now()}`;
+      const loginEmail = `login2_${Date.now()}@example.com`;
+      const loginUsername = `loginuser2_${Date.now()}`;
       
       // Primero registrar un usuario
       return request(app.getHttpServer())
@@ -244,7 +260,7 @@ describe('AuthController (e2e)', () => {
           expect(res.body).toHaveProperty('message');
           expect(res.body).toHaveProperty('statusCode');
           expect(res.body.statusCode).toBe(401);
-          expect(res.body.message).toContain('Credenciales inválidas');
+          expect(res.body.message).toContain('Invalid credentials');
         });
     });
 
@@ -261,15 +277,15 @@ describe('AuthController (e2e)', () => {
           expect(res.body).toHaveProperty('message');
           expect(res.body).toHaveProperty('statusCode');
           expect(res.body.statusCode).toBe(401);
-          expect(res.body.message).toContain('Credenciales inválidas');
+          expect(res.body.message).toContain('Invalid credentials');
         });
     });
   });
 
   describe('/auth/refresh (POST)', () => {
     it('should refresh token successfully', () => {
-      const refreshEmail = `refresh-${Date.now()}@example.com`;
-      const refreshUsername = `refreshuser-${Date.now()}`;
+      const refreshEmail = `refresh_${Date.now()}@example.com`;
+      const refreshUsername = `refreshuser_${Date.now()}`;
       
       // Primero registrar y hacer login
       return request(app.getHttpServer())
@@ -307,16 +323,15 @@ describe('AuthController (e2e)', () => {
           expect(res.body).toHaveProperty('message');
           expect(res.body).toHaveProperty('statusCode');
           expect(res.body.statusCode).toBe(401);
-          expect(res.body.message).toContain('Refresh token inválido');
+          expect(res.body.message).toContain('Invalid refresh token');
         });
     });
   });
 
   describe('/auth/profile (GET)', () => {
     it('should get user profile successfully with valid token', () => {
-      const profileEmail = `profile-${Date.now()}@example.com`;
-      const profileUsername = `profileuser-${Date.now()}`;
-      
+      const profileEmail = `profile_${Date.now()}@example.com`;
+      const profileUsername = `profileuser_${Date.now()}`;
       // Primero registrar y hacer login
       return request(app.getHttpServer())
         .post('/auth/register')
@@ -326,9 +341,16 @@ describe('AuthController (e2e)', () => {
           username: profileUsername,
         })
         .expect(201)
-        .then((registerRes) => {
+        .then(async (registerRes) => {
           const accessToken = registerRes.body.accessToken;
-          
+          const user = registerRes.body.user;
+          const jwt = require('jsonwebtoken');
+          const payload = jwt.decode(accessToken);
+
+          // Consultar la base de datos directamente por el userId (sub)
+          const { User } = require('../../src/auth/entities/user.entity');
+          const userFromDb = await dataSource.getRepository(User).findOne({ where: { id: payload.sub } });
+
           // Luego obtener el perfil
           return request(app.getHttpServer())
             .get('/auth/profile')
@@ -354,29 +376,31 @@ describe('AuthController (e2e)', () => {
           expect(res.body).toHaveProperty('message');
           expect(res.body).toHaveProperty('statusCode');
           expect(res.body.statusCode).toBe(401);
-          expect(res.body.message).toContain('Token de acceso requerido');
+          expect(res.body.message).toContain('Access token required');
         });
-    });
+    }); 
 
     it('should fail with invalid token', () => {
+      // Token con formato JWT válido pero firma inválida
+      const fakeJwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmYWtlLXVzZXItaWQiLCJlbWFpbCI6ImZha2VAZXhhbXBsZS5jb20iLCJpYXQiOjE2MDAwMDAwMDAsImV4cCI6MTYwMDAwMDAwMH0.invalidsignature';
       return request(app.getHttpServer())
         .get('/auth/profile')
-        .set('Authorization', 'Bearer invalid-token')
+        .set('Authorization', `Bearer ${fakeJwt}`)
         .expect(401)
         .expect((res) => {
           expect(res.body).toHaveProperty('error');
           expect(res.body).toHaveProperty('message');
           expect(res.body).toHaveProperty('statusCode');
           expect(res.body.statusCode).toBe(401);
-          expect(res.body.message).toContain('Token inválido');
+          expect(res.body.message).toContain('Invalid token');
         });
     });
   });
 
   describe('/auth/validate (POST)', () => {
     it('should validate credentials successfully', () => {
-      const validateEmail = `validate-${Date.now()}@example.com`;
-      const validateUsername = `validateuser-${Date.now()}`;
+      const validateEmail = `validate_${Date.now()}@example.com`;
+      const validateUsername = `validateuser_${Date.now()}`;
       
       // Primero registrar un usuario
       return request(app.getHttpServer())
@@ -420,8 +444,8 @@ describe('AuthController (e2e)', () => {
 
   describe('/auth/logout (POST)', () => {
     it('should logout successfully', () => {
-      const logoutEmail = `logout-${Date.now()}@example.com`;
-      const logoutUsername = `logoutuser-${Date.now()}`;
+      const logoutEmail = `logout_${Date.now()}@example.com`;
+      const logoutUsername = `logoutuser_${Date.now()}`;
       
       // Primero registrar y hacer login
       return request(app.getHttpServer())
@@ -455,8 +479,170 @@ describe('AuthController (e2e)', () => {
           expect(res.body).toHaveProperty('message');
           expect(res.body).toHaveProperty('statusCode');
           expect(res.body.statusCode).toBe(401);
-          expect(res.body.message).toContain('Token de acceso requerido');
+          expect(res.body.message).toContain('Access token required');
         });
     });
+  });
+}); 
+
+describe('Global errors and edge cases', () => {
+  let app: INestApplication;
+
+  beforeAll(async () => {
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile();
+    app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(new CustomValidationPipe());
+    await app.init();
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+
+  it('should return 404 for non-existent routes', () => {
+    return request(app.getHttpServer())
+      .get('/ruta-que-no-existe')
+      .expect(404)
+      .expect((res) => {
+        expect(res.body.statusCode).toBe(404);
+      });
+  });
+});
+
+// Opcional: Test para IpFilterGuard (si está activo globalmente o en alguna ruta)
+// describe('IpFilterGuard (Opcional)', () => {
+//   let app: INestApplication;
+//   beforeAll(async () => {
+//     const moduleFixture: TestingModule = await Test.createTestingModule({
+//       imports: [AppModule],
+//     }).compile();
+//     app = moduleFixture.createNestApplication();
+//     await app.init();
+//   });
+//   afterAll(async () => {
+//     await app.close();
+//   });
+//   it('deniega acceso a IP en blacklist', async () => {
+//     // Suponiendo que tienes la IP 1.2.3.4 en blacklist en tu config
+//     return request(app.getHttpServer())
+//       .get('/auth/profile')
+//       .set('X-Forwarded-For', '1.2.3.4')
+//       .expect(403);
+//   });
+// });
+
+// Opcional: Test para roles (si tienes rutas protegidas por roles)
+// describe('RolesGuard (Opcional)', () => {
+//   let app: INestApplication;
+//   beforeAll(async () => {
+//     const moduleFixture: TestingModule = await Test.createTestingModule({
+//       imports: [AppModule],
+//     }).compile();
+//     app = moduleFixture.createNestApplication();
+//     await app.init();
+//   });
+//   afterAll(async () => {
+//     await app.close();
+//   });
+//   it('deniega acceso a usuario sin rol requerido', async () => {
+//     // Suponiendo que tienes un endpoint protegido por Roles('admin')
+//     // y el usuario autenticado no es admin
+//     // Aquí deberías mockear el token de un usuario sin rol admin
+//     // Este test es un placeholder, debes adaptarlo a tu endpoint real
+//     return request(app.getHttpServer())
+//       .get('/admin-only')
+//       .set('Authorization', 'Bearer token-de-usuario-no-admin')
+//       .expect(403);
+//   });
+// });
+
+describe('Additional DTO validations', () => {
+  let app: INestApplication;
+
+  beforeAll(async () => {
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile();
+    app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(new CustomValidationPipe());
+    await app.init();
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+
+  it('should fail if email is invalid in register', () => {
+    return request(app.getHttpServer())
+      .post('/auth/register')
+      .send({
+        email: 'no-es-email',
+        username: `usuario${Date.now()}`,
+        password: `Password${Date.now()}!`,
+        passwordConfirmation: `Password${Date.now()}!`,
+      })
+      .expect(400)
+      .expect((res) => {
+        expect(res.body.errors).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              field: 'email',
+              constraints: expect.objectContaining({
+                isEmail: expect.stringContaining('Email must be valid'),
+              }),
+            }),
+          ])
+        );
+      });
+  });
+
+  it('should fail if password is weak', () => {
+    return request(app.getHttpServer())
+      .post('/auth/register')
+      .send({
+        email: `test${Date.now()}@example.com`,
+        username: `usuario${Date.now()}`,
+        password: '123',
+        passwordConfirmation: '123',
+      })
+      .expect(400)
+      .expect((res) => {
+        expect(res.body.errors).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              field: 'password',
+              constraints: expect.objectContaining({
+                isStrongPassword: expect.any(String),
+              }),
+            }),
+          ])
+        );
+      });
+  });
+
+  it('should fail if username is invalid', () => {
+    return request(app.getHttpServer())
+      .post('/auth/register')
+      .send({
+        email: `test${Date.now()}@example.com`,
+        username: 'usuario con espacios',
+        password: `Password${Date.now()}!`,
+        passwordConfirmation: `Password${Date.now()}!`,
+      })
+      .expect(400)
+      .expect((res) => {
+        expect(res.body.errors).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              field: 'username',
+              constraints: expect.objectContaining({
+                matches: expect.stringContaining('Username can only contain letters, numbers, and underscores'),
+              }),
+            }),
+          ])
+        );
+      });
   });
 }); 

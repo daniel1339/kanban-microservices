@@ -1,17 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-// Ejemplos para RegisterDto
+// Examples for RegisterDto
 export class RegisterDtoExample {
   @ApiProperty({
-    example: 'usuario@ejemplo.com',
-    description: 'Email válido del usuario',
+    example: 'user@example.com',
+    description: 'Valid user email',
     pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$',
   })
   email: string;
 
   @ApiProperty({
-    example: 'usuario123',
-    description: 'Nombre de usuario único (3-100 caracteres, solo letras, números y guiones bajos)',
+    example: 'user123',
+    description: 'Unique username (3-100 characters, only letters, numbers and underscores)',
     minLength: 3,
     maxLength: 100,
     pattern: '^[a-zA-Z0-9_]+$',
@@ -19,25 +19,25 @@ export class RegisterDtoExample {
   username: string;
 
   @ApiProperty({
-    example: 'Contraseña123!',
-    description: 'Contraseña segura (mínimo 8 caracteres, incluir mayúsculas, minúsculas, números y símbolos)',
+    example: 'Password123!',
+    description: 'Secure password (minimum 8 characters, include uppercase, lowercase, numbers and symbols)',
     minLength: 8,
     maxLength: 255,
   })
   password: string;
 
   @ApiProperty({
-    example: 'Contraseña123!',
-    description: 'Confirmación de la contraseña (debe coincidir con password)',
+    example: 'Password123!',
+    description: 'Password confirmation (must match password)',
   })
   passwordConfirmation: string;
 }
 
-// Ejemplos para LoginDto
+// Examples for LoginDto
 export class LoginDtoExample {
   @ApiProperty({
-    example: 'usuario@ejemplo.com',
-    description: 'Email o nombre de usuario del usuario',
+    example: 'user@example.com',
+    description: 'User email or username',
     oneOf: [
       { type: 'string', format: 'email' },
       { type: 'string', pattern: '^[a-zA-Z0-9_]+$' },
@@ -46,153 +46,165 @@ export class LoginDtoExample {
   emailOrUsername: string;
 
   @ApiProperty({
-    example: 'Contraseña123!',
-    description: 'Contraseña del usuario',
+    example: 'Password123!',
+    description: 'User password',
   })
   password: string;
 }
 
-// Ejemplos para RefreshTokenDto
+// Examples for RefreshTokenDto
 export class RefreshTokenDtoExample {
   @ApiProperty({
     example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
-    description: 'Refresh token válido para renovar el access token',
+    description: 'Valid refresh token to renew access token',
   })
   refreshToken: string;
 }
 
-// Ejemplos de respuestas exitosas
+// Successful response examples
 export class AuthResponseExample {
   @ApiProperty({
     example: {
       id: '123e4567-e89b-12d3-a456-426614174000',
-      email: 'usuario@ejemplo.com',
-      username: 'usuario123',
+      email: 'user@example.com',
+      username: 'user123',
       isVerified: true,
       createdAt: '2024-01-01T00:00:00.000Z',
       updatedAt: '2024-01-01T00:00:00.000Z',
     },
-    description: 'Información del usuario',
+    description: 'User information',
   })
   user: any;
 
   @ApiProperty({
     example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
-    description: 'JWT access token para autenticación',
+    description: 'JWT access token for authentication',
   })
   accessToken: string;
 
   @ApiProperty({
     example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
-    description: 'Refresh token para renovar el access token',
+    description: 'Refresh token to renew access token',
   })
   refreshToken: string;
 
   @ApiProperty({
     example: 900,
-    description: 'Tiempo de expiración del access token en segundos',
+    description: 'Access token expiration time in seconds',
   })
   expiresIn: number;
 }
 
-// Ejemplos de respuestas de error
+// Error response examples
 export class ErrorResponseExample {
   @ApiProperty({
-    example: 'Bad Request',
-    description: 'Tipo de error',
+    example: 'ValidationError',
+    description: 'Error type',
   })
   error: string;
 
   @ApiProperty({
     example: 400,
-    description: 'Código de estado HTTP',
+    description: 'HTTP status code',
   })
   statusCode: number;
 
   @ApiProperty({
-    example: ['El email debe ser válido', 'La contraseña debe tener al menos 8 caracteres'],
-    description: 'Lista de errores de validación',
+    example: ['Email must be valid', 'Password must be at least 8 characters'],
+    description: 'List of validation errors',
   })
   message: string[];
 
   @ApiProperty({
     example: '/auth/register',
-    description: 'Endpoint donde ocurrió el error',
+    description: 'Endpoint where the error occurred',
   })
   path: string;
 
   @ApiProperty({
     example: '2024-01-01T00:00:00.000Z',
-    description: 'Timestamp del error',
+    description: 'Error timestamp',
   })
   timestamp: string;
 }
 
-// Ejemplos de validación de contraseña
+// Password validation examples
 export class PasswordValidationExample {
   @ApiProperty({
-    example: 'Contraseña123!',
-    description: 'Contraseña válida que cumple con todos los requisitos',
+    example: 'Password123!',
+    description: 'Valid password that meets all requirements',
   })
   validPassword: string;
 
   @ApiProperty({
     example: 'password',
-    description: 'Contraseña inválida (muy común)',
+    description: 'Invalid password (very common)',
   })
   invalidCommonPassword: string;
 
   @ApiProperty({
     example: '123',
-    description: 'Contraseña inválida (muy corta)',
+    description: 'Invalid password (too short)',
   })
   invalidShortPassword: string;
 
   @ApiProperty({
-    example: 'sololetras',
-    description: 'Contraseña inválida (solo letras minúsculas)',
+    example: 'onlyletters',
+    description: 'Invalid password (only lowercase letters)',
   })
   invalidWeakPassword: string;
 }
 
-// Ejemplos de headers de rate limiting
+// Rate limit headers examples
 export class RateLimitHeadersExample {
   @ApiProperty({
-    example: '5',
-    description: 'Número máximo de requests permitidos',
+    example: 'X-RateLimit-Limit: 5',
+    description: 'Maximum number of requests allowed',
   })
-  'x-ratelimit-limit': string;
+  limit: string;
 
   @ApiProperty({
-    example: '3',
-    description: 'Número de requests restantes',
+    example: 'X-RateLimit-Remaining: 3',
+    description: 'Number of requests remaining',
   })
-  'x-ratelimit-remaining': string;
+  remaining: string;
 
   @ApiProperty({
-    example: '1640995200',
-    description: 'Timestamp cuando se resetea el rate limit',
+    example: 'X-RateLimit-Reset: 1640995200',
+    description: 'Timestamp when rate limit resets',
   })
-  'x-ratelimit-reset': string;
+  reset: string;
+
+  @ApiProperty({
+    example: 'Retry-After: 900',
+    description: 'Seconds to wait before retrying',
+  })
+  retryAfter: string;
 }
 
-// Ejemplos de headers de seguridad
+// Security headers examples
 export class SecurityHeadersExample {
   @ApiProperty({
-    example: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
-    description: 'JWT token para autenticación',
+    example: 'X-Content-Type-Options: nosniff',
+    description: 'Prevents MIME type sniffing',
   })
-  'Authorization': string;
+  contentTypeOptions: string;
 
   @ApiProperty({
-    example: 'application/json',
-    description: 'Tipo de contenido de la petición',
+    example: 'X-Frame-Options: DENY',
+    description: 'Prevents clickjacking attacks',
   })
-  'Content-Type': string;
+  frameOptions: string;
 
   @ApiProperty({
-    example: 'X-API-Key-12345',
-    description: 'Clave API para endpoints premium',
+    example: 'X-XSS-Protection: 1; mode=block',
+    description: 'Enables XSS protection',
   })
-  'X-API-Key': string;
+  xssProtection: string;
+
+  @ApiProperty({
+    example: 'Strict-Transport-Security: max-age=31536000; includeSubDomains',
+    description: 'Enforces HTTPS',
+  })
+  hsts: string;
 } 

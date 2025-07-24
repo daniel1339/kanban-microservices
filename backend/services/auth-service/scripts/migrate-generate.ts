@@ -9,19 +9,19 @@ async function generateMigration() {
   try {
     const migrationName = process.argv[2];
     if (!migrationName) {
-      console.error('❌ Debes proporcionar un nombre para la migración');
-      console.log('Uso: npm run migrate:generate <nombre-migracion>');
+      console.error('❌ You must provide a name for the migration');
+      console.log('Usage: npm run migrate:generate <migration-name>');
       process.exit(1);
     }
 
-    console.log(`🔄 Generando migración: ${migrationName}...`);
-    // Nota: Para generar migraciones, usar el CLI de TypeORM
+    console.log(`🔄 Generating migration: ${migrationName}...`);
+    // Note: To generate migrations, use TypeORM CLI
     // npm run typeorm migration:generate -- -n ${migrationName}
-    console.log('⚠️  Para generar migraciones, usa el CLI de TypeORM:');
+    console.log('⚠️  To generate migrations, use TypeORM CLI:');
     console.log(`   npm run typeorm migration:generate -- -n ${migrationName}`);
-    console.log('✅ Instrucciones mostradas');
+    console.log('✅ Instructions displayed');
   } catch (error) {
-    console.error('❌ Error generando migración:', error);
+    console.error('❌ Error generating migration:', error);
     process.exit(1);
   } finally {
     await app.close();

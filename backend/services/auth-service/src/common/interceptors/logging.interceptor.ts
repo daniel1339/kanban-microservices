@@ -35,11 +35,11 @@ export class LoggingInterceptor implements NestInterceptor {
     const response = context.switchToHttp().getResponse<Response>();
     const startTime = Date.now();
 
-    // Generar ID único para el request
+    // Generate unique ID for the request
     const requestId = this.generateRequestId();
     (request.headers as any)['x-request-id'] = requestId;
 
-    // Log del request
+    // Log the request
     const loggedRequest: LoggedRequest = {
       method: request.method,
       url: request.url,
@@ -99,7 +99,7 @@ export class LoggingInterceptor implements NestInterceptor {
 
     const sanitized = { ...body };
     
-    // Remover campos sensibles
+    // Remove sensitive fields
     const sensitiveFields = ['password', 'passwordConfirmation', 'token', 'refreshToken'];
     sensitiveFields.forEach(field => {
       if (sanitized[field]) {
@@ -115,7 +115,7 @@ export class LoggingInterceptor implements NestInterceptor {
 
     const sanitized = { ...headers };
     
-    // Remover headers sensibles
+    // Remove sensitive headers
     const sensitiveHeaders = ['authorization', 'cookie', 'x-api-key'];
     sensitiveHeaders.forEach(header => {
       if (sanitized[header]) {
@@ -129,7 +129,7 @@ export class LoggingInterceptor implements NestInterceptor {
   private sanitizeResponse(data: any): any {
     if (!data) return data;
 
-    // Para respuestas de autenticación, remover tokens
+    // For authentication responses, remove tokens
     if (data.accessToken || data.refreshToken) {
       return {
         ...data,

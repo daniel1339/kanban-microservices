@@ -1,109 +1,109 @@
-# 📊 Estado Actual - Auth Service
+# 📊 Current Status - Auth Service
 
-## 🎉 COMPLETADO AL 100%
+## 🎉 100% COMPLETED
 
-### **✅ Funcionalidades Implementadas**
-- [x] **Registro de usuarios** con validación
-- [x] **Login** con email/username
-- [x] **Refresh tokens** para sesiones largas
-- [x] **Logout** con invalidación de tokens
-- [x] **Validación de credenciales** sin login
-- [x] **Perfil de usuario** protegido
-- [x] **JWT Authentication** con guards
-- [x] **Validación de DTOs** con class-validator
-- [x] **Manejo de errores** global
-- [x] **Logging** de requests/responses
-- [x] **Documentación Swagger** completa
-- [x] **Tests unitarios** (100% coverage)
-- [x] **Tests e2e** con base de datos real
-- [x] **Migraciones** de base de datos
-- [x] **Configuración multi-entorno**
+### **✅ Implemented Features**
+- [x] **User registration** with validation
+- [x] **Login** with email/username
+- [x] **Refresh tokens** for long sessions
+- [x] **Logout** with token invalidation
+- [x] **Credential validation** without login
+- [x] **Protected user profile**
+- [x] **JWT Authentication** with guards
+- [x] **DTO validation** with class-validator
+- [x] **Global error handling**
+- [x] **Request/response logging**
+- [x] **Complete Swagger documentation**
+- [x] **Unit tests** (100% coverage)
+- [x] **E2E tests** with real database
+- [x] **Database migrations**
+- [x] **Multi-environment configuration**
 
-### **✅ Arquitectura y Estructura**
-- [x] **Entidades TypeORM** (User, RefreshToken)
-- [x] **DTOs** con validación
-- [x] **Interfaces** TypeScript
-- [x] **Guards** de autenticación
-- [x] **Decoradores** personalizados
-- [x] **Interceptores** de logging y transformación
-- [x] **Filtros** de excepción globales
-- [x] **Pipes** de validación
-- [x] **Configuración** modular
-- [x] **Fixtures** para testing
+### **✅ Architecture and Structure**
+- [x] **TypeORM entities** (User, RefreshToken)
+- [x] **DTOs** with validation
+- [x] **TypeScript interfaces**
+- [x] **Authentication guards**
+- [x] **Custom decorators**
+- [x] **Logging and transformation interceptors**
+- [x] **Global exception filters**
+- [x] **Validation pipes**
+- [x] **Modular configuration**
+- [x] **Testing fixtures**
 
-### **✅ Base de Datos**
-- [x] **PostgreSQL** configurado
-- [x] **TypeORM** con migraciones
-- [x] **Entidades** con relaciones
-- [x] **Base de datos de test** separada
-- [x] **Scripts** de setup automático
+### **✅ Database**
+- [x] **PostgreSQL** configured
+- [x] **TypeORM** with migrations
+- [x] **Entities** with relationships
+- [x] **Separate test database**
+- [x] **Automatic setup scripts**
 
 ### **✅ Testing**
-- [x] **Tests unitarios** para AuthService
-- [x] **Tests unitarios** para AuthController
-- [x] **Tests e2e** para todos los endpoints
-- [x] **Fixtures** reutilizables
-- [x] **Setup automático** de DB de test
-- [x] **Scripts** de testing organizados
+- [x] **Unit tests** for AuthService
+- [x] **Unit tests** for AuthController
+- [x] **E2E tests** for all endpoints
+- [x] **Reusable fixtures**
+- [x] **Automatic test DB setup**
+- [x] **Organized testing scripts**
 
-## 🔄 EN PROGRESO
+## 🔄 IN PROGRESS
 
-### **📋 Configuración de Entorno**
-- [ ] **Variables de entorno** por ambiente
-- [ ] **Archivos .env** para dev/prod/test
-- [ ] **Validación** de variables requeridas
+### **📋 Environment Configuration**
+- [ ] **Environment variables** by environment
+- [ ] **.env files** for dev/prod/test
+- [ ] **Validation** of required variables
 
-### **🐳 Dockerización**
-- [ ] **Dockerfile** para el servicio
-- [ ] **docker-compose** para desarrollo
-- [ ] **Multi-stage builds** para producción
+### **🐳 Dockerization**
+- [ ] **Dockerfile** for the service
+- [ ] **docker-compose** for development
+- [ ] **Multi-stage builds** for production
 
 ### **🚀 CI/CD**
 - [ ] **GitHub Actions** workflow
-- [ ] **Tests automáticos** en PR
-- [ ] **Deployment** automático
+- [ ] **Automatic tests** on PR
+- [ ] **Automatic deployment**
 
-## 📋 PRÓXIMOS PASOS
+## 📋 NEXT STEPS
 
-### **1. Finalizar Auth Service**
+### **1. Finalize Auth Service**
 ```bash
-# Configurar variables de entorno
+# Configure environment variables
 cp .env.example .env.development
 cp .env.example .env.production
 cp .env.example .env.test
 
-# Dockerizar
+# Dockerize
 docker build -t auth-service .
 docker-compose up -d
 
-# Verificar todo funciona
+# Verify everything works
 npm run test:all
 npm run start:dev
 ```
 
-### **2. Implementar User Service** (Siguiente)
-- Gestión de perfiles extendidos
-- Subida de avatares
-- Preferencias de usuario
-- Historial de actividad
+### **2. Implement User Service** (Next)
+- Extended profile management
+- Avatar upload
+- User preferences
+- Activity history
 
-### **3. Implementar Project Service**
-- Creación de proyectos
-- Roles y permisos
-- Configuración de proyectos
+### **3. Implement Project Service**
+- Project creation
+- Roles and permissions
+- Project configuration
 
-### **4. Implementar Board Service**
-- Tableros Kanban
-- Columnas y tarjetas
+### **4. Implement Board Service**
+- Kanban boards
+- Columns and cards
 - Drag & drop
 
-### **5. Implementar API Gateway**
-- Enrutamiento de servicios
+### **5. Implement API Gateway**
+- Service routing
 - Rate limiting
-- CORS centralizado
-- Autenticación centralizada
+- Centralized CORS
+- Centralized authentication
 
-## 🏗️ Arquitectura de Microservicios
+## 🏗️ Microservices Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -137,94 +137,94 @@ npm run start:dev
 └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘
 ```
 
-## 🎯 Métricas de Progreso
+## 🎯 Progress Metrics
 
-### **Auth Service: 100% COMPLETADO**
-- ✅ **Funcionalidad**: 100%
+### **Auth Service: 100% COMPLETED**
+- ✅ **Functionality**: 100%
 - ✅ **Testing**: 100%
-- ✅ **Documentación**: 100%
-- ✅ **Arquitectura**: 100%
+- ✅ **Documentation**: 100%
+- ✅ **Architecture**: 100%
 
-### **Proyecto General: 15% COMPLETADO**
+### **General Project: 15% COMPLETED**
 - ✅ **Auth Service**: 100%
 - ⏳ **User Service**: 0%
 - ⏳ **Project Service**: 0%
 - ⏳ **Board Service**: 0%
 - ⏳ **API Gateway**: 0%
-- ⏳ **Infraestructura**: 0%
+- ⏳ **Infrastructure**: 0%
 
-## 🚀 Comandos Útiles
+## 🚀 Useful Commands
 
-### **Desarrollo**
+### **Development**
 ```bash
-# Instalar dependencias
+# Install dependencies
 npm install
 
-# Ejecutar en desarrollo
+# Run in development
 npm run start:dev
 
-# Ejecutar tests
+# Run tests
 npm run test:all
 
-# Ejecutar migraciones
+# Run migrations
 npm run migrate:run
 ```
 
 ### **Testing**
 ```bash
-# Tests unitarios
+# Unit tests
 npm run test:unit
 
-# Tests de integración
+# Integration tests
 npm run test:integration
 
-# Todos los tests
+# All tests
 npm run test:all
 
-# Tests con coverage
+# Tests with coverage
 npm run test:cov
 ```
 
-### **Base de Datos**
+### **Database**
 ```bash
-# Setup de DB de test
+# Test DB setup
 npm run test:setup
 
-# Ejecutar migraciones
+# Run migrations
 npm run migrate:run
 
-# Revertir migraciones
+# Revert migrations
 npm run migrate:revert
 
-# Generar migración
+# Generate migration
 npm run migrate:generate
 ```
 
-## 📈 Próximos Milestones
+## 📈 Next Milestones
 
-### **Milestone 1: Auth Service Finalizado** ✅
-- [x] Funcionalidad completa
-- [x] Tests completos
-- [x] Documentación
-- [ ] Variables de entorno
-- [ ] Dockerización
+### **Milestone 1: Auth Service Finalized** ✅
+- [x] Complete functionality
+- [x] Complete tests
+- [x] Documentation
+- [ ] Environment variables
+- [ ] Dockerization
 
 ### **Milestone 2: User Service** 📋
-- [ ] Entidades y DTOs
-- [ ] CRUD de perfiles
-- [ ] Subida de avatares
-- [ ] Tests unitarios y e2e
-- [ ] Documentación Swagger
+- [ ] Entities and DTOs
+- [ ] Profile CRUD
+- [ ] Avatar upload
+- [ ] Unit and e2e tests
+- [ ] Swagger documentation
 
 ### **Milestone 3: API Gateway** 📋
-- [ ] Configuración de Kong/Nginx
-- [ ] Enrutamiento de servicios
+- [ ] Kong/Nginx configuration
+- [ ] Service routing
 - [ ] Rate limiting
-- [ ] CORS centralizado
+- [ ] Centralized CORS
 
 ### **Milestone 4: Project Service** 📋
-- [ ] Gestión de proyectos
-- [ ] Roles y permisos
-- [ ] Integración con Auth y User
+- [ ] Project management
+- [ ] Roles and permissions
+- [ ] Integration with Auth and User
 
-¿Quieres que procedamos con la finalización del Auth Service o prefieres comenzar con el User Service? 
+Would you like to proceed with finalizing the Auth Service or prefer to start with the User Service? 

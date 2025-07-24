@@ -14,14 +14,12 @@ export function IsStrongPassword(validationOptions?: ValidationOptions) {
             return false;
           }
 
-          const configService = new ConfigService();
-          const passwordConfig = configService.get('security.password');
-
-          const minLength = passwordConfig?.minLength || 8;
-          const requireUppercase = passwordConfig?.requireUppercase ?? true;
-          const requireLowercase = passwordConfig?.requireLowercase ?? true;
-          const requireNumbers = passwordConfig?.requireNumbers ?? true;
-          const requireSpecialChars = passwordConfig?.requireSpecialChars ?? true;
+          // Fixed secure values
+          const minLength = 8;
+          const requireUppercase = true;
+          const requireLowercase = true;
+          const requireNumbers = true;
+          const requireSpecialChars = true;
 
           // Check minimum length
           if (value.length < minLength) {
@@ -78,28 +76,14 @@ export function IsStrongPassword(validationOptions?: ValidationOptions) {
           return true;
         },
         defaultMessage(args: ValidationArguments) {
-          const configService = new ConfigService();
-          const passwordConfig = configService.get('security.password');
-          
-          const requirements = [];
-          
-          if (passwordConfig?.minLength) {
-            requirements.push(`at least ${passwordConfig.minLength} characters`);
-          }
-          if (passwordConfig?.requireUppercase) {
-            requirements.push('one uppercase letter');
-          }
-          if (passwordConfig?.requireLowercase) {
-            requirements.push('one lowercase letter');
-          }
-          if (passwordConfig?.requireNumbers) {
-            requirements.push('one number');
-          }
-          if (passwordConfig?.requireSpecialChars) {
-            requirements.push('one special character');
-          }
-
-          return `Password must contain ${requirements.join(', ')} and cannot contain common weak patterns or repeated characters.`;
+          const requirements = [
+            'at least 8 characters',
+            'one uppercase letter',
+            'one lowercase letter',
+            'one number',
+            'one special character',
+          ];
+          return `Password must contain ${requirements.join(', ')} and cannot contain weak patterns or repeated characters.`;
         },
       },
     });

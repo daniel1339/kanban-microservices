@@ -99,6 +99,14 @@ export default registerAs('security', () => ({
     refreshTokenRotation: process.env.REFRESH_TOKEN_ROTATION === 'true',
   },
 
+  // IP Control
+  ipControl: {
+    whitelist: process.env.IP_WHITELIST?.split(',') || [],
+    blacklist: process.env.IP_BLACKLIST?.split(',') || [],
+    enableGeoBlocking: process.env.ENABLE_GEO_BLOCKING === 'true',
+    allowedCountries: process.env.ALLOWED_COUNTRIES?.split(',') || [],
+  },
+
   // Logging Security
   logging: {
     logFailedAttempts: process.env.LOG_FAILED_ATTEMPTS === 'true',
@@ -106,13 +114,23 @@ export default registerAs('security', () => ({
     logPasswordChanges: process.env.LOG_PASSWORD_CHANGES === 'true',
     logAccountLockouts: process.env.LOG_ACCOUNT_LOCKOUTS === 'true',
     maskSensitiveData: process.env.MASK_SENSITIVE_DATA === 'true',
+    logLevel: process.env.SECURITY_LOG_LEVEL || 'info',
   },
 
-  // IP Whitelist/Blacklist
-  ipControl: {
-    whitelist: process.env.IP_WHITELIST?.split(',') || [],
-    blacklist: process.env.IP_BLACKLIST?.split(',') || [],
-    enableGeoBlocking: process.env.ENABLE_GEO_BLOCKING === 'true',
-    blockedCountries: process.env.BLOCKED_COUNTRIES?.split(',') || [],
+  // Account Lockout
+  lockout: {
+    enabled: process.env.ACCOUNT_LOCKOUT_ENABLED === 'true',
+    maxAttempts: parseInt(process.env.MAX_LOGIN_ATTEMPTS || '5', 10),
+    lockoutDuration: parseInt(process.env.LOCKOUT_DURATION || '900000', 10), // 15 minutes
+    resetAttemptsAfter: parseInt(process.env.RESET_ATTEMPTS_AFTER || '3600000', 10), // 1 hour
+  },
+
+  // Two-Factor Authentication
+  twoFactor: {
+    enabled: process.env.TWO_FACTOR_ENABLED === 'true',
+    issuer: process.env.TWO_FACTOR_ISSUER || 'Kanban Auth Service',
+    algorithm: process.env.TWO_FACTOR_ALGORITHM || 'sha1',
+    digits: parseInt(process.env.TWO_FACTOR_DIGITS || '6', 10),
+    period: parseInt(process.env.TWO_FACTOR_PERIOD || '30', 10), // seconds
   },
 })); 

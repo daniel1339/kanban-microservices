@@ -1,5 +1,5 @@
 services:
-  # LocalStack para servicios AWS locales
+  # LocalStack for local AWS services
   localstack:
     image: localstack/localstack:latest
     ports:
@@ -13,7 +13,7 @@ services:
     networks:
       - kanban-network
 
-  # PostgreSQL para bases de datos
+  # PostgreSQL for databases
   postgres:
     image: postgres:15
     container_name: kanban-postgres
@@ -22,7 +22,7 @@ services:
       POSTGRES_USER: kanban_user
       POSTGRES_PASSWORD: kanban_password
     ports:
-      - "5433:5432"
+      - "5432:5432"  # Changed from 5433:5432 to 5432:5432
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -33,7 +33,7 @@ services:
       timeout: 5s
       retries: 5
 
-  # Redis para cache y sesiones
+  # Redis for cache and sessions
   redis:
     image: redis:7-alpine
     container_name: kanban-redis
@@ -49,7 +49,7 @@ services:
       timeout: 5s
       retries: 5
 
-  # API Gateway (cuando lo desarrolles)
+  # API Gateway (when you develop it)
   api-gateway:
     build:
       context: ./backend/services/api-gateway
@@ -77,7 +77,7 @@ services:
     profiles:
       - services
 
-  # Auth Service (cuando lo desarrolles)
+  # Auth Service (when you develop it)
   auth-service:
     build:
       context: ./backend/services/auth-service
@@ -106,7 +106,7 @@ services:
     profiles:
       - services
 
-  # User Service (cuando lo desarrolles)
+  # User Service (when you develop it)
   user-service:
     build:
       context: ./backend/services/user-service
@@ -134,7 +134,7 @@ services:
     profiles:
       - services
 
-  # Board Service (cuando lo desarrolles)
+  # Board Service (when you develop it)
   board-service:
     build:
       context: ./backend/services/board-service
@@ -162,7 +162,7 @@ services:
     profiles:
       - services
 
-  # List Service (cuando lo desarrolles)
+  # List Service (when you develop it)
   list-service:
     build:
       context: ./backend/services/list-service
@@ -190,7 +190,7 @@ services:
     profiles:
       - services
 
-  # Card Service (cuando lo desarrolles)
+  # Card Service (when you develop it)
   card-service:
     build:
       context: ./backend/services/card-service
@@ -218,7 +218,7 @@ services:
     profiles:
       - services
 
-  # Notification Service (cuando lo desarrolles)
+  # Notification Service (when you develop it)
   notification-service:
     build:
       context: ./backend/services/notification-service
@@ -246,7 +246,7 @@ services:
     profiles:
       - services
 
-  # File Service (cuando lo desarrolles)
+  # File Service (when you develop it)
   file-service:
     build:
       context: ./backend/services/file-service

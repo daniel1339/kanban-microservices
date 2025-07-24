@@ -1,6 +1,6 @@
 # Testing - Auth Service
 
-Este documento explica cómo ejecutar y escribir tests para el Auth Service.
+This document explains how to run and write tests for the Auth Service.
 
 ## 📋 Tipos de Tests
 
@@ -46,36 +46,36 @@ npm run test:watch
 npm run test:ci
 ```
 
-## 📊 Cobertura de Tests
+## 📊 Test Coverage
 
 ### **AuthService Tests**
-- ✅ **register**: Registro exitoso, validaciones, duplicados
-- ✅ **login**: Login con email/username, credenciales inválidas
-- ✅ **refreshToken**: Renovación exitosa, tokens inválidos
-- ✅ **logout**: Logout exitoso
-- ✅ **validateUser**: Validación de credenciales
-- ✅ **getProfile**: Obtención de perfil, usuario no encontrado
+- ✅ **register**: Successful registration, validations, duplicates
+- ✅ **login**: Login with email/username, invalid credentials
+- ✅ **refreshToken**: Successful renewal, invalid tokens
+- ✅ **logout**: Successful logout
+- ✅ **validateUser**: Credential validation
+- ✅ **getProfile**: Profile retrieval, user not found
 
 ### **AuthController Tests**
-- ✅ **register**: Endpoint de registro
-- ✅ **login**: Endpoint de login
-- ✅ **refreshToken**: Endpoint de renovación
-- ✅ **logout**: Endpoint de logout
-- ✅ **validateUser**: Endpoint de validación
-- ✅ **getProfile**: Endpoint de perfil
+- ✅ **register**: Registration endpoint
+- ✅ **login**: Login endpoint
+- ✅ **refreshToken**: Token renewal endpoint
+- ✅ **logout**: Logout endpoint
+- ✅ **validateUser**: Validation endpoint
+- ✅ **getProfile**: Profile endpoint
 
 ### **E2E Tests**
-- ✅ **Registro**: Flujo completo de registro
-- ✅ **Login**: Flujo completo de login
-- ✅ **Refresh**: Renovación de tokens
-- ✅ **Profile**: Obtención de perfil autenticado
-- ✅ **Validación**: Validación de credenciales
-- ✅ **Logout**: Cierre de sesión
-- ✅ **Errores**: Casos de error y validaciones
+- ✅ **Registration**: Complete registration flow
+- ✅ **Login**: Complete login flow
+- ✅ **Refresh**: Token renewal
+- ✅ **Profile**: Authenticated profile retrieval
+- ✅ **Validation**: Credential validation
+- ✅ **Logout**: Session closure
+- ✅ **Errors**: Error cases and validations
 
-## 🔧 Configuración de Tests
+## 🔧 Test Configuration
 
-### **Variables de Entorno para Tests**
+### **Environment Variables for Tests**
 ```env
 NODE_ENV=test
 DB_HOST=localhost
@@ -86,31 +86,31 @@ DB_NAME=kanban_test
 JWT_SECRET=test-jwt-secret-key-for-testing-only
 ```
 
-### **Base de Datos de Tests**
-- **Base de datos separada**: `kanban_test`
-- **Sincronización automática**: `synchronize: true`
-- **Sin logging**: `logging: false`
+### **Test Database**
+- **Separate database**: `kanban_test`
+- **Automatic synchronization**: `synchronize: true`
+- **No logging**: `logging: false`
 
-## 📝 Escribir Nuevos Tests
+## 📝 Writing New Tests
 
-### **Test Unitario Ejemplo**
+### **Unit Test Example**
 ```typescript
-describe('MiServicio', () => {
-  let service: MiServicio;
-  let mockRepository: Repository<MiEntidad>;
+describe('MyService', () => {
+  let service: MyService;
+  let mockRepository: Repository<MyEntity>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        MiServicio,
+        MyService,
         {
-          provide: getRepositoryToken(MiEntidad),
+          provide: getRepositoryToken(MyEntity),
           useValue: mockRepository,
         },
       ],
     }).compile();
 
-    service = module.get<MiServicio>(MiServicio);
+    service = module.get<MyService>(MyService);
   });
 
   it('should do something', async () => {
@@ -126,9 +126,9 @@ describe('MiServicio', () => {
 });
 ```
 
-### **Test E2E Ejemplo**
+### **E2E Test Example**
 ```typescript
-describe('MiController (e2e)', () => {
+describe('MyController (e2e)', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
@@ -140,9 +140,9 @@ describe('MiController (e2e)', () => {
     await app.init();
   });
 
-  it('/mi-endpoint (GET)', () => {
+  it('/my-endpoint (GET)', () => {
     return request(app.getHttpServer())
-      .get('/mi-endpoint')
+      .get('/my-endpoint')
       .expect(200)
       .expect((res) => {
         expect(res.body.success).toBe(true);

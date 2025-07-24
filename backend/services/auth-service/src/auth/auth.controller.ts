@@ -1,8 +1,7 @@
-import { Controller, Post, Get, Body, HttpCode, HttpStatus, UseGuards, Req } from '@nestjs/common';
+import { Controller, Post, Get, Body, HttpCode, HttpStatus, UseGuards, Req, UnauthorizedException } from '@nestjs/common';
 import { 
   ApiTags, 
   ApiOperation, 
-  ApiResponse, 
   ApiBearerAuth, 
   ApiBody, 
   ApiParam,
@@ -19,26 +18,29 @@ import {
   LoginUsernameRequestExample,
   RefreshTokenRequestExample,
   ValidateCredentialsRequestExample,
-  AuthResponseExample,
-  UserProfileResponseExample,
-  ValidateCredentialsResponseExample,
-  ValidationErrorExample,
-  UnauthorizedErrorExample,
-  ConflictErrorExample,
-  InvalidTokenErrorExample,
-  RateLimitErrorExample
 } from '../docs/examples/auth.examples';
+import {
+  RegisterResponse,
+  LoginResponse,
+  RefreshTokenResponse,
+  ProfileResponse,
+  ValidateCredentialsResponse,
+  LogoutResponse,
+  LogoutAllResponse,
+  ValidationErrorResponse,
+  UnauthorizedErrorResponse,
+  ConflictErrorResponse,
+  NotFoundErrorResponse,
+  RateLimitErrorResponse,
+  InternalServerErrorResponse,
+} from '../docs/responses/auth.responses';
 
 import { AuthService } from './auth.service';
 import { RegisterDto, LoginDto, RefreshTokenDto } from './dto';
-import { AuthResponseDto } from './dto/auth-response.dto';
 import { AuthResponse } from './interfaces/auth.interface';
 import { Public } from './decorators/public.decorator';
 import { CurrentUser } from './decorators/current-user.decorator';
-import { Roles } from './decorators/roles.decorator';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { RolesGuard } from './guards/roles.guard';
-import { ErrorResponseDto } from '../common/dto/error-response.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -52,303 +54,198 @@ export class AuthController {
   @UseGuards(ThrottlerGuard)
   @ThrottleRegister()
   @ApiOperation({ 
-    summary: 'Registrar un nuevo usuario',
-    description: 'Crea una nueva cuenta de usuario con email, username y contraseña. La contraseña debe cumplir con los requisitos de seguridad.',
-    tags: ['auth']
+    summary: 'User registration',
+    description: 'Creates a new user. Returns the user and JWT tokens. Password must meet security requirements.'
   })
   @ApiBody({
     type: RegisterDto,
-    description: 'Datos del usuario a registrar',
+    description: 'Registration data',
     examples: {
-      'Registro exitoso': RegisterRequestExample,
-      'Datos inválidos': {
-        summary: 'Datos inválidos',
-        description: 'Ejemplo con datos que no cumplen validaciones',
+      'Successful registration': RegisterRequestExample,
+      'Validation error': {
+        summary: 'Validation error',
+        description: 'Example of validation error',
         value: {
-          email: 'email-invalido',
+          email: 'no-es-email',
           username: 'us',
           password: '123',
-          confirmPassword: '456'
+          passwordConfirmation: '456'
         }
       }
     }
   })
-  @ApiResponse({ 
-    status: 201, 
-    description: 'Usuario registrado exitosamente',
-    type: AuthResponseDto,
-    content: {
-      'application/json': {
-        example: AuthResponseExample
-      }
-    }
-  })
-  @ApiResponse({ 
-    status: 400, 
-    description: 'Datos inválidos o contraseñas no coinciden',
-    content: {
-      'application/json': {
-        example: ValidationErrorExample
-      }
-    }
-  })
-  @ApiResponse({ 
-    status: 409, 
-    description: 'Email o username ya existe',
-    content: {
-      'application/json': {
-        example: ConflictErrorExample
-      }
-    }
-  })
-  @ApiResponse({ 
-    status: 429, 
-    description: 'Rate limit excedido',
-    content: {
-      'application/json': {
-        example: RateLimitErrorExample
-      }
-    }
-  })
+  @RegisterResponse()
+  @ValidationErrorResponse()
+  @ConflictErrorResponse()
+  @RateLimitErrorResponse()
+  @InternalServerErrorResponse()
   async register(@Body() registerDto: RegisterDto): Promise<AuthResponse> {
     return this.authService.register(registerDto);
   }
 
   @Post('login')
   @Public()
-  @HttpCode(HttpStatus.OK)
+  @UseGuards(ThrottlerGuard)
   @ThrottleLogin()
-  @ApiOperation({ 
-    summary: 'Iniciar sesión',
-    description: 'Autentica un usuario usando email/username y contraseña. Retorna tokens de acceso y refresh.',
-    tags: ['auth']
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'User login',
+    description: 'Authenticates using email/username and password. Returns accessToken and refreshToken.'
   })
   @ApiBody({
     type: LoginDto,
-    description: 'Credenciales de login',
+    description: 'Login credentials',
     examples: {
-      'Login con email': LoginRequestExample,
-      'Login con username': LoginUsernameRequestExample,
-      'Credenciales inválidas': {
-        summary: 'Credenciales inválidas',
-        description: 'Ejemplo con credenciales incorrectas',
+      'Login with email': LoginRequestExample,
+      'Login with username': LoginUsernameRequestExample,
+      'Invalid credentials': {
+        summary: 'Invalid credentials',
+        description: 'Example of invalid credentials error',
         value: {
           emailOrUsername: 'usuario@ejemplo.com',
-          password: 'password-incorrecto'
+          password: 'incorrecta'
         }
       }
     }
   })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'Login exitoso',
-    type: AuthResponseDto,
-    content: {
-      'application/json': {
-        example: AuthResponseExample
-      }
-    }
-  })
-  @ApiResponse({ 
-    status: 401, 
-    description: 'Credenciales inválidas',
-    content: {
-      'application/json': {
-        example: UnauthorizedErrorExample
-      }
-    }
-  })
-  @ApiResponse({ 
-    status: 429, 
-    description: 'Rate limit excedido',
-    content: {
-      'application/json': {
-        example: RateLimitErrorExample
-      }
-    }
-  })
+  @LoginResponse()
+  @ValidationErrorResponse()
+  @UnauthorizedErrorResponse()
+  @RateLimitErrorResponse()
+  @InternalServerErrorResponse()
   async login(@Body() loginDto: LoginDto): Promise<AuthResponse> {
     return this.authService.login(loginDto);
   }
 
   @Post('refresh')
   @Public()
-  @HttpCode(HttpStatus.OK)
+  @UseGuards(ThrottlerGuard)
   @ThrottleRefresh()
-  @ApiOperation({ 
-    summary: 'Renovar token de acceso',
-    description: 'Renueva el token de acceso usando un refresh token válido.',
-    tags: ['auth']
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Renew accessToken',
+    description: 'Returns a new accessToken and refreshToken if the refreshToken is valid.'
   })
   @ApiBody({
     type: RefreshTokenDto,
-    description: 'Refresh token para renovar acceso',
+    description: 'Valid refresh token',
     examples: {
-      'Refresh token válido': RefreshTokenRequestExample,
-      'Refresh token inválido': {
-        summary: 'Refresh token inválido',
-        description: 'Ejemplo con refresh token expirado o inválido',
+      'Valid refresh token': RefreshTokenRequestExample,
+      'Token error': {
+        summary: 'Invalid token',
+        description: 'Example of refresh token error',
         value: {
-          refreshToken: 'token-invalido-o-expirado'
+          refreshToken: 'token-invalido'
         }
       }
     }
   })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'Token renovado exitosamente',
-    type: AuthResponseDto,
-    content: {
-      'application/json': {
-        example: AuthResponseExample
-      }
-    }
-  })
-  @ApiResponse({ 
-    status: 401, 
-    description: 'Refresh token inválido o expirado',
-    content: {
-      'application/json': {
-        example: InvalidTokenErrorExample
-      }
-    }
-  })
+  @RefreshTokenResponse()
+  @ValidationErrorResponse()
+  @UnauthorizedErrorResponse()
+  @RateLimitErrorResponse()
+  @InternalServerErrorResponse()
   async refreshToken(@Body() refreshTokenDto: RefreshTokenDto): Promise<AuthResponse> {
     return this.authService.refreshToken(refreshTokenDto.refreshToken);
   }
 
   @Post('logout')
-  @UseGuards(JwtAuthGuard)
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ 
-    summary: 'Cerrar sesión',
-    description: 'Invalida el refresh token y cierra la sesión del usuario.',
-    tags: ['auth']
+  @ApiOperation({
+    summary: 'Logout',
+    description: 'Logs out the user and removes the refreshToken.'
   })
-  @ApiResponse({ 
-    status: 204, 
-    description: 'Logout exitoso' 
-  })
-  @ApiResponse({ 
-    status: 401, 
-    description: 'Token inválido',
-    content: {
-      'application/json': {
-        example: InvalidTokenErrorExample
-      }
-    }
-  })
-  @ApiBearerAuth('JWT-auth')
-  async logout(
-    @CurrentUser() user: CurrentUser,
-    @Body() refreshTokenDto: RefreshTokenDto
-  ): Promise<void> {
-    await this.authService.logout(user.id, refreshTokenDto.refreshToken);
-  }
-
-  @Post('logout-all')
-  @UseGuards(JwtAuthGuard)
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ 
-    summary: 'Cerrar todas las sesiones',
-    description: 'Invalida todos los refresh tokens del usuario, cerrando todas las sesiones activas.',
-    tags: ['auth']
-  })
-  @ApiResponse({ 
-    status: 204, 
-    description: 'Todas las sesiones cerradas exitosamente' 
-  })
-  @ApiResponse({ 
-    status: 401, 
-    description: 'Token inválido',
-    content: {
-      'application/json': {
-        example: InvalidTokenErrorExample
-      }
-    }
-  })
-  @ApiBearerAuth('JWT-auth')
-  async logoutAll(@CurrentUser() user: CurrentUser): Promise<void> {
-    await this.authService.logoutAll(user.id);
-  }
-
-  @Post('validate')
-  @Public()
-  @HttpCode(HttpStatus.OK)
-  @ThrottleValidate()
-  @ApiOperation({ 
-    summary: 'Validar credenciales de usuario',
-    description: 'Valida las credenciales de un usuario sin realizar login. Útil para verificar contraseñas.',
-    tags: ['auth']
-  })
+  @UseGuards(JwtAuthGuard, ThrottlerGuard)
+  @HttpCode(204)
+  @ApiBearerAuth()
   @ApiBody({
-    type: LoginDto,
-    description: 'Credenciales a validar',
+    type: RefreshTokenDto,
+    description: 'Valid refresh token for logout',
     examples: {
-      'Credenciales válidas': ValidateCredentialsRequestExample,
-      'Credenciales inválidas': {
-        summary: 'Credenciales inválidas',
-        description: 'Ejemplo con credenciales incorrectas',
+      'Successful logout': RefreshTokenRequestExample,
+      'Token error': {
+        summary: 'Invalid token',
+        description: 'Example of refresh token error',
         value: {
-          emailOrUsername: 'usuario@ejemplo.com',
-          password: 'password-incorrecto'
+          refreshToken: 'token-invalido'
         }
       }
     }
   })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'Credenciales válidas',
-    content: {
-      'application/json': {
-        example: ValidateCredentialsResponseExample
+  @LogoutResponse()
+  @UnauthorizedErrorResponse()
+  @RateLimitErrorResponse()
+  @InternalServerErrorResponse()
+  async logout(
+    @CurrentUser() user: any,
+    @Body() refreshTokenDto: RefreshTokenDto
+  ): Promise<void> {
+    if (!user) throw new UnauthorizedException('Token de acceso requerido');
+    return this.authService.logout(user.id, refreshTokenDto.refreshToken);
+  }
+
+  @Post('logout-all')
+  @ApiOperation({
+    summary: 'Logout all sessions',
+    description: 'Logs out all active user sessions.'
+  })
+  @UseGuards(JwtAuthGuard, ThrottlerGuard)
+  @ApiBearerAuth()
+  @LogoutAllResponse()
+  @UnauthorizedErrorResponse()
+  @RateLimitErrorResponse()
+  @InternalServerErrorResponse()
+  async logoutAll(@CurrentUser() user: any): Promise<void> {
+    if (!user) throw new UnauthorizedException('Token de acceso requerido');
+    return this.authService.logoutAll(user.id);
+  }
+
+  @Post('validate')
+  @Public()
+  @UseGuards(ThrottlerGuard)
+  @ThrottleValidate()
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Validate credentials',
+    description: 'Validates if email/username and password credentials are correct.'
+  })
+  @ApiBody({
+    type: LoginDto,
+    description: 'Credentials to validate',
+    examples: {
+      'Validate credentials': ValidateCredentialsRequestExample,
+      'Invalid credentials': {
+        summary: 'Invalid credentials',
+        description: 'Example of invalid credentials error',
+        value: {
+          emailOrUsername: 'usuario@ejemplo.com',
+          password: 'incorrecta'
+        }
       }
     }
   })
-  @ApiResponse({ 
-    status: 401, 
-    description: 'Credenciales inválidas',
-    content: {
-      'application/json': {
-        example: UnauthorizedErrorExample
-      }
-    }
-  })
+  @ValidateCredentialsResponse()
+  @ValidationErrorResponse()
+  @UnauthorizedErrorResponse()
+  @RateLimitErrorResponse()
+  @InternalServerErrorResponse()
   async validateUser(@Body() loginDto: LoginDto): Promise<{ isValid: boolean }> {
-    const user = await this.authService.validateUser(
-      loginDto.emailOrUsername,
-      loginDto.password,
-    );
+    const user = await this.authService.validateUser(loginDto.emailOrUsername, loginDto.password);
     return { isValid: !!user };
   }
 
   @Get('profile')
-  @UseGuards(JwtAuthGuard)
-  @ApiOperation({ 
-    summary: 'Obtener perfil del usuario actual',
-    description: 'Retorna los datos del perfil del usuario autenticado.',
-    tags: ['users']
+  @UseGuards(JwtAuthGuard, ThrottlerGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Get user profile',
+    description: 'Returns the authenticated user profile information.'
   })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'Perfil del usuario obtenido exitosamente',
-    content: {
-      'application/json': {
-        example: UserProfileResponseExample
-      }
-    }
-  })
-  @ApiResponse({ 
-    status: 401, 
-    description: 'Token inválido',
-    content: {
-      'application/json': {
-        example: InvalidTokenErrorExample
-      }
-    }
-  })
-  @ApiBearerAuth('JWT-auth')
-  async getProfile(@CurrentUser() user: CurrentUser) {
+  @ProfileResponse()
+  @UnauthorizedErrorResponse()
+  @NotFoundErrorResponse()
+  @InternalServerErrorResponse()
+  async getProfile(@CurrentUser() user: any) {
+    if (!user) throw new UnauthorizedException('Token de acceso requerido');
     return this.authService.getProfile(user.id);
   }
 } 

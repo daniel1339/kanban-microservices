@@ -33,6 +33,7 @@ export interface RateLimitItem {
 export class DynamoDBService {
   private readonly logger = new Logger(DynamoDBService.name);
   private readonly docClient: DynamoDBDocumentClient;
+  private readonly dynamoClient: DynamoDBClient;
 
   constructor(private readonly configService: ConfigService) {
     const isLocal = this.configService.get<string>('NODE_ENV') === 'development';
@@ -45,13 +46,14 @@ export class DynamoDBService {
       },
     };
 
-    // Configurar endpoint local si estamos en desarrollo
+    // Configure local endpoint if we're in development
     if (isLocal) {
       clientConfig.endpoint = this.configService.get<string>('AWS_ENDPOINT', 'http://localhost:4566');
       this.logger.log('Using LocalStack DynamoDB endpoint');
     }
 
     const dynamoClient = new DynamoDBClient(clientConfig);
+    this.dynamoClient = dynamoClient;
     this.docClient = DynamoDBDocumentClient.from(dynamoClient);
   }
 
@@ -118,7 +120,7 @@ export class DynamoDBService {
       const response = await this.docClient.send(command);
       const tokens = response.Items || [];
 
-      // Eliminar todos los tokens del usuario
+      // Delete all user tokens
       const deletePromises = tokens.map(token => 
         this.deleteRefreshToken(token.token)
       );
@@ -246,7 +248,7 @@ export class DynamoDBService {
       const response = await this.docClient.send(command);
       const count = response.Attributes?.count || 0;
 
-      // Por ahora, permitimos hasta 100 requests por ventana
+      // For now, we allow up to 100 requests per window
       const isAllowed = count <= 100;
 
       this.logger.debug(`Rate limit for ${key}: ${count}/100 (${isAllowed ? 'allowed' : 'blocked'})`);
@@ -254,7 +256,7 @@ export class DynamoDBService {
       return { count, isAllowed };
     } catch (error) {
       this.logger.error('Error incrementing rate limit:', error);
-      // En caso de error, permitimos la request
+      // In case of error, allow the request
       return { count: 0, isAllowed: true };
     }
   }
@@ -277,6 +279,13 @@ export class DynamoDBService {
   // ========================================
   // UTILITY METHODS
   // ========================================
+
+  async close(): Promise<void> {
+    if (this.dynamoClient) {
+      await this.dynamoClient.destroy();
+      this.logger.log('DynamoDB client destroyed');
+    }
+  }
 
   async healthCheck(): Promise<boolean> {
     try {
@@ -309,7 +318,7 @@ export class DynamoDBService {
       const response = await this.docClient.send(command);
       const expiredTokens = response.Items || [];
 
-      // Eliminar tokens expirados
+      // Delete expired tokens
       const deletePromises = expiredTokens.map(token => 
         this.deleteRefreshToken(token.token)
       );

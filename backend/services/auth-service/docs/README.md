@@ -1,98 +1,98 @@
-# 📚 Documentación - Auth Service
+# 📚 Documentation - Auth Service
 
-## 🗂️ **ESTRUCTURA DE DOCUMENTACIÓN**
+## 🗂️ **DOCUMENTATION STRUCTURE**
 
 ### **📁 docs/api/**
-- **swagger-standards.md**: Estándares de documentación OpenAPI/Swagger
-- **endpoints.md**: Documentación de endpoints y ejemplos
+- **swagger-standards.md**: OpenAPI/Swagger documentation standards
+- **endpoints.md**: Endpoint documentation and examples
 
 ### **📁 docs/development/**
-- **environment.md**: Variables de entorno y configuración
-- **migrations.md**: Gestión de base de datos y migrations
-- **performance.md**: Optimizaciones de performance
+- **environment.md**: Environment variables and configuration
+- **migrations.md**: Database management and migrations
+- **performance.md**: Performance optimizations
 
 ### **📁 docs/security/**
-- **security-enhancements.md**: Mejoras de seguridad implementadas
-- **rate-limiting.md**: Configuración de rate limiting
+- **security-enhancements.md**: Implemented security enhancements
+- **rate-limiting.md**: Rate limiting configuration
 
 ### **📁 docs/testing/**
-- **testing-guide.md**: Guía completa de testing
-- **test-coverage.md**: Cobertura de tests y métricas
+- **testing-guide.md**: Complete testing guide
+- **test-coverage.md**: Test coverage and metrics
 
 ### **📁 docs/deployment/**
-- **deployment-guide.md**: Guía de despliegue
-- **docker-setup.md**: Configuración de Docker
+- **deployment-guide.md**: Deployment guide
+- **docker-setup.md**: Docker configuration
 
 ---
 
-## 🚀 **INICIO RÁPIDO**
+## 🚀 **QUICK START**
 
-### **1. Configuración Inicial**
+### **1. Initial Setup**
 ```bash
-# Instalar dependencias
+# Install dependencies
 npm install
 
-# Configurar variables de entorno
+# Configure environment variables
 cp .env.example .env.development
 
-# Ejecutar migraciones
+# Run migrations
 npm run migrate:run
 
-# Ejecutar seeds
+# Run seeds
 npm run db:seed
 ```
 
-### **2. Desarrollo**
+### **2. Development**
 ```bash
-# Ejecutar en desarrollo
+# Run in development
 npm run start:dev
 
-# Ejecutar tests
+# Run tests
 npm run test:all
 
-# Ver documentación API
+# View API documentation
 # http://localhost:3001/api
 ```
 
 ### **3. Testing**
 ```bash
-# Tests unitarios
+# Unit tests
 npm run test:unit
 
-# Tests de integración
+# Integration tests
 npm run test:integration
 
-# Tests con coverage
+# Tests with coverage
 npm run test:cov
 ```
 
 ---
 
-## 📊 **ESTADO ACTUAL**
+## 📊 **CURRENT STATUS**
 
-### **✅ COMPLETADO (100%)**
-- [x] **JWT Authentication** - Login, registro, refresh tokens
-- [x] **Rate Limiting** - Protección contra ataques
-- [x] **Security Enhancements** - Helmet, CORS, validación
-- [x] **Performance Optimization** - Cache, compresión, monitoreo
-- [x] **Database Migrations** - TypeORM con seeds
+### **✅ COMPLETED (100%)**
+- [x] **JWT Authentication** - Login, registration, refresh tokens
+- [x] **Rate Limiting** - Protection against attacks
+- [x] **Security Enhancements** - Helmet, CORS, validation
+- [x] **Performance Optimization** - Cache, compression, monitoring
+- [x] **Database Migrations** - TypeORM with seeds
 - [x] **Testing** - Unit, integration, coverage 90%+
-- [x] **Documentation** - Swagger, READMEs, guías
+- [x] **Documentation** - Swagger, READMEs, guides
 
-### **🔄 EN PROGRESO**
-- [ ] **Dockerización** - Containers para desarrollo/producción
+### **🔄 IN PROGRESS**
+- [ ] **Dockerization** - Development/production containers
 - [ ] **CI/CD Pipeline** - GitHub Actions
-- [ ] **Monitoring** - Logs centralizados, métricas
+- [ ] **Monitoring** - Centralized logs, metrics
 
-### **📋 PRÓXIMOS PASOS**
-1. **User Service** - Gestión de perfiles extendidos
-2. **Project Service** - Gestión de proyectos
-3. **Board Service** - Tableros Kanban
-4. **API Gateway** - Enrutamiento centralizado
+### **📋 NEXT STEPS**
+1. **User Service** - Extended profile management
+2. **Project Service** - Project management
+3. **Board Service** - Kanban boards
+4. **API Gateway** - Centralized routing
 
 ---
 
-## 🔗 **ENLACES ÚTILES**
+## 🔗 **USEFUL LINKS**
 
 - **API Documentation**: http://localhost:3001/api
 - **Health Check**: http://localhost:3001/health
@@ -100,9 +100,9 @@ npm run test:cov
 
 ---
 
-## 📞 **SOPORTE**
+## 📞 **SUPPORT**
 
-Para preguntas o problemas:
-1. Revisar la documentación específica en cada carpeta
-2. Ejecutar `npm run test:all` para verificar funcionamiento
-3. Revisar logs en `logs/` directory 
+For questions or issues:
+1. Review specific documentation in each folder
+2. Run `npm run test:all` to verify functionality
+3. Check logs in `logs/` directory 

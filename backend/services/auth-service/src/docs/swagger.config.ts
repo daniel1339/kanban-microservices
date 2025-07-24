@@ -6,45 +6,45 @@ export class SwaggerConfig {
     const config = new DocumentBuilder()
       .setTitle('Kanban Auth Service API')
       .setDescription(`
-        ## 🚀 API de Autenticación y Autorización
+        ## 🚀 Authentication and Authorization API
         
-        ### Descripción
-        Servicio de autenticación para la aplicación Kanban con microservicios.
+        ### Description
+        Authentication service for the Kanban microservices application.
         
-        ### Características
-        - ✅ Registro de usuarios con validación
-        - ✅ Login con email/username
-        - ✅ JWT Authentication con refresh tokens
-        - ✅ Logout con invalidación de tokens
-        - ✅ Validación de credenciales
-        - ✅ Perfil de usuario protegido
+        ### Features
+        - ✅ User registration with validation
+        - ✅ Login with email/username
+        - ✅ JWT Authentication with refresh tokens
+        - ✅ Logout with token invalidation
+        - ✅ Credential validation
+        - ✅ Protected user profile
         
-        ### Autenticación
-        Esta API utiliza **JWT Bearer Token** para autenticación.
+        ### Authentication
+        This API uses **JWT Bearer Token** for authentication.
         
         \`\`\`
         Authorization: Bearer <your-jwt-token>
         \`\`\`
         
         ### Rate Limiting
-        - **Registro/Login**: 5 requests por 15 minutos
-        - **Refresh Token**: 10 requests por 15 minutos
-        - **Otros endpoints**: 100 requests por 15 minutos
+        - **Registration/Login**: 5 requests per 15 minutes
+        - **Refresh Token**: 10 requests per 15 minutes
+        - **Other endpoints**: 100 requests per 15 minutes
         
-        ### Códigos de Error
-        | Código | Descripción |
-        |--------|-------------|
-        | 400 | Bad Request - Datos inválidos |
-        | 401 | Unauthorized - Token inválido |
-        | 403 | Forbidden - Sin permisos |
-        | 404 | Not Found - Recurso no encontrado |
-        | 409 | Conflict - Recurso ya existe |
-        | 422 | Unprocessable Entity - Validación fallida |
-        | 429 | Too Many Requests - Rate limit excedido |
-        | 500 | Internal Server Error - Error del servidor |
+        ### Error Codes
+        | Code | Description |
+        |------|-------------|
+        | 400 | Bad Request - Invalid data |
+        | 401 | Unauthorized - Invalid token |
+        | 403 | Forbidden - No permissions |
+        | 404 | Not Found - Resource not found |
+        | 409 | Conflict - Resource already exists |
+        | 422 | Unprocessable Entity - Validation failed |
+        | 429 | Too Many Requests - Rate limit exceeded |
+        | 500 | Internal Server Error - Server error |
         
-        ### Ejemplos de Uso
-        Vea los ejemplos en cada endpoint para entender mejor cómo usar la API.
+        ### Usage Examples
+        See examples in each endpoint to better understand how to use the API.
       `)
       .setVersion('1.0.0')
       .setContact(
@@ -58,15 +58,15 @@ export class SwaggerConfig {
       )
       .addServer('http://localhost:3001', 'Development Server')
       .addServer('https://auth.kanban.com', 'Production Server')
-      .addTag('auth', 'Endpoints de autenticación y autorización')
-      .addTag('users', 'Gestión de usuarios')
+      .addTag('auth', 'Authentication and authorization endpoints')
+      .addTag('users', 'User management')
       .addBearerAuth(
         {
           type: 'http',
           scheme: 'bearer',
           bearerFormat: 'JWT',
           name: 'JWT',
-          description: 'Ingrese su token JWT. Ejemplo: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+          description: 'Enter your JWT token. Example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
           in: 'header',
         },
         'JWT-auth',
@@ -75,7 +75,7 @@ export class SwaggerConfig {
         {
           type: 'apiKey',
           name: 'X-API-Key',
-          description: 'Clave API para acceso a endpoints premium',
+          description: 'API key for premium endpoint access',
           in: 'header',
         },
         'API-Key',
@@ -87,7 +87,7 @@ export class SwaggerConfig {
       operationIdFactory: (controllerKey: string, methodKey: string) => methodKey,
     });
 
-    SwaggerModule.setup('api', app, document, {
+    SwaggerModule.setup('api/docs', app, document, {
       swaggerOptions: {
         persistAuthorization: true,
         displayRequestDuration: true,
@@ -98,34 +98,43 @@ export class SwaggerConfig {
         docExpansion: 'list',
         defaultModelsExpandDepth: 2,
         defaultModelExpandDepth: 2,
-        displayOperationId: true,
         tryItOutEnabled: true,
         requestInterceptor: (req: any) => {
-          // Agregar headers por defecto
+          // Add default headers for testing
           req.headers['Content-Type'] = 'application/json';
           return req;
         },
         responseInterceptor: (res: any) => {
-          // Procesar respuestas
+          // Log responses for debugging
+          console.log('Swagger Response:', res);
           return res;
         },
+        onComplete: (data: any) => {
+          console.log('Swagger documentation loaded successfully');
+        },
+        onFailure: (error: any) => {
+          console.error('Swagger documentation failed to load:', error);
+        },
       },
-      customSiteTitle: 'Kanban Auth API Documentation',
       customCss: `
-        .swagger-ui .topbar { display: none }
-        .swagger-ui .info .title { color: #2c3e50; font-size: 2.5em; }
-        .swagger-ui .info .description { font-size: 1.1em; line-height: 1.6; }
-        .swagger-ui .opblock.opblock-post { border-color: #61affe; background: rgba(97, 175, 254, 0.1); }
-        .swagger-ui .opblock.opblock-get { border-color: #49cc90; background: rgba(73, 204, 144, 0.1); }
-        .swagger-ui .opblock.opblock-put { border-color: #fca130; background: rgba(252, 161, 48, 0.1); }
-        .swagger-ui .opblock.opblock-delete { border-color: #f93e3e; background: rgba(249, 62, 62, 0.1); }
+        .swagger-ui .topbar { display: none; }
+        .swagger-ui .info .title { color: #2c3e50; }
+        .swagger-ui .info .description { color: #34495e; }
+        .swagger-ui .scheme-container { background: #ecf0f1; }
+        .swagger-ui .opblock.opblock-get { border-color: #3498db; }
+        .swagger-ui .opblock.opblock-post { border-color: #27ae60; }
+        .swagger-ui .opblock.opblock-put { border-color: #f39c12; }
+        .swagger-ui .opblock.opblock-delete { border-color: #e74c3c; }
       `,
+      customSiteTitle: 'Kanban Auth Service - API Documentation',
+      customfavIcon: '/favicon.ico',
       customJs: [
-        'https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/swagger-ui-bundle.js',
-        'https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/swagger-ui-standalone-preset.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.min.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-standalone-preset.min.js',
+      ],
+      customCssUrl: [
+        'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css',
       ],
     });
-
-    console.log('📚 Swagger documentation available at http://localhost:3001/api');
   }
 } 

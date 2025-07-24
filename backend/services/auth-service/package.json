@@ -17,7 +17,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:e2e": "jest --config ./test/jest-e2e.json --forceExit",
     "test:unit": "jest --testPathPattern=src",
     "test:setup": "ts-node scripts/setup-test-db.ts",
     "test:integration": "npm run test:setup && jest --config ./test/jest-e2e.json --testPathPattern=test/e2e",
@@ -51,6 +51,7 @@
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
+    "@nestjs/event-emitter": "^3.0.1",
     "@nestjs/jwt": "^11.0.0",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.0.1",
@@ -80,9 +81,9 @@
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "swagger-ui-express": "^5.0.1",
+    "ts-node": "^10.9.2",
     "typeorm": "^0.3.25",
-    "uuid": "^11.1.0",
-    "ts-node": "^10.9.2"
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
@@ -124,7 +125,18 @@
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "collectCoverageFrom": [
-      "**/*.(t|j)s"
+      "**/*.(t|j)s",
+      "!**/*.module.ts",
+      "!**/main.ts",
+      "!**/index.ts",
+      "!**/dto/**",
+      "!**/entities/**",
+      "!**/migrations/**",
+      "!**/config/**",
+      "!**/interfaces/**",
+      "!**/constants/**",
+      "!**/docs/**",
+      "!**/seeds/**"
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"

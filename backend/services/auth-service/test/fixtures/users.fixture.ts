@@ -5,7 +5,7 @@ export const mockUsers = {
   valid: {
     email: 'test@example.com',
     username: 'testuser',
-    password: 'Password123!',
+    password: 'Secure2024!@',
     firstName: 'Test',
     lastName: 'User',
   },
@@ -19,7 +19,7 @@ export const mockUsers = {
   duplicate: {
     email: 'existing@example.com',
     username: 'existinguser',
-    password: 'Password123!',
+    password: 'Secure2024!@',
     firstName: 'Existing',
     lastName: 'User',
   },
@@ -72,7 +72,7 @@ export const mockInvalidCredentials = {
 };
 
 export const mockValidationErrors = {
-  email: ['El email debe ser válido'],
-  username: ['El username debe tener al menos 3 caracteres'],
-  password: ['La contraseña debe tener al menos 8 caracteres'],
+  email: ['Email must be valid'],
+  username: ['Username must be at least 3 characters'],
+  password: ['Password must be at least 8 characters'],
 }; 

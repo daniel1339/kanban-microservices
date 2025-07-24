@@ -7,11 +7,11 @@ async function revertMigrations() {
   const dataSource = app.get(DataSource);
 
   try {
-    console.log('🔄 Revirtiendo última migración...');
+    console.log('🔄 Reverting last migration...');
     await dataSource.undoLastMigration();
-    console.log('✅ Migración revertida exitosamente');
+    console.log('✅ Migration reverted successfully');
   } catch (error) {
-    console.error('❌ Error revirtiendo migración:', error);
+    console.error('❌ Error reverting migration:', error);
     process.exit(1);
   } finally {
     await app.close();

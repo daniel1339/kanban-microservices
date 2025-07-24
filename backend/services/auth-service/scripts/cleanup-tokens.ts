@@ -3,28 +3,28 @@ import { AppModule } from '../src/app.module';
 import { AuthService } from '../src/auth/auth.service';
 
 async function cleanupExpiredTokens() {
-  console.log('🧹 Iniciando limpieza de tokens expirados...');
+  console.log('🧹 Starting cleanup of expired tokens...');
 
   try {
-    // Crear aplicación NestJS
+    // Create NestJS application
     const app = await NestFactory.createApplicationContext(AppModule);
     const authService = app.get(AuthService);
 
-    // Limpiar tokens expirados
+    // Clean up expired tokens
     const cleanedCount = await authService.cleanupExpiredTokens();
 
-    console.log(`✅ Limpieza completada: ${cleanedCount} tokens expirados eliminados`);
+    console.log(`✅ Cleanup completed: ${cleanedCount} expired tokens removed`);
 
-    // Cerrar aplicación
+    // Close application
     await app.close();
     process.exit(0);
   } catch (error) {
-    console.error('❌ Error durante la limpieza:', error);
+    console.error('❌ Error during cleanup:', error);
     process.exit(1);
   }
 }
 
-// Ejecutar si se llama directamente
+// Execute if called directly
 if (require.main === module) {
   cleanupExpiredTokens();
 }

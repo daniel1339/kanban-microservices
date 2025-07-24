@@ -32,10 +32,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       if (!user) {
         throw new UnauthorizedException('User not found');
       }
-
-      if (!user.isActive) {
+      if (user.isActive === false) {
         throw new UnauthorizedException('User account is deactivated');
       }
+
+      // Si quieres requerir verificación, descomenta la siguiente línea:
+      // if (!user.is_verified) {
+      //   throw new UnauthorizedException('User not verified');
+      // }
 
       // Retornar el usuario para que esté disponible en el request
       return {

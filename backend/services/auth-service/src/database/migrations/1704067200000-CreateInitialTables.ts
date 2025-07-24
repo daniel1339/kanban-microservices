@@ -4,7 +4,7 @@ export class CreateInitialTables1704067200000 implements MigrationInterface {
   name = 'CreateInitialTables1704067200000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // Crear tabla de usuarios
+    // Create users table
     await queryRunner.createTable(
       new Table({
         name: 'users',
@@ -59,7 +59,7 @@ export class CreateInitialTables1704067200000 implements MigrationInterface {
       true,
     );
 
-    // Crear tabla de refresh tokens
+    // Create refresh tokens table
     await queryRunner.createTable(
       new Table({
         name: 'refresh_tokens',
@@ -105,40 +105,44 @@ export class CreateInitialTables1704067200000 implements MigrationInterface {
             isNullable: false,
           },
         ],
+        foreignKeys: [
+          {
+            columnNames: ['user_id'],
+            referencedColumnNames: ['id'],
+            referencedTableName: 'users',
+            onDelete: 'CASCADE',
+          },
+        ],
       }),
       true,
     );
 
-    // Crear índices para optimizar queries
+    // Create indexes for better performance
     await queryRunner.query(`CREATE INDEX "IDX_USERS_EMAIL" ON "users" ("email")`);
     await queryRunner.query(`CREATE INDEX "IDX_USERS_USERNAME" ON "users" ("username")`);
-    await queryRunner.query(`CREATE INDEX "IDX_USERS_CREATED_AT" ON "users" ("created_at")`);
     await queryRunner.query(`CREATE INDEX "IDX_REFRESH_TOKENS_USER_ID" ON "refresh_tokens" ("user_id")`);
     await queryRunner.query(`CREATE INDEX "IDX_REFRESH_TOKENS_TOKEN" ON "refresh_tokens" ("token")`);
     await queryRunner.query(`CREATE INDEX "IDX_REFRESH_TOKENS_EXPIRES_AT" ON "refresh_tokens" ("expires_at")`);
-    await queryRunner.query(`CREATE INDEX "IDX_REFRESH_TOKENS_IS_REVOKED" ON "refresh_tokens" ("is_revoked")`);
-
-    // Crear foreign key
-    await queryRunner.query(`ALTER TABLE "refresh_tokens" ADD CONSTRAINT "FK_REFRESH_TOKENS_USER_ID" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE`);
-
-    // Crear extensión uuid-ossp si no existe
-    await queryRunner.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    // Eliminar foreign key
-    await queryRunner.query(`ALTER TABLE "refresh_tokens" DROP CONSTRAINT "FK_REFRESH_TOKENS_USER_ID"`);
+    // Drop indexes
+    await queryRunner.dropIndex('refresh_tokens', 'IDX_REFRESH_TOKENS_EXPIRES_AT');
+    await queryRunner.dropIndex('refresh_tokens', 'IDX_REFRESH_TOKENS_TOKEN');
+    await queryRunner.dropIndex('refresh_tokens', 'IDX_REFRESH_TOKENS_USER_ID');
+    await queryRunner.dropIndex('users', 'IDX_USERS_USERNAME');
+    await queryRunner.dropIndex('users', 'IDX_USERS_EMAIL');
 
-    // Eliminar índices
-    await queryRunner.query(`DROP INDEX "IDX_REFRESH_TOKENS_IS_REVOKED"`);
-    await queryRunner.query(`DROP INDEX "IDX_REFRESH_TOKENS_EXPIRES_AT"`);
-    await queryRunner.query(`DROP INDEX "IDX_REFRESH_TOKENS_TOKEN"`);
-    await queryRunner.query(`DROP INDEX "IDX_REFRESH_TOKENS_USER_ID"`);
-    await queryRunner.query(`DROP INDEX "IDX_USERS_CREATED_AT"`);
-    await queryRunner.query(`DROP INDEX "IDX_USERS_USERNAME"`);
-    await queryRunner.query(`DROP INDEX "IDX_USERS_EMAIL"`);
+    // Drop foreign key
+    const table = await queryRunner.getTable('refresh_tokens');
+    if (table) {
+      const foreignKey = table.foreignKeys.find(fk => fk.columnNames.indexOf('user_id') !== -1);
+      if (foreignKey) {
+        await queryRunner.dropForeignKey('refresh_tokens', foreignKey);
+      }
+    }
 
-    // Eliminar tablas
+    // Drop tables
     await queryRunner.dropTable('refresh_tokens');
     await queryRunner.dropTable('users');
   }

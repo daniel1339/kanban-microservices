@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
@@ -27,6 +28,7 @@ import { CacheService } from '../common/services/cache.service';
       }),
       inject: [ConfigService],
     }),
+    EventEmitterModule.forRoot(),
   ],
   controllers: [AuthController],
   providers: [

@@ -3,32 +3,32 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class LoginDto {
   @ApiProperty({
-    example: 'usuario@ejemplo.com',
-    description: 'Email o nombre de usuario del usuario',
+    example: 'user@example.com',
+    description: 'User email or username. Can be a valid email or a username.',
     oneOf: [
       { type: 'string', format: 'email' },
       { type: 'string', pattern: '^[a-zA-Z0-9_]+$' },
     ],
   })
-  @IsString({ message: 'El email o username debe ser una cadena de texto' })
-  @MaxLength(255, { message: 'El email o username no puede tener más de 255 caracteres' })
+  @IsString({ message: 'Email or username must be a string' })
+  @MaxLength(255, { message: 'Email or username cannot be longer than 255 characters' })
   emailOrUsername: string;
 
   @ApiProperty({
-    example: 'Contraseña123!',
-    description: 'Contraseña del usuario',
+    example: 'Password123!',
+    description: 'User password. Must meet security requirements.',
   })
-  @IsString({ message: 'La contraseña debe ser una cadena de texto' })
-  @MinLength(1, { message: 'La contraseña es requerida' })
-  @MaxLength(255, { message: 'La contraseña no puede tener más de 255 caracteres' })
+  @IsString({ message: 'Password must be a string' })
+  @MinLength(1, { message: 'Password is required' })
+  @MaxLength(255, { message: 'Password cannot be longer than 255 characters' })
   password: string;
 
   @ApiProperty({
     example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
-    description: 'Refresh token opcional para renovar tokens',
+    description: 'Optional refresh token to renew tokens. Only used in refresh flows.',
     required: false,
   })
   @IsOptional()
-  @IsString({ message: 'El refresh token debe ser una cadena de texto' })
+  @IsString({ message: 'Refresh token must be a string' })
   refreshToken?: string;
 } 

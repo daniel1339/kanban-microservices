@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { ConflictException, UnauthorizedException, BadRequestException, NotFoundException } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 import { AuthService } from './auth.service';
 import { User, RefreshToken } from './entities';
@@ -16,11 +17,13 @@ describe('AuthService', () => {
   let userRepository: Repository<User>;
   let refreshTokenRepository: Repository<RefreshToken>;
   let configService: ConfigService;
+  let eventEmitter: EventEmitter2;
 
   const mockUserRepository = {
     findOne: jest.fn(),
     create: jest.fn(),
     save: jest.fn(),
+    remove: jest.fn(), // <-- agregado para soportar deleteUser
   };
 
   const mockRefreshTokenRepository = {
@@ -57,6 +60,8 @@ describe('AuthService', () => {
     isHealthy: jest.fn(),
   };
 
+  const mockEventEmitter = { emit: jest.fn() };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -77,6 +82,10 @@ describe('AuthService', () => {
           provide: CacheService,
           useValue: mockCacheService,
         },
+        {
+          provide: EventEmitter2,
+          useValue: mockEventEmitter,
+        },
       ],
     }).compile();
 
@@ -84,6 +93,7 @@ describe('AuthService', () => {
     userRepository = module.get<Repository<User>>(getRepositoryToken(User));
     refreshTokenRepository = module.get<Repository<RefreshToken>>(getRepositoryToken(RefreshToken));
     configService = module.get<ConfigService>(ConfigService);
+    eventEmitter = module.get<EventEmitter2>(EventEmitter2);
 
     // Configuración por defecto
     mockConfigService.get.mockImplementation((key: string, defaultValue?: any) => {
@@ -139,6 +149,11 @@ describe('AuthService', () => {
       expect(result).toHaveProperty('refreshToken');
       expect(result.user.email).toBe(registerDto.email);
       expect(result.user.username).toBe(registerDto.username);
+      expect(mockEventEmitter.emit).toHaveBeenCalledWith('user.created', expect.objectContaining({
+        id: expect.any(String),
+        email: expect.any(String),
+        username: expect.any(String),
+      }));
     });
 
     it('should throw BadRequestException when passwords do not match', async () => {
@@ -477,6 +492,65 @@ describe('AuthService', () => {
       mockUserRepository.findOne.mockResolvedValue(null);
 
       await expect(service.getProfile(userId)).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('updateUser', () => {
+    it('should update user and emit user.updated event', async () => {
+      const userId = 'user-id';
+      const updateDto = { email: 'new@example.com', username: 'newuser' };
+      const existingUser = {
+        id: userId,
+        email: 'old@example.com',
+        username: 'olduser',
+        password_hash: 'hash',
+        is_verified: true,
+        created_at: new Date(),
+        updated_at: new Date(),
+      };
+      const updatedUser = { ...existingUser, ...updateDto };
+      mockUserRepository.findOne.mockResolvedValue(existingUser);
+      mockUserRepository.save.mockResolvedValue(updatedUser);
+
+      const result = await service.updateUser(userId, updateDto);
+      expect(result.email).toBe(updateDto.email);
+      expect(result.username).toBe(updateDto.username);
+      expect(mockEventEmitter.emit).toHaveBeenCalledWith('user.updated', expect.objectContaining({
+        id: userId,
+        email: updateDto.email,
+        username: updateDto.username,
+      }));
+    });
+
+    it('should throw NotFoundException if user does not exist', async () => {
+      mockUserRepository.findOne.mockResolvedValue(null);
+      await expect(service.updateUser('nonexistent', { email: 'x' })).rejects.toThrow('User not found');
+    });
+  });
+
+  describe('deleteUser', () => {
+    it('should delete user and emit user.deleted event', async () => {
+      const userId = 'user-id';
+      const existingUser = {
+        id: userId,
+        email: 'test@example.com',
+        username: 'testuser',
+        password_hash: 'hash',
+        is_verified: true,
+        created_at: new Date(),
+        updated_at: new Date(),
+      };
+      mockUserRepository.findOne.mockResolvedValue(existingUser);
+      mockUserRepository.remove.mockResolvedValue(existingUser);
+
+      await service.deleteUser(userId);
+      expect(mockUserRepository.remove).toHaveBeenCalledWith(existingUser);
+      expect(mockEventEmitter.emit).toHaveBeenCalledWith('user.deleted', { id: userId });
+    });
+
+    it('should throw NotFoundException if user does not exist', async () => {
+      mockUserRepository.findOne.mockResolvedValue(null);
+      await expect(service.deleteUser('nonexistent')).rejects.toThrow('User not found');
     });
   });
 }); 

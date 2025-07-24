@@ -4,7 +4,7 @@ import { DynamoDBDocumentClient, PutCommand, GetCommand, DeleteCommand } from '@
 async function testAWSLocalIntegration(): Promise<void> {
   console.log('🧪 Testing AWS Local Integration...\n');
 
-  // Configuración directa para testing
+  // Direct configuration for testing
   const dynamoClient = new DynamoDBClient({
     region: 'us-east-1',
     endpoint: 'http://localhost:4566',
@@ -17,7 +17,7 @@ async function testAWSLocalIntegration(): Promise<void> {
   const docClient = DynamoDBDocumentClient.from(dynamoClient);
 
   try {
-    // 1. Health Check - Verificar conexión
+    // 1. Health Check - Verify connection
     console.log('1️⃣ Testing DynamoDB Connection...');
     const healthCommand = new GetCommand({
       TableName: 'kanban-refresh-tokens',
@@ -136,7 +136,7 @@ async function testAWSLocalIntegration(): Promise<void> {
   }
 }
 
-// Ejecutar test si se llama directamente
+// Execute test if called directly
 if (require.main === module) {
   testAWSLocalIntegration()
     .then(() => {

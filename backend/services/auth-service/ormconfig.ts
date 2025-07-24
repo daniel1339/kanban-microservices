@@ -13,12 +13,9 @@ export default new DataSource({
   password: configService.get('DB_PASSWORD', 'password'),
   database: configService.get('DB_NAME', 'auth_service'),
   entities: [User, RefreshToken],
-  migrations: [
-    configService.get('NODE_ENV') === 'production'
-      ? 'dist/src/database/migrations/*.js'
-      : 'src/database/migrations/*.ts'
-  ],
-  synchronize: false, // Deshabilitado para producción
+ 
+  migrations: ['src/database/migrations/*.ts'],
+  synchronize: false, // Disabled for production
   logging: configService.get('NODE_ENV') === 'development',
   ssl: configService.get('NODE_ENV') === 'production' ? { rejectUnauthorized: false } : false,
   extra: {

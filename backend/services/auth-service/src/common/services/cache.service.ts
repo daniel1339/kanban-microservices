@@ -16,7 +16,7 @@ export class CacheService {
   }
 
   /**
-   * Obtener valor del cache
+   * Get value from cache
    */
   async get<T>(key: string): Promise<T | null> {
     try {
@@ -35,7 +35,7 @@ export class CacheService {
   }
 
   /**
-   * Establecer valor en el cache
+   * Set value in cache
    */
   async set(key: string, value: any, ttl?: number): Promise<void> {
     try {
@@ -48,7 +48,7 @@ export class CacheService {
   }
 
   /**
-   * Eliminar valor del cache
+   * Delete value from cache
    */
   async del(key: string): Promise<void> {
     try {
@@ -60,12 +60,12 @@ export class CacheService {
   }
 
   /**
-   * Limpiar todo el cache
+   * Clear all cache
    */
   async reset(): Promise<void> {
     try {
-      // Nota: reset() no está disponible en todas las versiones de cache-manager
-      // Se puede implementar limpiando keys específicos o usando el store subyacente
+      // Note: reset() is not available in all versions of cache-manager
+      // Can be implemented by clearing specific keys or using the underlying store
       this.logger.debug('Cache reset completed');
     } catch (error) {
       this.logger.error('Error resetting cache:', error);
@@ -73,7 +73,7 @@ export class CacheService {
   }
 
   /**
-   * Obtener o establecer valor (get-or-set pattern)
+   * Get or set value (get-or-set pattern)
    */
   async getOrSet<T>(
     key: string,
@@ -91,21 +91,21 @@ export class CacheService {
   }
 
   /**
-   * Invalidar cache por patrón
+   * Invalidate cache by pattern
    */
   async invalidatePattern(pattern: string): Promise<void> {
     try {
-      // Nota: Esta funcionalidad depende del store de cache
-      // Para Redis, se puede implementar con SCAN
+      // Note: This functionality depends on the cache store
+      // For Redis, it can be implemented with SCAN
       this.logger.debug(`Cache invalidation pattern: ${pattern}`);
-      // Implementación específica según el store
+      // Specific implementation according to the store
     } catch (error) {
       this.logger.error(`Error invalidating cache pattern ${pattern}:`, error);
     }
   }
 
   /**
-   * Cache de usuario por ID
+   * User cache by ID
    */
   async getUserById(userId: string): Promise<any> {
     const key = `user:${userId}`;
@@ -113,7 +113,7 @@ export class CacheService {
   }
 
   /**
-   * Cache de usuario por email
+   * User cache by email
    */
   async getUserByEmail(email: string): Promise<any> {
     const key = `user:email:${email}`;
@@ -121,7 +121,7 @@ export class CacheService {
   }
 
   /**
-   * Cache de usuario por username
+   * User cache by username
    */
   async getUserByUsername(username: string): Promise<any> {
     const key = `user:username:${username}`;
@@ -129,29 +129,29 @@ export class CacheService {
   }
 
   /**
-   * Establecer cache de usuario
+   * Set user cache
    */
   async setUser(user: any): Promise<void> {
     const userId = user.id;
     const email = user.email;
     const username = user.username;
 
-    // Cache por ID
-    await this.set(`user:${userId}`, user, 600); // 10 minutos
+    // Cache by ID
+    await this.set(`user:${userId}`, user, 600); // 10 minutes
 
-    // Cache por email
+    // Cache by email
     if (email) {
       await this.set(`user:email:${email}`, user, 600);
     }
 
-    // Cache por username
+    // Cache by username
     if (username) {
       await this.set(`user:username:${username}`, user, 600);
     }
   }
 
   /**
-   * Invalidar cache de usuario
+   * Invalidate user cache
    */
   async invalidateUser(userId: string, email?: string, username?: string): Promise<void> {
     await this.del(`user:${userId}`);
@@ -166,7 +166,7 @@ export class CacheService {
   }
 
   /**
-   * Cache de refresh token
+   * Refresh token cache
    */
   async getRefreshToken(tokenId: string): Promise<any> {
     const key = `refresh_token:${tokenId}`;
@@ -174,15 +174,15 @@ export class CacheService {
   }
 
   /**
-   * Establecer cache de refresh token
+   * Set refresh token cache
    */
   async setRefreshToken(tokenId: string, tokenData: any): Promise<void> {
     const key = `refresh_token:${tokenId}`;
-    await this.set(key, tokenData, 3600); // 1 hora
+    await this.set(key, tokenData, 3600); // 1 hour
   }
 
   /**
-   * Invalidar cache de refresh token
+   * Invalidate refresh token cache
    */
   async invalidateRefreshToken(tokenId: string): Promise<void> {
     const key = `refresh_token:${tokenId}`;
@@ -190,7 +190,7 @@ export class CacheService {
   }
 
   /**
-   * Cache de rate limiting
+   * Rate limiting cache
    */
   async getRateLimit(key: string): Promise<any> {
     const cacheKey = `rate_limit:${key}`;
@@ -198,7 +198,7 @@ export class CacheService {
   }
 
   /**
-   * Establecer cache de rate limiting
+   * Set rate limiting cache
    */
   async setRateLimit(key: string, data: any, ttl: number): Promise<void> {
     const cacheKey = `rate_limit:${key}`;
@@ -206,12 +206,12 @@ export class CacheService {
   }
 
   /**
-   * Obtener estadísticas del cache
+   * Get cache statistics
    */
   async getStats(): Promise<any> {
     try {
-      // Esta funcionalidad depende del store de cache
-      // Para Redis, se puede obtener con INFO command
+      // This functionality depends on the cache store
+      // For Redis, it can be obtained with INFO command
       return {
         store: this.configService.get('performance.cache.store'),
         ttl: this.defaultTTL,
@@ -224,7 +224,7 @@ export class CacheService {
   }
 
   /**
-   * Verificar si el cache está disponible
+   * Check if cache is available
    */
   async isHealthy(): Promise<boolean> {
     try {

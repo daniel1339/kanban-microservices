@@ -9,7 +9,7 @@ async function runSeeds() {
     await dataSource.initialize();
     console.log('Database connection established');
 
-    // Ejecutar seeders
+    // Run seeders
     const userSeeder = new UserSeeder(dataSource);
     await userSeeder.run();
 

@@ -6,14 +6,14 @@ async function setupTestDatabase() {
     port: 5432,
     user: 'kanban_user',
     password: 'kanban_password',
-    database: 'postgres', // Conectar a postgres para crear la DB de test
+    database: 'postgres', // Connect to postgres to create test DB
   });
 
   try {
     await client.connect();
     console.log('✅ Connected to PostgreSQL');
 
-    // Verificar si la base de datos de test existe
+    // Check if test database exists
     const checkDbQuery = `
       SELECT 1 FROM pg_database WHERE datname = 'kanban_test'
     `;
@@ -21,7 +21,7 @@ async function setupTestDatabase() {
     const result = await client.query(checkDbQuery);
     
     if (result.rows.length === 0) {
-      // Crear base de datos de test si no existe
+      // Create test database if it doesn't exist
       const createDbQuery = `CREATE DATABASE kanban_test`;
       await client.query(createDbQuery);
       console.log('✅ Created test database: kanban_test');
@@ -38,7 +38,7 @@ async function setupTestDatabase() {
   }
 }
 
-// Ejecutar si se llama directamente
+// Execute if called directly
 if (require.main === module) {
   setupTestDatabase()
     .then(() => {

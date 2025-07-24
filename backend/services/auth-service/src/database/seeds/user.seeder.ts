@@ -8,7 +8,7 @@ export class UserSeeder {
   async run(): Promise<void> {
     const userRepository = this.dataSource.getRepository(User);
 
-    // Verificar si ya existen usuarios
+    // Check if users already exist
     const existingUsers = await userRepository.count();
     if (existingUsers > 0) {
       console.log('Users already exist, skipping seeder...');

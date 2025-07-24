@@ -20,12 +20,12 @@ async function backupDatabase(config: BackupConfig): Promise<void> {
   const filename = config.filename || `backup-${config.database}-${timestamp}.sql`;
   const backupPath = path.join(config.backupDir, filename);
 
-  // Crear directorio de backup si no existe
+  // Create backup directory if it doesn't exist
   if (!fs.existsSync(config.backupDir)) {
     fs.mkdirSync(config.backupDir, { recursive: true });
   }
 
-  // Comando pg_dump
+  // pg_dump command
   const command = `PGPASSWORD="${config.password}" pg_dump -h ${config.host} -p ${config.port} -U ${config.username} -d ${config.database} -f "${backupPath}" --verbose --no-password`;
 
   try {
@@ -42,7 +42,7 @@ async function backupDatabase(config: BackupConfig): Promise<void> {
       console.log('Backup output:', stdout);
     }
 
-    // Verificar que el archivo se creó
+    // Verify that the file was created
     if (fs.existsSync(backupPath)) {
       const stats = fs.statSync(backupPath);
       const fileSizeInMB = (stats.size / (1024 * 1024)).toFixed(2);
@@ -66,7 +66,7 @@ async function restoreDatabase(config: BackupConfig, backupFile: string): Promis
     throw new Error(`Backup file not found: ${backupPath}`);
   }
 
-  // Comando psql para restaurar
+  // psql command to restore
   const command = `PGPASSWORD="${config.password}" psql -h ${config.host} -p ${config.port} -U ${config.username} -d ${config.database} -f "${backupPath}" --verbose --no-password`;
 
   try {
@@ -119,7 +119,7 @@ async function listBackups(backupDir: string): Promise<void> {
   });
 }
 
-// Función principal
+// Main function
 async function main() {
   const args = process.argv.slice(2);
   const command = args[0];

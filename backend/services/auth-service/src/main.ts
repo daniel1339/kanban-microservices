@@ -17,6 +17,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 
+  // LOG HERE
+  
+
   // Security: Helmet.js for security headers
   app.use(helmet({
     contentSecurityPolicy: {
@@ -27,8 +30,8 @@ async function bootstrap() {
         imgSrc: ["'self'", "data:", "https:"],
       },
     },
-    crossOriginEmbedderPolicy: false, // Para Swagger
-    crossOriginResourcePolicy: { policy: "cross-origin" }, // Para Swagger
+    crossOriginEmbedderPolicy: false, // For Swagger
+    crossOriginResourcePolicy: { policy: "cross-origin" }, // For Swagger
   }));
 
   // Configure CORS with enhanced security
@@ -56,9 +59,8 @@ async function bootstrap() {
   );
 
   // Global guards
-  app.useGlobalGuards(
-    new JwtAuthGuard(app.get(Reflector)),
-  );
+  const jwtAuthGuard = app.get(JwtAuthGuard);
+  app.useGlobalGuards(jwtAuthGuard);
 
   // Swagger documentation
   SwaggerConfig.setup(app);
@@ -66,7 +68,7 @@ async function bootstrap() {
   const port = configService.get<number>('app.port') || 3001;
   await app.listen(port);
   console.log(`🚀 Auth Service running on port ${port}`);
-  console.log(`📚 Swagger documentation available at http://localhost:${port}/api`);
+  console.log(`📚 Swagger documentation available at http://localhost:${port}/api/docs`);
 }
 
 void bootstrap();

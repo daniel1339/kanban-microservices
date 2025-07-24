@@ -3,14 +3,14 @@ import axios from 'axios';
 const BASE_URL = 'http://localhost:3001';
 
 async function testRateLimiting() {
-  console.log('🧪 Probando Rate Limiting...\n');
+  console.log('🧪 Testing Rate Limiting...\n');
 
   const loginData = {
     emailOrUsername: 'test@example.com',
     password: 'password123',
   };
 
-  console.log('📊 Haciendo 6 requests rápidos al endpoint /auth/login...\n');
+  console.log('📊 Making 6 quick requests to /auth/login endpoint...\n');
 
   for (let i = 1; i <= 6; i++) {
     const startTime = Date.now();
@@ -26,7 +26,7 @@ async function testRateLimiting() {
 
       const endTime = Date.now();
       console.log(`  ✅ Status: ${response.status}`);
-      console.log(`  ⏱️  Tiempo: ${endTime - startTime}ms`);
+      console.log(`  ⏱️  Time: ${endTime - startTime}ms`);
       console.log(`  📊 Rate Limit Headers:`);
       console.log(`     X-RateLimit-Limit: ${response.headers['x-ratelimit-limit']}`);
       console.log(`     X-RateLimit-Remaining: ${response.headers['x-ratelimit-remaining']}`);
@@ -36,7 +36,7 @@ async function testRateLimiting() {
     } catch (error: any) {
       const endTime = Date.now();
       console.log(`  ❌ Status: ${error.response?.status || 'Network Error'}`);
-      console.log(`  ⏱️  Tiempo: ${endTime - startTime}ms`);
+      console.log(`  ⏱️  Time: ${endTime - startTime}ms`);
       
       if (error.response?.status === 429) {
         console.log(`  🚫 Rate Limit Exceeded!`);
@@ -52,12 +52,12 @@ async function testRateLimiting() {
     }
   }
 
-  console.log('🎯 Test completado!');
-  console.log('💡 Los primeros 5 requests deberían pasar (aunque fallen por credenciales inválidas)');
-  console.log('💡 El 6to request debería ser bloqueado con status 429');
+  console.log('🎯 Test completed!');
+  console.log('💡 The first 5 requests should pass (even if they fail due to invalid credentials)');
+  console.log('💡 The 6th request should be blocked with status 429');
 }
 
-// Ejecutar si se llama directamente
+// Execute if called directly
 if (require.main === module) {
   testRateLimiting().catch(console.error);
 }

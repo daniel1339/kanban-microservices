@@ -27,7 +27,7 @@ export class CompressionInterceptor implements NestInterceptor {
     const request = context.switchToHttp().getRequest();
     const response = context.switchToHttp().getResponse();
 
-    // Aplicar compresión si está habilitada
+    // Apply compression if enabled
     const compressionEnabled = this.configService.get('performance.compression.enabled', false);
     
     if (compressionEnabled) {
@@ -40,7 +40,7 @@ export class CompressionInterceptor implements NestInterceptor {
 
           next.handle().pipe(
             map(data => {
-              // Agregar headers de compresión si es necesario
+              // Add compression headers if necessary
               if (!response.getHeader('Content-Encoding')) {
                 response.setHeader('Vary', 'Accept-Encoding');
               }
@@ -59,17 +59,17 @@ export class CompressionInterceptor implements NestInterceptor {
   }
 
   private defaultFilter(req: any, res: any): boolean {
-    // No comprimir requests pequeños
+    // Don't compress small requests
     if (req.headers['content-length'] && parseInt(req.headers['content-length']) < 1024) {
       return false;
     }
 
-    // No comprimir si ya está comprimido
+    // Don't compress if already compressed
     if (req.headers['content-encoding']) {
       return false;
     }
 
-    // Comprimir solo respuestas JSON y texto
+    // Compress only JSON and text responses
     const contentType = res.getHeader('Content-Type');
     if (contentType) {
       return contentType.includes('application/json') || 

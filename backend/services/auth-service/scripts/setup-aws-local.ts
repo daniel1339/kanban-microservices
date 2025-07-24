@@ -1,7 +1,7 @@
 import { DynamoDBClient, CreateTableCommand, ListTablesCommand } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 
-// Configuración para AWS Local (LocalStack)
+// Configuration for AWS Local (LocalStack)
 const AWS_CONFIG = {
   region: 'us-east-1',
   endpoint: 'http://localhost:4566',
@@ -14,7 +14,7 @@ const AWS_CONFIG = {
 const dynamoClient = new DynamoDBClient(AWS_CONFIG);
 const docClient = DynamoDBDocumentClient.from(dynamoClient);
 
-// Definición de tablas para Auth Service
+// Table definitions for Auth Service
 const TABLES = {
   refreshTokens: {
     TableName: 'kanban-refresh-tokens',
@@ -118,7 +118,7 @@ async function createTable(tableDefinition: any): Promise<boolean> {
 async function setupAWSLocal(): Promise<void> {
   console.log('🚀 Setting up AWS Local for Auth Service...\n');
 
-  // Verificar conexión con LocalStack
+  // Verify connection with LocalStack
   try {
     const existingTables = await listTables();
     console.log('📋 Existing tables:', existingTables);
@@ -128,7 +128,7 @@ async function setupAWSLocal(): Promise<void> {
     process.exit(1);
   }
 
-  // Crear tablas
+  // Create tables
   console.log('\n📦 Creating DynamoDB tables...\n');
 
   const results = await Promise.allSettled([
@@ -159,7 +159,7 @@ async function setupAWSLocal(): Promise<void> {
   }
 }
 
-// Ejecutar setup si se llama directamente
+// Execute setup if called directly
 if (require.main === module) {
   setupAWSLocal()
     .then(() => {

@@ -1,115 +1,115 @@
-# Variables de Entorno para Producción
+# Production Environment Variables
 
-## 🔧 Render (Backend) - Variables de Entorno
+## 🔧 Render (Backend) - Environment Variables
 
-### **Variables Comunes para todos los microservicios:**
+### **Common Variables for All Microservices:**
 
-| Variable | Valor | Descripción | Requerida |
-|----------|-------|-------------|-----------|
-| `NODE_ENV` | `production` | Entorno de producción | ✅ |
-| `DATABASE_URL` | `[AUTO]` | URL de PostgreSQL (se configura automáticamente) | ✅ |
-| `JWT_SECRET` | `[GENERAR]` | Clave secreta para JWT (mínimo 32 caracteres) | ✅ |
-| `JWT_EXPIRES_IN` | `24h` | Tiempo de expiración del JWT | ✅ |
-| `JWT_REFRESH_SECRET` | `[GENERAR]` | Clave secreta para refresh JWT | ✅ |
-| `JWT_REFRESH_EXPIRES_IN` | `7d` | Tiempo de expiración del refresh JWT | ✅ |
-| `BCRYPT_ROUNDS` | `12` | Rondas de encriptación para bcrypt | ✅ |
-| `CORS_ORIGIN` | `[FRONTEND_URL]` | URL del frontend en Vercel | ✅ |
+| Variable | Value | Description | Required |
+|----------|-------|-------------|----------|
+| `NODE_ENV` | `production` | Production environment | ✅ |
+| `DATABASE_URL` | `[AUTO]` | PostgreSQL URL (configured automatically) | ✅ |
+| `JWT_SECRET` | `[GENERATE]` | Secret key for JWT (minimum 32 characters) | ✅ |
+| `JWT_EXPIRES_IN` | `24h` | JWT expiration time | ✅ |
+| `JWT_REFRESH_SECRET` | `[GENERATE]` | Secret key for refresh JWT | ✅ |
+| `JWT_REFRESH_EXPIRES_IN` | `7d` | Refresh JWT expiration time | ✅ |
+| `BCRYPT_ROUNDS` | `12` | Bcrypt encryption rounds | ✅ |
+| `CORS_ORIGIN` | `[FRONTEND_URL]` | Frontend URL on Vercel | ✅ |
 
-### **Variables Específicas por Microservicio:**
+### **Service-Specific Variables:**
 
 #### **Auth Service:**
-| Variable | Valor | Descripción |
+| Variable | Value | Description |
 |----------|-------|-------------|
-| `PORT` | `3001` | Puerto del servicio |
-| `REDIS_URL` | `[UPSTASH_URL]` | URL de Redis (Upstash) |
-| `SENDGRID_API_KEY` | `[SENDGRID_KEY]` | API Key de SendGrid |
-| `SENDGRID_FROM_EMAIL` | `noreply@tudominio.com` | Email de envío |
+| `PORT` | `3001` | Service port |
+| `REDIS_URL` | `[UPSTASH_URL]` | Redis URL (Upstash) |
+| `SENDGRID_API_KEY` | `[SENDGRID_KEY]` | SendGrid API Key |
+| `SENDGRID_FROM_EMAIL` | `noreply@yourdomain.com` | Sender email |
 
 #### **User Service:**
-| Variable | Valor | Descripción |
+| Variable | Value | Description |
 |----------|-------|-------------|
-| `PORT` | `3002` | Puerto del servicio |
+| `PORT` | `3002` | Service port |
 
 #### **Board Service:**
-| Variable | Valor | Descripción |
+| Variable | Value | Description |
 |----------|-------|-------------|
-| `PORT` | `3003` | Puerto del servicio |
+| `PORT` | `3003` | Service port |
 
 #### **List Service:**
-| Variable | Valor | Descripción |
+| Variable | Value | Description |
 |----------|-------|-------------|
-| `PORT` | `3004` | Puerto del servicio |
+| `PORT` | `3004` | Service port |
 
 #### **Card Service:**
-| Variable | Valor | Descripción |
+| Variable | Value | Description |
 |----------|-------|-------------|
-| `PORT` | `3005` | Puerto del servicio |
+| `PORT` | `3005` | Service port |
 
 #### **Notification Service:**
-| Variable | Valor | Descripción |
+| Variable | Value | Description |
 |----------|-------|-------------|
-| `PORT` | `3006` | Puerto del servicio |
-| `REDIS_URL` | `[UPSTASH_URL]` | URL de Redis (Upstash) |
-| `SENDGRID_API_KEY` | `[SENDGRID_KEY]` | API Key de SendGrid |
+| `PORT` | `3006` | Service port |
+| `REDIS_URL` | `[UPSTASH_URL]` | Redis URL (Upstash) |
+| `SENDGRID_API_KEY` | `[SENDGRID_KEY]` | SendGrid API Key |
 
 #### **File Service:**
-| Variable | Valor | Descripción |
+| Variable | Value | Description |
 |----------|-------|-------------|
-| `PORT` | `3007` | Puerto del servicio |
-| `CLOUDINARY_CLOUD_NAME` | `[CLOUDINARY_NAME]` | Cloud name de Cloudinary |
-| `CLOUDINARY_API_KEY` | `[CLOUDINARY_KEY]` | API Key de Cloudinary |
-| `CLOUDINARY_API_SECRET` | `[CLOUDINARY_SECRET]` | API Secret de Cloudinary |
+| `PORT` | `3007` | Service port |
+| `CLOUDINARY_CLOUD_NAME` | `[CLOUDINARY_NAME]` | Cloudinary cloud name |
+| `CLOUDINARY_API_KEY` | `[CLOUDINARY_KEY]` | Cloudinary API Key |
+| `CLOUDINARY_API_SECRET` | `[CLOUDINARY_SECRET]` | Cloudinary API Secret |
 
 #### **API Gateway:**
-| Variable | Valor | Descripción |
+| Variable | Value | Description |
 |----------|-------|-------------|
-| `PORT` | `3000` | Puerto del servicio |
+| `PORT` | `3000` | Service port |
 
-## 🌐 Vercel (Frontend) - Variables de Entorno
+## 🌐 Vercel (Frontend) - Environment Variables
 
-| Variable | Valor | Descripción | Requerida |
-|----------|-------|-------------|-----------|
-| `NEXT_PUBLIC_API_URL` | `https://kanban-api-gateway.onrender.com` | URL del API Gateway | ✅ |
-| `NEXT_PUBLIC_AUTH_URL` | `https://kanban-auth-service.onrender.com` | URL del Auth Service | ✅ |
+| Variable | Value | Description | Required |
+|----------|-------|-------------|----------|
+| `NEXT_PUBLIC_API_URL` | `https://kanban-api-gateway.onrender.com` | API Gateway URL | ✅ |
+| `NEXT_PUBLIC_AUTH_URL` | `https://kanban-auth-service.onrender.com` | Auth Service URL | ✅ |
 
-## 🔑 Cómo Generar las Claves Secretas
+## 🔑 How to Generate Secret Keys
 
-### **JWT_SECRET y JWT_REFRESH_SECRET:**
+### **JWT_SECRET and JWT_REFRESH_SECRET:**
 ```bash
-# En PowerShell
+# In PowerShell
 $jwtSecret = -join ((33..126) | Get-Random -Count 64 | ForEach-Object {[char]$_})
 echo $jwtSecret
 ```
 
-### **O usar un generador online:**
+### **Or use an online generator:**
 - https://generate-secret.vercel.app/64
 - https://www.allkeysgenerator.com/Random/Security-Encryption-Key-Generator.aspx
 
-## 📝 Pasos para Configurar en Render
+## 📝 Steps to Configure in Render
 
-1. **Ir a Render Dashboard**
-2. **Seleccionar cada servicio**
-3. **Ir a "Environment"**
-4. **Agregar cada variable de la tabla**
+1. **Go to Render Dashboard**
+2. **Select each service**
+3. **Go to "Environment"**
+4. **Add each variable from the table**
 
-## 📝 Pasos para Configurar en Vercel
+## 📝 Steps to Configure in Vercel
 
-1. **Ir a Vercel Dashboard**
-2. **Seleccionar el proyecto**
-3. **Ir a "Settings" > "Environment Variables"**
-4. **Agregar cada variable de la tabla**
+1. **Go to Vercel Dashboard**
+2. **Select the project**
+3. **Go to "Settings" > "Environment Variables"**
+4. **Add each variable from the table**
 
-## ⚠️ Variables Sensibles (NO subir a GitHub)
+## ⚠️ Sensitive Variables (DO NOT upload to GitHub)
 
 - `JWT_SECRET`
 - `JWT_REFRESH_SECRET`
 - `SENDGRID_API_KEY`
 - `CLOUDINARY_API_SECRET`
-- `DATABASE_URL` (se configura automáticamente en Render)
+- `DATABASE_URL` (configured automatically in Render)
 
-## 🔗 URLs de Servicios en Render
+## 🔗 Service URLs on Render
 
-Una vez desplegados, las URLs serán:
+Once deployed, the URLs will be:
 - API Gateway: `https://kanban-api-gateway.onrender.com`
 - Auth Service: `https://kanban-auth-service.onrender.com`
 - User Service: `https://kanban-user-service.onrender.com`

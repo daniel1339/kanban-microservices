@@ -6,7 +6,7 @@ export default () => ({
   host: process.env.HOST || 'localhost',
   nodeEnv: process.env.NODE_ENV || 'development',
   
-  // Database Configuration (Solo URL)
+  // Database Configuration (URL only)
   database: {
     url: process.env.DATABASE_URL,
   },
@@ -29,12 +29,12 @@ export default () => ({
     credentials: true,
   },
   
-  // AWS Configuration (para producción)
+  // AWS Configuration (for production)
   aws: {
     region: process.env.AWS_REGION || 'us-east-1',
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    endpoint: process.env.AWS_ENDPOINT, // Para LocalStack en desarrollo
+    endpoint: process.env.AWS_ENDPOINT, // For LocalStack in development
   },
 
   // Rate Limiting Configuration
@@ -101,12 +101,12 @@ export default () => ({
         destroyTimeoutMillis: parseInt(process.env.DB_DESTROY_TIMEOUT || '5000', 10),
         idleTimeoutMillis: parseInt(process.env.DB_IDLE_TIMEOUT || '30000', 10),
         reapIntervalMillis: parseInt(process.env.DB_REAP_INTERVAL || '1000', 10),
+        createRetryIntervalMillis: parseInt(process.env.DB_CREATE_RETRY_INTERVAL || '200', 10),
       },
-      query: {
-        slowQueryThreshold: parseInt(process.env.SLOW_QUERY_THRESHOLD || '1000', 10),
-        logSlowQueries: process.env.LOG_SLOW_QUERIES === 'true',
-        enableQueryCache: process.env.ENABLE_QUERY_CACHE === 'true',
-        queryCacheDuration: parseInt(process.env.QUERY_CACHE_DURATION || '300', 10),
+      connection: {
+        timeout: parseInt(process.env.DB_CONNECTION_TIMEOUT || '30000', 10),
+        maxRetries: parseInt(process.env.DB_MAX_RETRIES || '3', 10),
+        retryDelay: parseInt(process.env.DB_RETRY_DELAY || '1000', 10),
       },
     },
     compression: {
@@ -114,19 +114,25 @@ export default () => ({
       level: parseInt(process.env.COMPRESSION_LEVEL || '6', 10),
       threshold: parseInt(process.env.COMPRESSION_THRESHOLD || '1024', 10),
     },
-    monitoring: {
-      metrics: {
-        enabled: process.env.METRICS_ENABLED === 'true',
-        interval: parseInt(process.env.METRICS_INTERVAL || '60000', 10),
-        includeMemory: process.env.METRICS_INCLUDE_MEMORY === 'true',
-        includeCPU: process.env.METRICS_INCLUDE_CPU === 'true',
-        includeDatabase: process.env.METRICS_INCLUDE_DATABASE === 'true',
-      },
-      health: {
-        enabled: process.env.HEALTH_CHECK_ENABLED === 'true',
-        interval: parseInt(process.env.HEALTH_CHECK_INTERVAL || '30000', 10),
-        timeout: parseInt(process.env.HEALTH_CHECK_TIMEOUT || '5000', 10),
-      },
+  },
+
+  // Monitoring Configuration
+  monitoring: {
+    health: {
+      enabled: process.env.HEALTH_CHECK_ENABLED === 'true',
+      path: process.env.HEALTH_CHECK_PATH || '/health',
+      interval: parseInt(process.env.HEALTH_CHECK_INTERVAL || '30000', 10),
+    },
+    metrics: {
+      enabled: process.env.METRICS_ENABLED === 'true',
+      path: process.env.METRICS_PATH || '/metrics',
+      collectDefault: process.env.METRICS_COLLECT_DEFAULT === 'true',
+    },
+    logging: {
+      level: process.env.LOG_LEVEL || 'info',
+      format: process.env.LOG_FORMAT || 'json',
+      timestamp: process.env.LOG_TIMESTAMP === 'true',
+      colorize: process.env.LOG_COLORIZE === 'true',
     },
   },
 });

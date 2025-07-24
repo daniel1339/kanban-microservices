@@ -19,26 +19,26 @@ export class RolesGuard implements CanActivate {
       context.getClass(),
     ]);
 
-    // Si no hay roles requeridos, permitir acceso
+    // If no roles are required, allow access
     if (!requiredRoles || requiredRoles.length === 0) {
       return true;
     }
 
     const { user } = context.switchToHttp().getRequest();
     
-    // Si no hay usuario, denegar acceso
+    // If there's no user, deny access
     if (!user) {
-      throw new ForbiddenException('Usuario no autenticado');
+      throw new ForbiddenException('User not authenticated');
     }
 
-    // Verificar si el usuario tiene los roles requeridos
+    // Check if the user has the required roles
     const hasRole = requiredRoles.some((role) => 
       user.roles?.includes(role)
     );
 
     if (!hasRole) {
       throw new ForbiddenException(
-        `Acceso denegado. Roles requeridos: ${requiredRoles.join(', ')}`
+        `Access denied. Required roles: ${requiredRoles.join(', ')}`
       );
     }
 

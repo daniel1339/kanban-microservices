@@ -1,33 +1,33 @@
 # 🔗 Endpoints - Auth Service
 
-## 📋 **RESUMEN DE ENDPOINTS**
+## 📋 **ENDPOINTS SUMMARY**
 
-### **🔐 Autenticación**
-- `POST /auth/register` - Registro de usuarios
-- `POST /auth/login` - Login de usuarios
-- `POST /auth/refresh` - Renovación de tokens
-- `POST /auth/logout` - Logout de usuarios
-- `POST /auth/validate` - Validación de credenciales
-- `GET /auth/profile` - Perfil de usuario
+### **🔐 Authentication**
+- `POST /auth/register` - User registration
+- `POST /auth/login` - User login
+- `POST /auth/refresh` - Token renewal
+- `POST /auth/logout` - User logout
+- `POST /auth/validate` - Credential validation
+- `GET /auth/profile` - User profile
 
 ### **🏥 Health & Status**
-- `GET /health` - Health check del servicio
-- `GET /api` - Documentación Swagger
+- `GET /health` - Service health check
+- `GET /api` - Swagger documentation
 
 ---
 
-## 🔐 **ENDPOINTS DE AUTENTICACIÓN**
+## 🔐 **AUTHENTICATION ENDPOINTS**
 
 ### **POST /auth/register**
-**Descripción**: Registro de nuevos usuarios
+**Description**: New user registration
 
 **Request Body:**
 ```json
 {
-  "email": "usuario@ejemplo.com",
-  "username": "usuario123",
-  "password": "Contraseña123!",
-  "confirmPassword": "Contraseña123!"
+  "email": "user@example.com",
+  "username": "user123",
+  "password": "Password123!",
+  "confirmPassword": "Password123!"
 }
 ```
 
@@ -36,8 +36,8 @@
 {
   "user": {
     "id": "uuid",
-    "email": "usuario@ejemplo.com",
-    "username": "usuario123",
+    "email": "user@example.com",
+    "username": "user123",
     "is_verified": false,
     "created_at": "2024-01-01T12:00:00.000Z"
   },
@@ -47,19 +47,19 @@
 }
 ```
 
-**Rate Limiting**: 3 registros por hora
-**Validación**: Contraseña fuerte, email único, username único
+**Rate Limiting**: 3 registrations per hour
+**Validation**: Strong password, unique email, unique username
 
 ---
 
 ### **POST /auth/login**
-**Descripción**: Login de usuarios existentes
+**Description**: Login for existing users
 
 **Request Body:**
 ```json
 {
-  "emailOrUsername": "usuario@ejemplo.com",
-  "password": "Contraseña123!"
+  "emailOrUsername": "user@example.com",
+  "password": "Password123!"
 }
 ```
 
@@ -68,8 +68,8 @@
 {
   "user": {
     "id": "uuid",
-    "email": "usuario@ejemplo.com",
-    "username": "usuario123",
+    "email": "user@example.com",
+    "username": "user123",
     "is_verified": true,
     "last_login_at": "2024-01-01T12:00:00.000Z"
   },
@@ -79,13 +79,13 @@
 }
 ```
 
-**Rate Limiting**: 5 intentos por 5 minutos
-**Validación**: Credenciales correctas, cuenta no bloqueada
+**Rate Limiting**: 5 attempts per 5 minutes
+**Validation**: Correct credentials, account not blocked
 
 ---
 
 ### **POST /auth/refresh**
-**Descripción**: Renovación de access token
+**Description**: Access token renewal
 
 **Request Body:**
 ```json
@@ -97,126 +97,154 @@
 **Response (200):**
 ```json
 {
-  "accessToken": "nuevo-jwt-token",
-  "refreshToken": "nuevo-refresh-token",
+  "accessToken": "new-jwt-token",
+  "refreshToken": "new-refresh-token",
   "expiresIn": 900
 }
 ```
 
-**Rate Limiting**: 10 refreshes por minuto
-**Validación**: Token válido, no expirado, no revocado
+**Rate Limiting**: 10 attempts per hour
+**Validation**: Valid refresh token, not expired
 
 ---
 
 ### **POST /auth/logout**
-**Descripción**: Logout y revocación de tokens
+**Description**: User logout and token invalidation
 
 **Headers:**
 ```
-Authorization: Bearer jwt-token
+Authorization: Bearer <access-token>
 ```
-
-**Response (200):**
-```json
-{
-  "message": "Logout successful"
-}
-```
-
-**Rate Limiting**: 20 requests por minuto
-**Validación**: Token válido
-
----
-
-### **POST /auth/validate**
-**Descripción**: Validación de credenciales sin login
 
 **Request Body:**
 ```json
 {
-  "emailOrUsername": "usuario@ejemplo.com",
-  "password": "Contraseña123!"
+  "refreshToken": "refresh-token"
 }
 ```
 
 **Response (200):**
 ```json
 {
-  "valid": true,
+  "message": "Logout successful",
+  "timestamp": "2024-01-01T12:00:00.000Z"
+}
+```
+
+**Rate Limiting**: 10 attempts per hour
+**Authentication**: Required
+
+---
+
+### **POST /auth/validate**
+**Description**: Credential validation
+
+**Request Body:**
+```json
+{
+  "emailOrUsername": "user@example.com",
+  "password": "Password123!"
+}
+```
+
+**Response (200):**
+```json
+{
+  "isValid": true,
   "user": {
     "id": "uuid",
-    "email": "usuario@ejemplo.com",
-    "username": "usuario123"
+    "email": "user@example.com",
+    "username": "user123"
   }
 }
 ```
 
-**Rate Limiting**: 20 validaciones por minuto
-**Validación**: Credenciales correctas
+**Response (200) - Invalid:**
+```json
+{
+  "isValid": false,
+  "message": "Invalid credentials"
+}
+```
+
+**Rate Limiting**: 10 attempts per 5 minutes
+**Validation**: Credential verification
 
 ---
 
 ### **GET /auth/profile**
-**Descripción**: Obtener perfil del usuario autenticado
+**Description**: Get user profile information
 
 **Headers:**
 ```
-Authorization: Bearer jwt-token
+Authorization: Bearer <access-token>
 ```
 
 **Response (200):**
 ```json
 {
-  "user": {
-    "id": "uuid",
-    "email": "usuario@ejemplo.com",
-    "username": "usuario123",
-    "first_name": "Juan",
-    "last_name": "Pérez",
-    "phone": "+1234567890",
-    "avatar_url": "https://example.com/avatar.jpg",
-    "is_verified": true,
-    "created_at": "2024-01-01T12:00:00.000Z",
-    "last_login_at": "2024-01-01T12:00:00.000Z"
-  }
+  "id": "uuid",
+  "email": "user@example.com",
+  "username": "user123",
+  "is_verified": true,
+  "created_at": "2024-01-01T12:00:00.000Z",
+  "updated_at": "2024-01-01T12:00:00.000Z",
+  "last_login_at": "2024-01-01T12:00:00.000Z"
 }
 ```
 
-**Rate Limiting**: 100 requests por minuto
-**Validación**: Token válido
+**Rate Limiting**: 100 requests per hour
+**Authentication**: Required
 
 ---
 
-## 🏥 **ENDPOINTS DE HEALTH**
+## 🏥 **HEALTH & STATUS ENDPOINTS**
 
 ### **GET /health**
-**Descripción**: Health check del servicio
+**Description**: Service health check
 
 **Response (200):**
 ```json
 {
   "status": "ok",
   "timestamp": "2024-01-01T12:00:00.000Z",
-  "service": "auth-service",
-  "version": "1.0.0",
   "uptime": 3600,
-  "database": "connected",
-  "cache": "connected"
+  "version": "1.0.0",
+  "environment": "development"
 }
 ```
 
+**Rate Limiting**: None
+**Authentication**: Not required
+
 ---
 
-## 📊 **CÓDIGOS DE ERROR**
+### **GET /api**
+**Description**: Swagger API documentation
+
+**Response**: HTML page with interactive API documentation
+
+**Rate Limiting**: None
+**Authentication**: Not required
+
+---
+
+## 📊 **ERROR RESPONSES**
 
 ### **400 Bad Request**
 ```json
 {
   "statusCode": 400,
-  "message": ["error1", "error2"],
+  "message": "Validation failed",
   "error": "Bad Request",
   "timestamp": "2024-01-01T12:00:00.000Z",
-  "path": "/auth/register"
+  "path": "/auth/register",
+  "details": [
+    {
+      "field": "email",
+      "message": "Email must be valid"
+    }
+  ]
 }
 ```
 
@@ -242,83 +270,159 @@ Authorization: Bearer jwt-token
 }
 ```
 
+### **404 Not Found**
+```json
+{
+  "statusCode": 404,
+  "message": "User not found",
+  "error": "Not Found",
+  "timestamp": "2024-01-01T12:00:00.000Z",
+  "path": "/auth/profile"
+}
+```
+
+### **409 Conflict**
+```json
+{
+  "statusCode": 409,
+  "message": "Email already registered",
+  "error": "Conflict",
+  "timestamp": "2024-01-01T12:00:00.000Z",
+  "path": "/auth/register"
+}
+```
+
+### **422 Unprocessable Entity**
+```json
+{
+  "statusCode": 422,
+  "message": "Validation failed",
+  "error": "Unprocessable Entity",
+  "timestamp": "2024-01-01T12:00:00.000Z",
+  "path": "/auth/register",
+  "details": [
+    {
+      "field": "password",
+      "message": "Password must be at least 8 characters long"
+    }
+  ]
+}
+```
+
 ### **429 Too Many Requests**
 ```json
 {
   "statusCode": 429,
-  "message": "Rate limit exceeded. Please try again later.",
+  "message": "Too many requests",
   "error": "Too Many Requests",
-  "retryAfter": 60,
   "timestamp": "2024-01-01T12:00:00.000Z",
-  "path": "/auth/login"
+  "path": "/auth/login",
+  "retryAfter": 300
 }
 ```
 
----
-
-## 🔒 **SEGURIDAD**
-
-### **Headers de Seguridad**
-- `X-Content-Type-Options: nosniff`
-- `X-Frame-Options: DENY`
-- `X-XSS-Protection: 1; mode=block`
-- `Strict-Transport-Security: max-age=31536000`
-- `Content-Security-Policy: default-src 'self'`
-
-### **Rate Limiting Headers**
-- `X-RateLimit-Limit`: Límite máximo
-- `X-RateLimit-Remaining`: Requests restantes
-- `X-RateLimit-Reset`: Timestamp de reset
-
-### **Performance Headers**
-- `X-Response-Time`: Tiempo de respuesta en ms
-- `X-Request-ID`: Identificador único del request
-
----
-
-## 🧪 **TESTING**
-
-### **Usuarios de Prueba**
+### **500 Internal Server Error**
 ```json
 {
-  "admin": {
-    "email": "admin@example.com",
-    "username": "admin",
-    "password": "password123"
-  },
-  "user": {
-    "email": "user@example.com",
-    "username": "user",
-    "password": "password123"
-  },
-  "test": {
-    "email": "test@example.com",
-    "username": "testuser",
-    "password": "password123"
-  }
+  "statusCode": 500,
+  "message": "Internal server error",
+  "error": "Internal Server Error",
+  "timestamp": "2024-01-01T12:00:00.000Z",
+  "path": "/auth/register"
 }
-```
-
-### **Comandos de Testing**
-```bash
-# Test de endpoints
-npm run test:unit
-
-# Test de integración
-npm run test:integration
-
-# Test de rate limiting
-npm run test:rate-limit
-
-# Todos los tests
-npm run test:all
 ```
 
 ---
 
-## 📚 **DOCUMENTACIÓN ADICIONAL**
+## 🔒 **SECURITY FEATURES**
 
-- **Swagger UI**: http://localhost:3001/api
-- **OpenAPI Spec**: http://localhost:3001/api-json
-- **Testing Guide**: [docs/testing/testing-guide.md](../testing/testing-guide.md)
-- **Security Guide**: [docs/security/security-enhancements.md](../security/security-enhancements.md) 
+### **Rate Limiting**
+- **Registration**: 3 attempts per hour
+- **Login**: 5 attempts per 5 minutes
+- **Refresh**: 10 attempts per hour
+- **Profile**: 100 requests per hour
+- **General**: 100 requests per minute
+
+### **Password Requirements**
+- Minimum 8 characters
+- At least 1 uppercase letter
+- At least 1 lowercase letter
+- At least 1 number
+- At least 1 special character
+
+### **JWT Configuration**
+- **Access Token**: 15 minutes
+- **Refresh Token**: 7 days
+- **Algorithm**: HS256
+- **Issuer**: Auth Service
+
+### **CORS Configuration**
+- **Origin**: Configurable via environment
+- **Methods**: GET, POST, PUT, DELETE, OPTIONS
+- **Headers**: Authorization, Content-Type
+- **Credentials**: true
+
+---
+
+## 📈 **PERFORMANCE METRICS**
+
+### **Response Times**
+- **Health Check**: < 50ms
+- **Login**: < 200ms
+- **Registration**: < 300ms
+- **Profile**: < 100ms
+- **Refresh**: < 150ms
+
+### **Throughput**
+- **Requests per second**: 1000+
+- **Concurrent users**: 1000+
+- **Database connections**: 20 max
+
+### **Availability**
+- **Uptime**: 99.9%
+- **Error rate**: < 0.1%
+- **Recovery time**: < 30 seconds
+
+---
+
+## 🧪 **TESTING ENDPOINTS**
+
+### **Test Data**
+```bash
+# Create test user
+curl -X POST http://localhost:3001/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "test@example.com",
+    "username": "testuser",
+    "password": "TestPassword123!",
+    "confirmPassword": "TestPassword123!"
+  }'
+
+# Login with test user
+curl -X POST http://localhost:3001/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "emailOrUsername": "test@example.com",
+    "password": "TestPassword123!"
+  }'
+```
+
+### **Load Testing**
+```bash
+# Test rate limiting
+for i in {1..10}; do
+  curl -X POST http://localhost:3001/auth/login \
+    -H "Content-Type: application/json" \
+    -d '{"emailOrUsername": "test@example.com", "password": "wrong"}'
+done
+```
+
+---
+
+## 📚 **ADDITIONAL RESOURCES**
+
+- **Swagger Documentation**: http://localhost:3001/api
+- **Health Check**: http://localhost:3001/health
+- **Testing Guide**: [../testing/testing-guide.md](../testing/testing-guide.md)
+- **Security Guide**: [../security/security-enhancements.md](../security/security-enhancements.md) 

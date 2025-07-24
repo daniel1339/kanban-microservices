@@ -9,12 +9,12 @@ async function testMigrations() {
     await dataSource.initialize();
     console.log('✅ Database connection established');
 
-    // Verificar estado de migrations
+    // Check migration status
     console.log('\n📋 Checking migration status...');
     const migrations = await dataSource.showMigrations();
     console.log('Migrations status:', migrations);
 
-    // Verificar tablas existentes
+    // Check existing tables
     console.log('\n📊 Checking existing tables...');
     const tables = await dataSource.query(`
       SELECT table_name 
@@ -24,7 +24,7 @@ async function testMigrations() {
     `);
     console.log('Existing tables:', tables.map((t: any) => t.table_name));
 
-    // Verificar índices
+    // Check indexes
     console.log('\n🔍 Checking indexes...');
     const indexes = await dataSource.query(`
       SELECT indexname, tablename 
@@ -34,7 +34,7 @@ async function testMigrations() {
     `);
     console.log('Existing indexes:', indexes.map((i: any) => `${i.tablename}.${i.indexname}`));
 
-    // Verificar constraints
+    // Check constraints
     console.log('\n🔒 Checking constraints...');
     const constraints = await dataSource.query(`
       SELECT conname, contype, conrelid::regclass as table_name
@@ -54,7 +54,7 @@ async function testMigrations() {
   }
 }
 
-// Ejecutar solo si se llama directamente
+// Execute only if called directly
 if (require.main === module) {
   testMigrations();
 }

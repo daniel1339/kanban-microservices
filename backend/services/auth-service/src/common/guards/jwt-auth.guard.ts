@@ -30,7 +30,7 @@ export class JwtAuthGuard implements CanActivate {
     const token = this.extractTokenFromHeader(request);
 
     if (!token) {
-      throw new UnauthorizedException('Token de acceso requerido');
+      throw new UnauthorizedException('Access token required');
     }
 
     try {
@@ -38,11 +38,11 @@ export class JwtAuthGuard implements CanActivate {
         secret: process.env.JWT_SECRET,
       });
 
-      // Agregar el usuario al request para uso posterior
+      // Add user to request for later use
       request['user'] = payload;
       return true;
     } catch (error) {
-      throw new UnauthorizedException('Token inválido o expirado');
+      throw new UnauthorizedException('Invalid token');
     }
   }
 

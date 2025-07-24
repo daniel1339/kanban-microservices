@@ -1,60 +1,60 @@
-# 📚 ESTÁNDARES DE DOCUMENTACIÓN SWAGGER/OPENAPI
+# 📚 SWAGGER/OPENAPI DOCUMENTATION STANDARDS
 
-## 🎯 **ESTÁNDARES SEGUIDOS**
+## 🎯 **FOLLOWED STANDARDS**
 
 ### **✅ OpenAPI 3.0 Specification**
-- **Versión**: OpenAPI 3.0.3
-- **Formato**: JSON/YAML
-- **Herramienta**: @nestjs/swagger
+- **Version**: OpenAPI 3.0.3
+- **Format**: JSON/YAML
+- **Tool**: @nestjs/swagger
 - **UI**: Swagger UI 5.9.0
 
-### **✅ Estándares de Nomenclatura**
-- **Tags**: En español, descriptivos
+### **✅ Naming Standards**
+- **Tags**: In English, descriptive
 - **Endpoints**: RESTful conventions
-- **Responses**: Consistentes y tipadas
-- **Errors**: Códigos HTTP estándar
+- **Responses**: Consistent and typed
+- **Errors**: Standard HTTP codes
 
 ---
 
-## 🏗️ **ARQUITECTURA DE DOCUMENTACIÓN**
+## 🏗️ **DOCUMENTATION ARCHITECTURE**
 
-### **📁 Estructura de Carpetas**
+### **📁 Folder Structure**
 ```
 src/
 ├── docs/
-│   ├── swagger.config.ts          # Configuración principal
-│   ├── examples/                  # Ejemplos de requests/responses
+│   ├── swagger.config.ts          # Main configuration
+│   ├── examples/                  # Request/response examples
 │   │   ├── auth.examples.ts
 │   │   ├── user.examples.ts
 │   │   └── common.examples.ts
-│   ├── schemas/                   # Esquemas reutilizables
+│   ├── schemas/                   # Reusable schemas
 │   │   ├── auth.schemas.ts
 │   │   └── common.schemas.ts
-│   └── responses/                 # Respuestas tipadas
+│   └── responses/                 # Typed responses
 │       ├── auth.responses.ts
 │       └── error.responses.ts
 ```
 
-### **🔧 Configuración Centralizada**
+### **🔧 Centralized Configuration**
 ```typescript
 // src/docs/swagger.config.ts
 export class SwaggerConfig {
   static setup(app: INestApplication): void {
-    // Configuración centralizada
+    // Centralized configuration
   }
 }
 ```
 
 ---
 
-## 📋 **ESTÁNDARES DE ENDPOINTS**
+## 📋 **ENDPOINT STANDARDS**
 
-### **1. Operaciones (ApiOperation)**
+### **1. Operations (ApiOperation)**
 ```typescript
 @ApiOperation({ 
-  summary: 'Título corto y descriptivo',
-  description: 'Descripción detallada del endpoint, casos de uso y comportamiento.',
-  tags: ['auth'] // Agrupar por funcionalidad
+  summary: 'Short and descriptive title',
+  description: 'Detailed description of the endpoint, use cases and behavior.',
+  tags: ['auth'] // Group by functionality
 })
 ```
 
@@ -62,10 +62,10 @@ export class SwaggerConfig {
 ```typescript
 @ApiBody({
   type: DtoClass,
-  description: 'Descripción del body',
+  description: 'Body description',
   examples: {
-    'Caso exitoso': SuccessExample,
-    'Caso de error': ErrorExample
+    'Success case': SuccessExample,
+    'Error case': ErrorExample
   }
 })
 ```
@@ -74,7 +74,7 @@ export class SwaggerConfig {
 ```typescript
 @ApiResponse({ 
   status: 200, 
-  description: 'Descripción del éxito',
+  description: 'Success description',
   type: ResponseDto,
   content: {
     'application/json': {
@@ -84,184 +84,430 @@ export class SwaggerConfig {
 })
 ```
 
-### **4. Autenticación (ApiBearerAuth)**
+### **4. Authentication (ApiBearerAuth)**
 ```typescript
-@ApiBearerAuth('JWT-auth') // Referencia al esquema de auth
+@ApiBearerAuth('JWT-auth') // Reference to auth schema
 ```
 
 ---
 
-## 📝 **ESTÁNDARES DE EJEMPLOS**
+## 📝 **EXAMPLE STANDARDS**
 
-### **✅ Ejemplos de Request**
+### **✅ Request Examples**
 ```typescript
 export const RegisterRequestExample = {
-  summary: 'Registro exitoso',
-  description: 'Ejemplo con datos válidos',
+  summary: 'Successful registration',
+  description: 'Example with valid data',
   value: {
-    email: 'usuario@ejemplo.com',
-    username: 'usuario123',
-    password: 'Contraseña123!',
-    confirmPassword: 'Contraseña123!'
+    email: 'user@example.com',
+    username: 'user123',
+    password: 'Password123!',
+    confirmPassword: 'Password123!'
   }
-};
+}
 ```
 
-### **✅ Ejemplos de Response**
+### **✅ Response Examples**
 ```typescript
-export const AuthResponseExample = {
-  summary: 'Respuesta de autenticación',
-  description: 'Respuesta cuando el login es exitoso',
+export const RegisterResponseExample = {
+  summary: 'Registration response',
+  description: 'User created successfully',
   value: {
-    user: { /* datos del usuario */ },
+    user: {
+      id: 'uuid',
+      email: 'user@example.com',
+      username: 'user123',
+      is_verified: false,
+      created_at: '2024-01-01T12:00:00.000Z'
+    },
     accessToken: 'jwt-token',
     refreshToken: 'refresh-token',
     expiresIn: 900
   }
-};
+}
 ```
 
-### **✅ Ejemplos de Error**
+### **✅ Error Examples**
 ```typescript
 export const ValidationErrorExample = {
-  summary: 'Error de validación',
-  description: 'Error cuando los datos son inválidos',
+  summary: 'Validation error',
+  description: 'Invalid input data',
   value: {
     statusCode: 400,
-    message: ['error1', 'error2'],
+    message: 'Validation failed',
     error: 'Bad Request',
-    timestamp: '2024-01-15T10:30:00.000Z',
-    path: '/auth/register'
+    timestamp: '2024-01-01T12:00:00.000Z',
+    path: '/auth/register',
+    details: [
+      {
+        field: 'email',
+        message: 'Email must be valid'
+      }
+    ]
   }
-};
+}
 ```
 
 ---
 
-## 🎨 **ESTÁNDARES DE UI**
+## 🏷️ **TAGGING STANDARDS**
 
-### **✅ Configuración de Swagger UI**
+### **📋 Tag Categories**
 ```typescript
-SwaggerModule.setup('api', app, document, {
-  swaggerOptions: {
-    persistAuthorization: true,    // Mantener auth entre requests
-    displayRequestDuration: true,  // Mostrar duración de requests
-    filter: true,                  // Filtro de endpoints
-    showRequestHeaders: true,      // Mostrar headers
-    showExtensions: true,          // Mostrar extensiones
-    docExpansion: 'list',          // Expandir por defecto
-    tryItOutEnabled: true,         // Habilitar "Try it out"
-  },
-  customSiteTitle: 'Kanban API Documentation',
-  customCss: '/* Estilos personalizados */'
+// Authentication operations
+@ApiTags(['auth'])
+
+// User management operations
+@ApiTags(['users'])
+
+// Health and status operations
+@ApiTags(['health'])
+
+// Testing operations
+@ApiTags(['testing'])
+```
+
+### **🎯 Tag Naming**
+- **auth**: Authentication and authorization
+- **users**: User management
+- **health**: Health checks and monitoring
+- **testing**: Testing endpoints
+
+---
+
+## 🔒 **SECURITY STANDARDS**
+
+### **🔑 Authentication Schemes**
+```typescript
+// JWT Bearer Token
+@ApiBearerAuth('JWT-auth')
+
+// API Key (if needed)
+@ApiHeader({
+  name: 'X-API-Key',
+  description: 'API Key for authentication'
+})
+```
+
+### **🛡️ Security Definitions**
+```typescript
+// In swagger.config.ts
+components: {
+  securitySchemes: {
+    'JWT-auth': {
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
+      description: 'JWT token for authentication'
+    }
+  }
+}
+```
+
+---
+
+## 📊 **RESPONSE STANDARDS**
+
+### **✅ Success Responses**
+```typescript
+@ApiResponse({
+  status: 200,
+  description: 'Operation completed successfully',
+  type: SuccessDto
+})
+
+@ApiResponse({
+  status: 201,
+  description: 'Resource created successfully',
+  type: CreatedDto
+})
+```
+
+### **❌ Error Responses**
+```typescript
+@ApiResponse({
+  status: 400,
+  description: 'Bad request - validation failed',
+  type: ValidationErrorDto
+})
+
+@ApiResponse({
+  status: 401,
+  description: 'Unauthorized - invalid credentials',
+  type: UnauthorizedErrorDto
+})
+
+@ApiResponse({
+  status: 404,
+  description: 'Not found - resource not found',
+  type: NotFoundErrorDto
+})
+
+@ApiResponse({
+  status: 409,
+  description: 'Conflict - resource already exists',
+  type: ConflictErrorDto
+})
+
+@ApiResponse({
+  status: 422,
+  description: 'Unprocessable entity - validation failed',
+  type: ValidationErrorDto
+})
+
+@ApiResponse({
+  status: 429,
+  description: 'Too many requests - rate limit exceeded',
+  type: RateLimitErrorDto
+})
+
+@ApiResponse({
+  status: 500,
+  description: 'Internal server error',
+  type: InternalErrorDto
+})
+```
+
+---
+
+## 📝 **DTO STANDARDS**
+
+### **✅ Property Decorators**
+```typescript
+export class RegisterDto {
+  @ApiProperty({
+    description: 'User email address',
+    example: 'user@example.com',
+    type: 'string',
+    format: 'email'
+  })
+  @IsEmail({}, { message: 'Email must be valid' })
+  email: string;
+
+  @ApiProperty({
+    description: 'Username for login',
+    example: 'user123',
+    type: 'string',
+    minLength: 3,
+    maxLength: 20
+  })
+  @IsString({ message: 'Username must be a string' })
+  @MinLength(3, { message: 'Username must be at least 3 characters' })
+  @MaxLength(20, { message: 'Username cannot exceed 20 characters' })
+  username: string;
+
+  @ApiProperty({
+    description: 'User password',
+    example: 'Password123!',
+    type: 'string',
+    minLength: 8
+  })
+  @IsString({ message: 'Password must be a string' })
+  @MinLength(8, { message: 'Password must be at least 8 characters' })
+  @IsStrongPassword({}, { message: 'Password must be strong' })
+  password: string;
+}
+```
+
+### **✅ Response DTOs**
+```typescript
+export class UserResponseDto {
+  @ApiProperty({
+    description: 'Unique user identifier',
+    example: '123e4567-e89b-12d3-a456-426614174000'
+  })
+  id: string;
+
+  @ApiProperty({
+    description: 'User email address',
+    example: 'user@example.com'
+  })
+  email: string;
+
+  @ApiProperty({
+    description: 'User verification status',
+    example: true
+  })
+  is_verified: boolean;
+
+  @ApiProperty({
+    description: 'User creation timestamp',
+    example: '2024-01-01T12:00:00.000Z'
+  })
+  created_at: Date;
+}
+```
+
+---
+
+## 🔧 **CONFIGURATION STANDARDS**
+
+### **✅ Main Configuration**
+```typescript
+// src/docs/swagger.config.ts
+export class SwaggerConfig {
+  static setup(app: INestApplication): void {
+    const config = new DocumentBuilder()
+      .setTitle('Auth Service API')
+      .setDescription('Complete authentication service for Kanban platform')
+      .setVersion('1.0.0')
+      .addTag('auth', 'Authentication operations')
+      .addTag('users', 'User management operations')
+      .addTag('health', 'Health and monitoring')
+      .addBearerAuth(
+        {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+          name: 'JWT',
+          description: 'Enter JWT token',
+          in: 'header',
+        },
+        'JWT-auth'
+      )
+      .build();
+
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api', app, document, {
+      swaggerOptions: {
+        persistAuthorization: true,
+        displayRequestDuration: true,
+        filter: true,
+        showRequestHeaders: true,
+      },
+    });
+  }
+}
+```
+
+### **✅ Environment Configuration**
+```typescript
+// Different configurations for different environments
+if (process.env.NODE_ENV === 'development') {
+  // Development configuration
+  SwaggerModule.setup('api', app, document, {
+    swaggerOptions: {
+      persistAuthorization: true,
+      displayRequestDuration: true,
+      filter: true,
+      showRequestHeaders: true,
+    },
+  });
+} else {
+  // Production configuration (minimal)
+  SwaggerModule.setup('api', app, document, {
+    swaggerOptions: {
+      persistAuthorization: false,
+      displayRequestDuration: false,
+      filter: false,
+      showRequestHeaders: false,
+    },
+  });
+}
+```
+
+---
+
+## 📊 **QUALITY STANDARDS**
+
+### **✅ Documentation Coverage**
+- **100% of endpoints** must be documented
+- **All DTOs** must have ApiProperty decorators
+- **All responses** must be documented
+- **All errors** must be documented
+
+### **✅ Example Quality**
+- **Realistic examples** with valid data
+- **Edge cases** documented
+- **Error scenarios** covered
+- **Consistent formatting**
+
+### **✅ Code Quality**
+- **Type safety** with TypeScript
+- **Validation decorators** on DTOs
+- **Consistent naming** conventions
+- **Proper error handling**
+
+---
+
+## 🧪 **TESTING STANDARDS**
+
+### **✅ Documentation Testing**
+```typescript
+// Test that documentation is generated correctly
+describe('Swagger Documentation', () => {
+  it('should generate valid OpenAPI spec', async () => {
+    const response = await request(app.getHttpServer())
+      .get('/api-json')
+      .expect(200);
+
+    expect(response.body).toHaveProperty('openapi');
+    expect(response.body.openapi).toBe('3.0.0');
+  });
+
+  it('should have all endpoints documented', async () => {
+    const response = await request(app.getHttpServer())
+      .get('/api-json')
+      .expect(200);
+
+    const paths = Object.keys(response.body.paths);
+    expect(paths.length).toBeGreaterThan(0);
+  });
+});
+```
+
+### **✅ Example Validation**
+```typescript
+// Test that examples are valid
+describe('API Examples', () => {
+  it('should have valid request examples', () => {
+    // Validate that all examples match their DTOs
+  });
+
+  it('should have valid response examples', () => {
+    // Validate that all response examples are correct
+  });
 });
 ```
 
 ---
 
-## 🔍 **VERIFICACIÓN DE ESTÁNDARES**
+## 📚 **ADDITIONAL RESOURCES**
 
-### **✅ Checklist de Verificación**
-- [ ] **OpenAPI 3.0 Compliance**: Validar con swagger-parser
-- [ ] **Ejemplos Completos**: Cada endpoint tiene ejemplos
-- [ ] **Error Handling**: Todos los códigos de error documentados
-- [ ] **Authentication**: Esquemas de auth configurados
-- [ ] **Response Types**: Todas las respuestas tipadas
-- [ ] **Descriptions**: Descripciones claras y útiles
-- [ ] **Tags**: Endpoints agrupados lógicamente
+### **🔗 Useful Links**
+- **OpenAPI Specification**: https://swagger.io/specification/
+- **NestJS Swagger**: https://docs.nestjs.com/openapi/introduction
+- **Swagger UI**: https://swagger.io/tools/swagger-ui/
 
-### **🔧 Herramientas de Validación**
-```bash
-# Validar especificación OpenAPI
-npm install -g swagger-parser
-swagger-parser validate http://localhost:3001/api-json
-
-# Generar documentación estática
-npm install -g swagger-codegen
-swagger-codegen generate -i http://localhost:3001/api-json -l html2
-```
+### **📖 Best Practices**
+- Keep documentation up to date
+- Use descriptive examples
+- Include all possible responses
+- Test documentation regularly
+- Follow naming conventions consistently
 
 ---
 
-## 📊 **MÉTRICAS DE CALIDAD**
+## ✅ **CHECKLIST**
 
-### **✅ Cobertura de Documentación**
-- **Endpoints Documentados**: 100%
-- **Ejemplos por Endpoint**: 2-3 ejemplos
-- **Códigos de Error**: Todos documentados
-- **Schemas Tipados**: 100%
+### **📋 Implementation Checklist**
+- [ ] All endpoints documented with @ApiOperation
+- [ ] All DTOs have @ApiProperty decorators
+- [ ] All responses documented with @ApiResponse
+- [ ] All errors documented with proper status codes
+- [ ] Authentication schemes configured
+- [ ] Examples provided for all endpoints
+- [ ] Tags used for grouping endpoints
+- [ ] Swagger UI accessible at /api
+- [ ] OpenAPI spec accessible at /api-json
+- [ ] Documentation tested and validated
 
-### **✅ Calidad de Contenido**
-- **Descriptions**: Claras y útiles
-- **Examples**: Reales y funcionales
-- **Error Messages**: Específicos y útiles
-- **Authentication**: Bien explicada
-
----
-
-## 🚀 **BEST PRACTICES**
-
-### **✅ DO's**
-- ✅ Usar descripciones claras y específicas
-- ✅ Proporcionar múltiples ejemplos (éxito/error)
-- ✅ Agrupar endpoints con tags lógicos
-- ✅ Documentar todos los códigos de error
-- ✅ Usar tipos TypeScript para responses
-- ✅ Mantener ejemplos actualizados
-- ✅ Incluir información de rate limiting
-- ✅ Documentar headers requeridos
-
-### **❌ DON'Ts**
-- ❌ Dejar endpoints sin documentar
-- ❌ Usar ejemplos genéricos o irreales
-- ❌ Olvidar códigos de error comunes
-- ❌ Mezclar idiomas en la documentación
-- ❌ Usar descripciones vagas o confusas
-- ❌ Olvidar documentar autenticación
-- ❌ No actualizar ejemplos cuando cambia la API
-
----
-
-## 🔄 **PROCESO DE ACTUALIZACIÓN**
-
-### **📋 Workflow de Documentación**
-1. **Desarrollo**: Documentar mientras se desarrolla
-2. **Review**: Revisar ejemplos y descripciones
-3. **Testing**: Probar ejemplos en Swagger UI
-4. **Validation**: Validar con swagger-parser
-5. **Deployment**: Incluir en CI/CD pipeline
-
-### **🔄 Mantenimiento**
-- **Semanal**: Revisar ejemplos obsoletos
-- **Mensual**: Actualizar descripciones
-- **Por Release**: Validar especificación completa
-
----
-
-## 📚 **RECURSOS ADICIONALES**
-
-### **🔗 Enlaces Útiles**
-- [OpenAPI 3.0 Specification](https://swagger.io/specification/)
-- [NestJS Swagger Documentation](https://docs.nestjs.com/openapi/introduction)
-- [Swagger UI Configuration](https://swagger.io/docs/open-source-tools/swagger-ui/usage/configuration/)
-- [API Documentation Best Practices](https://swagger.io/blog/api-documentation/best-practices-for-api-documentation/)
-
-### **📖 Lecturas Recomendadas**
-- "API Design Patterns" by Medjaoui et al.
-- "RESTful Web APIs" by Richardson & Ruby
-- "OpenAPI Specification Guide" by Swagger Team
-
----
-
-## 🎯 **CONCLUSIÓN**
-
-Esta documentación sigue los estándares más altos de OpenAPI 3.0 y proporciona:
-
-- ✅ **Ejemplos completos** para cada endpoint
-- ✅ **Documentación clara** y útil
-- ✅ **Estructura organizada** y mantenible
-- ✅ **Validación automática** de estándares
-- ✅ **UI personalizada** y profesional
-- ✅ **Proceso de mantenimiento** definido
-
-**Resultado**: Documentación profesional que facilita el uso de la API y mejora la experiencia del desarrollador. 
+### **🎯 Quality Checklist**
+- [ ] Documentation is clear and complete
+- [ ] Examples are realistic and valid
+- [ ] Error responses are comprehensive
+- [ ] Naming conventions are consistent
+- [ ] Code is type-safe and validated
+- [ ] Documentation is up to date
+- [ ] All edge cases are covered
+- [ ] Performance considerations documented 

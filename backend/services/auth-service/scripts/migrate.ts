@@ -7,11 +7,11 @@ async function runMigrations() {
   const dataSource = app.get(DataSource);
 
   try {
-    console.log('🔄 Ejecutando migraciones...');
+    console.log('🔄 Running migrations...');
     await dataSource.runMigrations();
-    console.log('✅ Migraciones ejecutadas exitosamente');
+    console.log('✅ Migrations executed successfully');
   } catch (error) {
-    console.error('❌ Error ejecutando migraciones:', error);
+    console.error('❌ Error running migrations:', error);
     process.exit(1);
   } finally {
     await app.close();

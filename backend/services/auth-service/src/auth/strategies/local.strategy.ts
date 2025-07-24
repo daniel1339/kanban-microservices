@@ -16,11 +16,11 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     const user = await this.authService.validateUser(emailOrUsername, password);
     
     if (!user) {
-      throw new UnauthorizedException('Credenciales inválidas');
+      throw new UnauthorizedException('Invalid credentials');
     }
 
     if (!user.is_active) {
-      throw new UnauthorizedException('Cuenta de usuario desactivada');
+      throw new UnauthorizedException('User account is deactivated');
     }
 
     return user;

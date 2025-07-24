@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 import { User, RefreshToken } from './entities';
 import { RegisterDto, LoginDto } from './dto';
@@ -20,6 +21,7 @@ export class AuthService implements IAuthService {
     private readonly refreshTokenRepository: Repository<RefreshToken>,
     private readonly configService: ConfigService,
     private readonly cacheService: CacheService,
+    private eventEmitter: EventEmitter2,
   ) {}
 
   async register(registerDto: RegisterDto): Promise<AuthResponse> {
@@ -27,19 +29,19 @@ export class AuthService implements IAuthService {
 
     // Validar que las contraseñas coincidan
     if (password !== passwordConfirmation) {
-      throw new BadRequestException('Las contraseñas no coinciden');
+      throw new BadRequestException('Passwords do not match');
     }
 
     // Verificar si el email ya existe
     const existingEmail = await this.userRepository.findOne({ where: { email } });
     if (existingEmail) {
-      throw new ConflictException('El email ya está registrado');
+      throw new ConflictException('Email is already registered');
     }
 
     // Verificar si el username ya existe
     const existingUsername = await this.userRepository.findOne({ where: { username } });
     if (existingUsername) {
-      throw new ConflictException('El username ya está en uso');
+      throw new ConflictException('Username is already in use');
     }
 
     // Encriptar contraseña
@@ -55,6 +57,14 @@ export class AuthService implements IAuthService {
     });
 
     const savedUser = await this.userRepository.save(user);
+
+    // Emitir evento user.created
+    this.eventEmitter.emit('user.created', {
+      id: savedUser.id,
+      email: savedUser.email,
+      username: savedUser.username,
+      // agrega otros campos relevantes
+    });
 
     // Generar tokens
     const { accessToken, refreshToken } = await this.generateTokens(savedUser);
@@ -79,13 +89,13 @@ export class AuthService implements IAuthService {
     });
 
     if (!user) {
-      throw new UnauthorizedException('Credenciales inválidas');
+      throw new UnauthorizedException('Invalid credentials');
     }
 
     // Verificar contraseña
     const isPasswordValid = await bcrypt.compare(password, user.password_hash);
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Credenciales inválidas');
+      throw new UnauthorizedException('Invalid credentials');
     }
 
     // Generar tokens
@@ -104,7 +114,7 @@ export class AuthService implements IAuthService {
       // Verificar refresh token
       const jwtSecret = this.configService.get<string>('JWT_SECRET');
       if (!jwtSecret) {
-        throw new UnauthorizedException('JWT secret no configurado');
+        throw new UnauthorizedException('JWT secret not configured');
       }
 
       const payload = jwt.verify(
@@ -119,19 +129,13 @@ export class AuthService implements IAuthService {
       });
 
       if (!tokenEntity || tokenEntity.token !== refreshToken) {
-        throw new UnauthorizedException('Refresh token inválido');
+        throw new UnauthorizedException('Invalid refresh token');
       }
 
       // Verificar que no haya expirado
       if (new Date() > tokenEntity.expires_at) {
         await this.refreshTokenRepository.remove(tokenEntity);
-        throw new UnauthorizedException('Refresh token expirado');
-      }
-
-      // Verificar que el usuario esté verificado (opcional, según requerimientos)
-      if (!tokenEntity.user.is_verified) {
-        await this.refreshTokenRepository.remove(tokenEntity);
-        throw new UnauthorizedException('Usuario no verificado');
+        throw new UnauthorizedException('Refresh token expired');
       }
 
       // TOKEN ROTATION: Invalidar el token actual antes de generar uno nuevo
@@ -147,7 +151,7 @@ export class AuthService implements IAuthService {
         expiresIn: 15 * 60, // 15 minutos
       };
     } catch (error) {
-      throw new UnauthorizedException('Refresh token inválido');
+      throw new UnauthorizedException('Invalid refresh token');
     }
   }
 
@@ -237,7 +241,7 @@ export class AuthService implements IAuthService {
   async generateTokens(user: User): Promise<{ accessToken: string; refreshToken: string }> {
     const jwtSecret = this.configService.get<string>('JWT_SECRET');
     if (!jwtSecret) {
-      throw new Error('JWT secret no configurado');
+      throw new Error('JWT secret not configured');
     }
     
     const jwtExpiresIn = this.configService.get<string>('JWT_EXPIRES_IN', '15m');
@@ -282,13 +286,13 @@ export class AuthService implements IAuthService {
     try {
       const jwtSecret = this.configService.get<string>('JWT_SECRET');
       if (!jwtSecret) {
-        throw new UnauthorizedException('JWT secret no configurado');
+        throw new UnauthorizedException('JWT secret not configured');
       }
 
       const payload = jwt.verify(token, jwtSecret) as any;
       return payload;
     } catch (error) {
-      throw new UnauthorizedException('Token inválido');
+      throw new UnauthorizedException('Invalid token');
     }
   }
 
@@ -344,10 +348,31 @@ export class AuthService implements IAuthService {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     
     if (!user) {
-      throw new NotFoundException('Usuario no encontrado');
+      throw new NotFoundException('User not found');
     }
 
     return this.mapUserToResponse(user);
+  }
+
+  async updateUser(userId: string, updateDto: Partial<{ email: string; username: string }>): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) throw new NotFoundException('User not found');
+    if (updateDto.email) user.email = updateDto.email;
+    if (updateDto.username) user.username = updateDto.username;
+    const updatedUser = await this.userRepository.save(user);
+    this.eventEmitter.emit('user.updated', {
+      id: updatedUser.id,
+      email: updatedUser.email,
+      username: updatedUser.username,
+    });
+    return updatedUser;
+  }
+
+  async deleteUser(userId: string): Promise<void> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) throw new NotFoundException('User not found');
+    await this.userRepository.remove(user);
+    this.eventEmitter.emit('user.deleted', { id: userId });
   }
 
   private mapUserToResponse(user: User): UserResponse {

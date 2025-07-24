@@ -3,7 +3,7 @@ import { registerAs } from '@nestjs/config';
 export default registerAs('performance', () => ({
   // Cache Configuration
   cache: {
-    ttl: parseInt(process.env.CACHE_TTL || '300', 10), // 5 minutos
+    ttl: parseInt(process.env.CACHE_TTL || '300', 10), // 5 minutes
     maxItems: parseInt(process.env.CACHE_MAX_ITEMS || '100', 10),
     store: process.env.CACHE_STORE || 'memory', // memory, redis
     prefix: process.env.CACHE_PREFIX || 'auth-service',
@@ -38,7 +38,7 @@ export default registerAs('performance', () => ({
       slowQueryThreshold: parseInt(process.env.SLOW_QUERY_THRESHOLD || '1000', 10), // ms
       logSlowQueries: process.env.LOG_SLOW_QUERIES === 'true',
       enableQueryCache: process.env.ENABLE_QUERY_CACHE === 'true',
-      queryCacheDuration: parseInt(process.env.QUERY_CACHE_DURATION || '300', 10), // segundos
+      queryCacheDuration: parseInt(process.env.QUERY_CACHE_DURATION || '300', 10), // seconds
     },
 
     // Indexes
@@ -54,7 +54,7 @@ export default registerAs('performance', () => ({
     level: parseInt(process.env.COMPRESSION_LEVEL || '6', 10), // 0-9
     threshold: parseInt(process.env.COMPRESSION_THRESHOLD || '1024', 10), // bytes
     filter: (req: any, res: any) => {
-      // No comprimir requests pequeños o ya comprimidos
+      // Don't compress small requests or already compressed ones
       if (req.headers['content-length'] && parseInt(req.headers['content-length']) < 1024) {
         return false;
       }
@@ -80,7 +80,7 @@ export default registerAs('performance', () => ({
     // Response Caching
     cache: {
       enabled: process.env.RESPONSE_CACHE_ENABLED === 'true',
-      maxAge: parseInt(process.env.RESPONSE_CACHE_MAX_AGE || '300', 10), // segundos
+      maxAge: parseInt(process.env.RESPONSE_CACHE_MAX_AGE || '300', 10), // seconds
       private: process.env.RESPONSE_CACHE_PRIVATE === 'true',
     },
   },
@@ -98,17 +98,45 @@ export default registerAs('performance', () => ({
       maxHeapSize: process.env.MAX_HEAP_SIZE || '512m',
       maxOldSpaceSize: process.env.MAX_OLD_SPACE_SIZE || '256m',
     },
+
+    // Memory Monitoring
+    monitoring: {
+      enabled: process.env.MEMORY_MONITORING_ENABLED === 'true',
+      interval: parseInt(process.env.MEMORY_MONITORING_INTERVAL || '60000', 10), // ms
+      threshold: parseInt(process.env.MEMORY_MONITORING_THRESHOLD || '80', 10), // percentage
+    },
   },
 
-  // Monitoring
+  // Request Processing
+  request: {
+    // Timeout Configuration
+    timeout: {
+      request: parseInt(process.env.REQUEST_TIMEOUT || '30000', 10), // ms
+      response: parseInt(process.env.RESPONSE_TIMEOUT || '30000', 10), // ms
+    },
+
+    // Rate Limiting
+    rateLimit: {
+      windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000', 10), // 15 minutes
+      max: parseInt(process.env.RATE_LIMIT_MAX || '100', 10),
+      skipSuccessfulRequests: process.env.RATE_LIMIT_SKIP_SUCCESSFUL === 'true',
+      skipFailedRequests: process.env.RATE_LIMIT_SKIP_FAILED === 'true',
+    },
+
+    // Request Size Limits
+    size: {
+      maxBodySize: process.env.MAX_BODY_SIZE || '10mb',
+      maxFileSize: process.env.MAX_FILE_SIZE || '5mb',
+    },
+  },
+
+  // Monitoring and Metrics
   monitoring: {
     // Performance Metrics
     metrics: {
-      enabled: process.env.METRICS_ENABLED === 'true',
+      enabled: process.env.PERFORMANCE_METRICS_ENABLED === 'true',
       interval: parseInt(process.env.METRICS_INTERVAL || '60000', 10), // ms
-      includeMemory: process.env.METRICS_INCLUDE_MEMORY === 'true',
-      includeCPU: process.env.METRICS_INCLUDE_CPU === 'true',
-      includeDatabase: process.env.METRICS_INCLUDE_DATABASE === 'true',
+      retention: parseInt(process.env.METRICS_RETENTION || '86400000', 10), // 24 hours
     },
 
     // Health Checks
@@ -117,20 +145,12 @@ export default registerAs('performance', () => ({
       interval: parseInt(process.env.HEALTH_CHECK_INTERVAL || '30000', 10), // ms
       timeout: parseInt(process.env.HEALTH_CHECK_TIMEOUT || '5000', 10), // ms
     },
-  },
 
-  // Optimization Flags
-  optimization: {
-    // Lazy Loading
-    lazyLoading: process.env.LAZY_LOADING === 'true',
-    
-    // Tree Shaking
-    treeShaking: process.env.TREE_SHAKING === 'true',
-    
-    // Code Splitting
-    codeSplitting: process.env.CODE_SPLITTING === 'true',
-    
-    // Bundle Optimization
-    bundleOptimization: process.env.BUNDLE_OPTIMIZATION === 'true',
+    // Logging
+    logging: {
+      performance: process.env.PERFORMANCE_LOGGING_ENABLED === 'true',
+      slowQueries: process.env.SLOW_QUERIES_LOGGING_ENABLED === 'true',
+      memoryUsage: process.env.MEMORY_USAGE_LOGGING_ENABLED === 'true',
+    },
   },
 })); 

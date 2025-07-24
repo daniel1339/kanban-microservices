@@ -29,7 +29,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const status = exception.getStatus();
     const exceptionResponse = exception.getResponse();
 
-    // Extraer mensaje de error
+    // Extract error message
     let message: string | string[];
     if (typeof exceptionResponse === 'object' && 'message' in exceptionResponse) {
       message = exceptionResponse.message as string | string[];
@@ -37,7 +37,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       message = exception.message;
     }
 
-    // Crear respuesta de error estructurada
+    // Create structured error response
     const errorResponse: ErrorResponse = {
       statusCode: status,
       message,
@@ -48,15 +48,15 @@ export class HttpExceptionFilter implements ExceptionFilter {
       requestId: request.headers['x-request-id'] as string,
     };
 
-    // Log del error
+    // Log the error
     this.logger.error(
       `${request.method} ${request.url} - ${status} - ${JSON.stringify(message)}`,
       exception.stack,
     );
 
-    // Log adicional para errores del servidor
+    // Additional log for server errors
     if (status >= 500) {
-      this.logger.error('Error interno del servidor:', {
+      this.logger.error('Internal server error:', {
         url: request.url,
         method: request.method,
         userAgent: request.headers['user-agent'],

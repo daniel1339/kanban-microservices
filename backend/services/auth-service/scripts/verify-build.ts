@@ -1,57 +1,57 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-console.log('🔍 Verificando build del Auth Service...');
+console.log('🔍 Verifying Auth Service build...');
 
 const distPath = path.join(__dirname, '..', 'dist');
 const mainJsPath = path.join(distPath, 'src', 'main.js');
 const mainJsMapPath = path.join(distPath, 'src', 'main.js.map');
 
-// Verificar que el directorio dist existe
+// Check if dist directory exists
 if (!fs.existsSync(distPath)) {
-  console.error('❌ Error: Directorio dist no encontrado');
+  console.error('❌ Error: dist directory not found');
   process.exit(1);
 }
 
-console.log('✅ Directorio dist encontrado');
+console.log('✅ dist directory found');
 
-// Verificar que main.js existe
+// Check if main.js exists
 if (!fs.existsSync(mainJsPath)) {
-  console.error('❌ Error: main.js no encontrado en dist/src/');
-  console.log('📁 Contenido de dist/:', fs.readdirSync(distPath));
+  console.error('❌ Error: main.js not found in dist/src/');
+  console.log('📁 Content of dist/:', fs.readdirSync(distPath));
   if (fs.existsSync(path.join(distPath, 'src'))) {
-    console.log('📁 Contenido de dist/src/:', fs.readdirSync(path.join(distPath, 'src')));
+    console.log('📁 Content of dist/src/:', fs.readdirSync(path.join(distPath, 'src')));
   }
   process.exit(1);
 }
 
-console.log('✅ main.js encontrado');
+console.log('✅ main.js found');
 
-// Verificar que main.js.map existe
+// Check if main.js.map exists
 if (!fs.existsSync(mainJsMapPath)) {
-  console.warn('⚠️  Warning: main.js.map no encontrado (source maps)');
+  console.warn('⚠️  Warning: main.js.map not found (source maps)');
 } else {
-  console.log('✅ main.js.map encontrado');
+  console.log('✅ main.js.map found');
 }
 
-// Verificar que el archivo main.js no está vacío
+// Check if main.js file is not empty
 const mainJsContent = fs.readFileSync(mainJsPath, 'utf8');
 if (mainJsContent.trim().length === 0) {
-  console.error('❌ Error: main.js está vacío');
+  console.error('❌ Error: main.js is empty');
   process.exit(1);
 }
 
-console.log('✅ main.js tiene contenido válido');
+console.log('✅ main.js has valid content');
 
-// Verificar que contiene la función bootstrap
+// Check if it contains the bootstrap function
 if (!mainJsContent.includes('bootstrap')) {
-  console.error('❌ Error: main.js no contiene la función bootstrap');
+  console.error('❌ Error: main.js does not contain the bootstrap function');
   process.exit(1);
 }
 
-console.log('✅ main.js contiene la función bootstrap');
+console.log('✅ main.js contains the bootstrap function');
 
-// Verificar otros archivos importantes
+// Check other important files
 const importantFiles = [
   'src/app.module.js',
   'src/auth/auth.controller.js',
@@ -61,11 +61,11 @@ const importantFiles = [
 for (const file of importantFiles) {
   const filePath = path.join(distPath, file);
   if (!fs.existsSync(filePath)) {
-    console.warn(`⚠️  Warning: ${file} no encontrado`);
+    console.warn(`⚠️  Warning: ${file} not found`);
   } else {
-    console.log(`✅ ${file} encontrado`);
+    console.log(`✅ ${file} found`);
   }
 }
 
-console.log('🎉 Verificación de build completada exitosamente');
-console.log('📁 Archivos generados en:', distPath); 
+console.log('🎉 Build verification completed successfully');
+console.log('📁 Generated files in:', distPath); 

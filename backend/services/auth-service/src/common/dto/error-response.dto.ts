@@ -2,19 +2,19 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class ValidationErrorDto {
   @ApiProperty({
-    description: 'Campo que causó el error',
+    description: 'Field that caused the error',
     example: 'email',
   })
   field: string;
 
   @ApiProperty({
-    description: 'Valor que causó el error',
+    description: 'Value that caused the error',
     example: 'invalid-email',
   })
   value: any;
 
   @ApiProperty({
-    description: 'Restricciones de validación que fallaron',
+    description: 'Validation constraints that failed',
     example: {
       isEmail: 'email must be an email',
     },
@@ -24,50 +24,50 @@ export class ValidationErrorDto {
 
 export class ErrorResponseDto {
   @ApiProperty({
-    description: 'Código de estado HTTP',
+    description: 'HTTP status code',
     example: 400,
   })
   statusCode: number;
 
   @ApiProperty({
-    description: 'Mensaje de error',
+    description: 'Error message',
     example: 'Validation failed',
   })
   message: string | string[];
 
   @ApiProperty({
-    description: 'Tipo de error',
+    description: 'Error type',
     example: 'Bad Request',
   })
   error: string;
 
   @ApiProperty({
-    description: 'Timestamp del error',
+    description: 'Error timestamp',
     example: '2024-01-15T10:30:00.000Z',
   })
   timestamp: string;
 
   @ApiProperty({
-    description: 'Ruta que causó el error',
+    description: 'Path that caused the error',
     example: '/auth/register',
   })
   path: string;
 
   @ApiProperty({
-    description: 'Método HTTP',
+    description: 'HTTP method',
     example: 'POST',
   })
   method: string;
 
   @ApiProperty({
-    description: 'ID único del request',
+    description: 'Unique request ID',
     example: 'req_1705312200000_abc123def',
     required: false,
   })
   requestId?: string;
 
   @ApiProperty({
-    description: 'Errores de validación específicos',
+    description: 'Specific validation errors',
     type: [ValidationErrorDto],
     required: false,
   })

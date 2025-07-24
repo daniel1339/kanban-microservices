@@ -19,12 +19,12 @@ export class ValidationPipe implements PipeTransform<any> {
 
     const object = plainToClass(metatype, value);
     const errors = await validate(object, {
-      whitelist: true, // Remover propiedades no decoradas
-      forbidNonWhitelisted: true, // Lanzar error si hay propiedades no permitidas
-      forbidUnknownValues: true, // Lanzar error si hay valores desconocidos
-      transform: true, // Transformar tipos automáticamente
+      whitelist: true, // Remove non-decorated properties
+      forbidNonWhitelisted: true, // Throw error if there are non-allowed properties
+      forbidUnknownValues: true, // Throw error if there are unknown values
+      transform: true, // Transform types automatically
       transformOptions: {
-        enableImplicitConversion: true, // Permitir conversión implícita
+        enableImplicitConversion: true, // Allow implicit conversion
       },
     });
 

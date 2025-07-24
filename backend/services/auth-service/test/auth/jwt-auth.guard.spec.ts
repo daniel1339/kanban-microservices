@@ -90,7 +90,7 @@ describe('JwtAuthGuard', () => {
       }),
     } as ExecutionContext;
 
-    authService.verifyToken.mockRejectedValue(new UnauthorizedException('Token inválido'));
+    authService.verifyToken.mockRejectedValue(new UnauthorizedException('Invalid token'));
 
     await expect(guard.canActivate(mockContext)).rejects.toThrow(UnauthorizedException);
   });
