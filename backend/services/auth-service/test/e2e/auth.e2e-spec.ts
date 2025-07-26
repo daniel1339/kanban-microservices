@@ -580,8 +580,8 @@ describe('Additional DTO validations', () => {
       .send({
         email: 'no-es-email',
         username: `usuario${Date.now()}`,
-        password: `Password${Date.now()}!`,
-        passwordConfirmation: `Password${Date.now()}!`,
+        password: `Valid123!`, // Updated to match new rule
+        passwordConfirmation: `Valid123!`,
       })
       .expect(400)
       .expect((res) => {
@@ -604,8 +604,8 @@ describe('Additional DTO validations', () => {
       .send({
         email: `test${Date.now()}@example.com`,
         username: `usuario${Date.now()}`,
-        password: '123',
-        passwordConfirmation: '123',
+        password: 'weakpass', // Not valid: no uppercase, number, or special char
+        passwordConfirmation: 'weakpass',
       })
       .expect(400)
       .expect((res) => {
@@ -614,7 +614,7 @@ describe('Additional DTO validations', () => {
             expect.objectContaining({
               field: 'password',
               constraints: expect.objectContaining({
-                isStrongPassword: expect.any(String),
+                matches: expect.stringContaining('Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character'),
               }),
             }),
           ])

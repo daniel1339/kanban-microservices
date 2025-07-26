@@ -80,14 +80,34 @@ export class ErrorResponseSchema {
 export class ValidationErrorSchema {
   @ApiProperty({ example: 400 })
   statusCode: number;
-  @ApiProperty({ example: ['Email must be valid', 'Password must be at least 8 characters'] })
-  message: string[];
+  @ApiProperty({ example: 'Validation failed' })
+  message: string;
   @ApiProperty({ example: 'Bad Request' })
   error: string;
-  @ApiProperty({ example: '/auth/register' })
+  @ApiProperty({ example: '/api/auth/register' })
   path: string;
   @ApiProperty({ example: '2024-01-01T00:00:00.000Z' })
   timestamp: string;
+  @ApiProperty({
+    example: [
+      {
+        field: 'email',
+        value: 'invalid-email',
+        constraints: {
+          isEmail: 'Email must be valid'
+        }
+      },
+      {
+        field: 'password',
+        value: 'weakpass',
+        constraints: {
+          matches: 'Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character.'
+        }
+      }
+    ],
+    description: 'Array of field-specific validation errors'
+  })
+  errors?: any[];
 }
 
 export class RateLimitErrorSchema {

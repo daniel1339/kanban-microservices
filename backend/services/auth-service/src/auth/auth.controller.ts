@@ -66,7 +66,7 @@ export class AuthController {
         summary: 'Validation error',
         description: 'Example of validation error',
         value: {
-          email: 'no-es-email',
+          email: 'invalid-email',
           username: 'us',
           password: '123',
           passwordConfirmation: '456'
@@ -102,8 +102,8 @@ export class AuthController {
         summary: 'Invalid credentials',
         description: 'Example of invalid credentials error',
         value: {
-          emailOrUsername: 'usuario@ejemplo.com',
-          password: 'incorrecta'
+          emailOrUsername: 'user@example.com',
+          password: 'incorrect'
         }
       }
     }
@@ -135,7 +135,7 @@ export class AuthController {
         summary: 'Invalid token',
         description: 'Example of refresh token error',
         value: {
-          refreshToken: 'token-invalido'
+          refreshToken: 'invalid-token'
         }
       }
     }
@@ -166,7 +166,7 @@ export class AuthController {
         summary: 'Invalid token',
         description: 'Example of refresh token error',
         value: {
-          refreshToken: 'token-invalido'
+          refreshToken: 'invalid-token'
         }
       }
     }
@@ -179,7 +179,7 @@ export class AuthController {
     @CurrentUser() user: any,
     @Body() refreshTokenDto: RefreshTokenDto
   ): Promise<void> {
-    if (!user) throw new UnauthorizedException('Token de acceso requerido');
+    if (!user) throw new UnauthorizedException('Access token required');
     return this.authService.logout(user.id, refreshTokenDto.refreshToken);
   }
 
@@ -195,7 +195,7 @@ export class AuthController {
   @RateLimitErrorResponse()
   @InternalServerErrorResponse()
   async logoutAll(@CurrentUser() user: any): Promise<void> {
-    if (!user) throw new UnauthorizedException('Token de acceso requerido');
+    if (!user) throw new UnauthorizedException('Access token required');
     return this.authService.logoutAll(user.id);
   }
 
@@ -217,8 +217,8 @@ export class AuthController {
         summary: 'Invalid credentials',
         description: 'Example of invalid credentials error',
         value: {
-          emailOrUsername: 'usuario@ejemplo.com',
-          password: 'incorrecta'
+          emailOrUsername: 'user@example.com',
+          password: 'incorrect'
         }
       }
     }
@@ -245,7 +245,7 @@ export class AuthController {
   @NotFoundErrorResponse()
   @InternalServerErrorResponse()
   async getProfile(@CurrentUser() user: any) {
-    if (!user) throw new UnauthorizedException('Token de acceso requerido');
+    if (!user) throw new UnauthorizedException('Access token required');
     return this.authService.getProfile(user.id);
   }
 } 

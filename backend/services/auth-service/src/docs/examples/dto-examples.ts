@@ -19,8 +19,8 @@ export class RegisterDtoExample {
   username: string;
 
   @ApiProperty({
-    example: 'Password123!',
-    description: 'Secure password (minimum 8 characters, include uppercase, lowercase, numbers and symbols)',
+    example: 'Valid123!',
+    description: 'Password must be at least 8 characters, include uppercase, lowercase, a number, and a special character.',
     minLength: 8,
     maxLength: 255,
   })
@@ -131,16 +131,16 @@ export class ErrorResponseExample {
 // Password validation examples
 export class PasswordValidationExample {
   @ApiProperty({
-    example: 'Password123!',
+    example: 'Valid123!',
     description: 'Valid password that meets all requirements',
   })
   validPassword: string;
 
   @ApiProperty({
-    example: 'password',
-    description: 'Invalid password (very common)',
+    example: 'weakpass',
+    description: 'Invalid password (missing uppercase, number, and special character)',
   })
-  invalidCommonPassword: string;
+  invalidWeakPassword: string;
 
   @ApiProperty({
     example: '123',
@@ -152,7 +152,7 @@ export class PasswordValidationExample {
     example: 'onlyletters',
     description: 'Invalid password (only lowercase letters)',
   })
-  invalidWeakPassword: string;
+  invalidOnlyLettersPassword: string;
 }
 
 // Rate limit headers examples

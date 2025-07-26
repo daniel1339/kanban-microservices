@@ -16,6 +16,7 @@ export interface ErrorResponse {
   path: string;
   method: string;
   requestId?: string;
+  errors?: any[]; // Add errors array for validation details
 }
 
 @Catch(HttpException)
@@ -29,10 +30,17 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const status = exception.getStatus();
     const exceptionResponse = exception.getResponse();
 
-    // Extract error message
+    // Extract error message and details
     let message: string | string[];
+    let errors: any[] | undefined;
+
     if (typeof exceptionResponse === 'object' && 'message' in exceptionResponse) {
       message = exceptionResponse.message as string | string[];
+      
+      // Extract validation errors if available
+      if ('errors' in exceptionResponse) {
+        errors = exceptionResponse.errors as any[];
+      }
     } else {
       message = exception.message;
     }
@@ -47,6 +55,11 @@ export class HttpExceptionFilter implements ExceptionFilter {
       method: request.method,
       requestId: request.headers['x-request-id'] as string,
     };
+
+    // Add validation errors if available
+    if (errors && errors.length > 0) {
+      errorResponse.errors = errors;
+    }
 
     // Log the error
     this.logger.error(

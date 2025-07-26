@@ -7,8 +7,8 @@ export const RegisterRequestExample = {
   value: {
     email: 'user@example.com',
     username: 'user123',
-    password: 'Password123!',
-    passwordConfirmation: 'Password123!',
+    password: 'Valid123!',
+    passwordConfirmation: 'Valid123!',
   },
 };
 
@@ -17,7 +17,7 @@ export const LoginRequestExample = {
   description: 'Example of login using email',
   value: {
     emailOrUsername: 'user@example.com',
-    password: 'Password123!',
+    password: 'Valid123!',
   },
 };
 
@@ -26,7 +26,7 @@ export const LoginUsernameRequestExample = {
   description: 'Example of login using username',
   value: {
     emailOrUsername: 'user123',
-    password: 'Password123!',
+    password: 'Valid123!',
   },
 };
 
@@ -155,19 +155,29 @@ export const RateLimitExceededResponseExample = {
 
 export const ValidationErrorResponseExample = {
   summary: 'Validation error',
-  description: 'Response when request validation fails',
+  description: 'Response when request validation fails with detailed field errors',
   value: {
+    statusCode: 400,
     message: 'Validation failed',
+    error: 'Bad Request',
+    timestamp: '2024-01-01T00:00:00.000Z',
+    path: '/api/auth/register',
     errors: [
       {
         field: 'email',
-        message: 'Email must be a valid email address',
+        value: 'invalid-email',
+        constraints: {
+          isEmail: 'Email must be valid'
+        }
       },
       {
         field: 'password',
-        message: 'Password must be at least 8 characters long',
-      },
-    ],
+        value: 'weakpass',
+        constraints: {
+          matches: 'Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character.'
+        }
+      }
+    ]
   },
 };
 

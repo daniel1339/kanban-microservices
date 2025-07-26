@@ -5,21 +5,21 @@ export const mockUsers = {
   valid: {
     email: 'test@example.com',
     username: 'testuser',
-    password: 'Secure2024!@',
+    password: 'Valid123!', // Updated to match new rule
     firstName: 'Test',
     lastName: 'User',
   },
   invalid: {
     email: 'invalid-email',
     username: 't', // Too short
-    password: 'weak',
+    password: 'weakpass', // Not valid: no uppercase, number, or special char
     firstName: 'Test',
     lastName: 'User',
   },
   duplicate: {
     email: 'existing@example.com',
     username: 'existinguser',
-    password: 'Secure2024!@',
+    password: 'Valid123!', // Updated to match new rule
     firstName: 'Existing',
     lastName: 'User',
   },

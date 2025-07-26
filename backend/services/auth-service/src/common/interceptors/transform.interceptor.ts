@@ -42,24 +42,24 @@ export class TransformInterceptor<T>
   private getSuccessMessage(method: string, url: string): string {
     const baseMessage = this.getBaseMessage(method);
     
-    // Personalizar mensajes según la ruta
+    // Customize messages based on route
     if (url.includes('/auth/register')) {
-      return 'Usuario registrado exitosamente';
+      return 'User registered successfully';
     }
     if (url.includes('/auth/login')) {
-      return 'Inicio de sesión exitoso';
+      return 'Login successful';
     }
     if (url.includes('/auth/logout')) {
-      return 'Sesión cerrada exitosamente';
+      return 'Session closed successfully';
     }
     if (url.includes('/auth/refresh')) {
-      return 'Token renovado exitosamente';
+      return 'Token renewed successfully';
     }
     if (url.includes('/auth/profile')) {
-      return 'Perfil obtenido exitosamente';
+      return 'Profile retrieved successfully';
     }
     if (url.includes('/auth/validate')) {
-      return 'Credenciales validadas exitosamente';
+      return 'Credentials validated successfully';
     }
 
     return baseMessage;
@@ -68,16 +68,16 @@ export class TransformInterceptor<T>
   private getBaseMessage(method: string): string {
     switch (method.toLowerCase()) {
       case 'get':
-        return 'Datos obtenidos exitosamente';
+        return 'Data retrieved successfully';
       case 'post':
-        return 'Recurso creado exitosamente';
+        return 'Resource created successfully';
       case 'put':
       case 'patch':
-        return 'Recurso actualizado exitosamente';
+        return 'Resource updated successfully';
       case 'delete':
-        return 'Recurso eliminado exitosamente';
+        return 'Resource deleted successfully';
       default:
-        return 'Operación completada exitosamente';
+        return 'Operation completed successfully';
     }
   }
 } 

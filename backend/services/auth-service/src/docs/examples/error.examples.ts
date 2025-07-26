@@ -2,21 +2,36 @@
 
 export const ValidationErrorExample = {
   summary: 'Validation error',
-  description: 'Error when data does not meet validations. The message field can be an array of strings with specific errors.',
+  description: 'Error when data does not meet validations. The response includes specific field errors with details.',
   value: {
     statusCode: 400,
-    message: [
-      'Email must be valid',
-      'Username must be at least 3 characters',
-      'Password must be at least 8 characters',
-      'Password must contain at least one uppercase letter',
-      'Password must contain at least one number',
-      'Password must contain at least one symbol',
-      'Password cannot be a common password',
-    ],
+    message: "Validation failed",
     error: 'Bad Request',
-    path: '/auth/register',
+    path: '/api/auth/register',
     timestamp: '2024-01-01T00:00:00.000Z',
+    errors: [
+      {
+        field: 'email',
+        value: 'invalid-email',
+        constraints: {
+          isEmail: 'Email must be valid'
+        }
+      },
+      {
+        field: 'username',
+        value: 'ab',
+        constraints: {
+          minLength: 'Username must be at least 3 characters'
+        }
+      },
+      {
+        field: 'password',
+        value: 'weakpass',
+        constraints: {
+          matches: 'Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character.'
+        }
+      }
+    ]
   },
 };
 

@@ -305,8 +305,8 @@ curl -X POST http://localhost:3001/api/auth/register \
   -d '{
     "email": "user@example.com",
     "username": "user123",
-    "password": "Password123!",
-    "passwordConfirmation": "Password123!"
+    "password": "Valid123!",
+    "passwordConfirmation": "Valid123!"
   }'
 ```
 **Response:**
@@ -332,7 +332,7 @@ curl -X POST http://localhost:3001/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "emailOrUsername": "user@example.com",
-    "password": "Password123!"
+    "password": "Valid123!"
   }'
 ```
 **Response:**
@@ -368,6 +368,7 @@ curl -X GET http://localhost:3001/api/auth/profile \
 
 All Auth Service endpoints return errors with the following structure to facilitate handling and debugging:
 
+### **Standard Error Response**
 ```json
 {
   "statusCode": 400,
@@ -378,11 +379,42 @@ All Auth Service endpoints return errors with the following structure to facilit
 }
 ```
 
+### **Validation Error Response (with field details)**
+```json
+{
+  "statusCode": 400,
+  "message": "Validation failed",
+  "error": "Bad Request",
+  "timestamp": "2024-01-01T12:00:00.000Z",
+  "path": "/api/auth/register",
+  "errors": [
+    {
+      "field": "email",
+      "value": "invalid-email",
+      "constraints": {
+        "isEmail": "Email must be valid"
+      }
+    },
+    {
+      "field": "password",
+      "value": "weakpass",
+      "constraints": {
+        "matches": "Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character."
+      }
+    }
+  ]
+}
+```
+
 - `statusCode`: HTTP error code (400, 401, 404, 409, 422, 429, 500, etc.)
 - `message`: Descriptive error message (can be string or array of strings for validations)
 - `error`: Error type ("Bad Request", "Unauthorized", etc.)
 - `timestamp`: Date and time of error in ISO format
 - `path`: Route of the endpoint where the error occurred
+- `errors`: Array of specific validation errors (only present for validation failures)
+  - `field`: Name of the field that failed validation
+  - `value`: The invalid value that was provided
+  - `constraints`: Object with validation rule names and their error messages
 
 This structure is standard and documented in Swagger for all endpoints.
 
@@ -472,12 +504,4 @@ Below is a table of common errors and their quick solutions for the Auth Service
 | `A worker process has failed to exit gracefully...`    | Handle leak in tests (Node/Jest)               | Use `--forceExit` in test scripts                   |
 
 ### Additional tips
-- **Environment variables:** Use `.env.example` as reference and never commit your secrets to git.
-- **Migrations:** If you change entities, run `npm run migrate:run` and check logs.
-- **Seeds:** Use `npm run db:seed` to populate test data.
-- **Testing:** If tests hang, check open connections and use `--forceExit`.
-- **Swagger:** Always access documentation at `/api/docs` to test endpoints and see examples.
-- **Logs:** Use `npm run start:debug` to see detailed logs in development.
-- **CORS issues:** Verify `CORS_ORIGIN` variable and CORS configuration in backend.
-
-Have an error not documented here? Update this table or consult the team!
+- **Environment variables:** Use `.env.example`

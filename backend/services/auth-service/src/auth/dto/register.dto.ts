@@ -29,14 +29,17 @@ export class RegisterDto {
 
   @ApiProperty({
     example: 'Password123!',
-    description: 'Secure password (minimum 8 characters, include uppercase, lowercase, numbers, and symbols).',
+    description: 'Password must be at least 8 characters, include uppercase, lowercase, a number, and a special character.',
     minLength: 8,
     maxLength: 255,
   })
   @IsString({ message: 'Password must be a string' })
   @MaxLength(255, { message: 'Password cannot be longer than 255 characters' })
-  @IsStrongPassword()
-  @IsNotCommonPassword()
+  @MinLength(8, { message: 'Password must be at least 8 characters' })
+  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/, {
+    message:
+      'Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character.'
+  })
   password: string;
 
   @ApiProperty({

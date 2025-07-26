@@ -53,8 +53,8 @@ describe('AuthController', () => {
       const registerDto: RegisterDto = {
         email: 'new@example.com',
         username: 'newuser',
-        password: 'Password123!',
-        passwordConfirmation: 'Password123!',
+        password: 'Valid123!', // Updated to match new rule
+        passwordConfirmation: 'Valid123!',
       };
 
       authService.register.mockResolvedValue(mockAuthResponse);
@@ -69,8 +69,8 @@ describe('AuthController', () => {
       const registerDto: RegisterDto = {
         email: 'existing@example.com',
         username: 'existinguser',
-        password: 'Password123!',
-        passwordConfirmation: 'Password123!',
+        password: 'Valid123!', // Updated to match new rule
+        passwordConfirmation: 'Valid123!',
       };
 
       authService.register.mockRejectedValue(new ConflictException('Email already registered'));
@@ -82,7 +82,7 @@ describe('AuthController', () => {
       const registerDto: RegisterDto = {
         email: 'new@example.com',
         username: 'newuser',
-        password: 'Password123!',
+        password: 'Valid123!', // Updated to match new rule
         passwordConfirmation: 'DifferentPassword123!',
       };
 

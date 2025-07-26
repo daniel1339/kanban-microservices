@@ -27,28 +27,28 @@ export class AuthService implements IAuthService {
   async register(registerDto: RegisterDto): Promise<AuthResponse> {
     const { email, username, password, passwordConfirmation } = registerDto;
 
-    // Validar que las contraseñas coincidan
+    // Validate that passwords match
     if (password !== passwordConfirmation) {
       throw new BadRequestException('Passwords do not match');
     }
 
-    // Verificar si el email ya existe
+    // Check if email already exists
     const existingEmail = await this.userRepository.findOne({ where: { email } });
     if (existingEmail) {
       throw new ConflictException('Email is already registered');
     }
 
-    // Verificar si el username ya existe
+    // Check if username already exists
     const existingUsername = await this.userRepository.findOne({ where: { username } });
     if (existingUsername) {
       throw new ConflictException('Username is already in use');
     }
 
-    // Encriptar contraseña
+    // Encrypt password
     const saltRounds = this.configService.get<number>('bcrypt.rounds', 12);
     const passwordHash = await bcrypt.hash(password, saltRounds);
 
-    // Crear usuario
+    // Create user
     const user = this.userRepository.create({
       email,
       username,
@@ -58,29 +58,29 @@ export class AuthService implements IAuthService {
 
     const savedUser = await this.userRepository.save(user);
 
-    // Emitir evento user.created
+    // Emit user.created event
     this.eventEmitter.emit('user.created', {
       id: savedUser.id,
       email: savedUser.email,
       username: savedUser.username,
-      // agrega otros campos relevantes
+      // add other relevant fields
     });
 
-    // Generar tokens
+    // Generate tokens
     const { accessToken, refreshToken } = await this.generateTokens(savedUser);
 
     return {
       user: this.mapUserToResponse(savedUser),
       accessToken,
       refreshToken,
-      expiresIn: 15 * 60, // 15 minutos
+      expiresIn: 15 * 60, // 15 minutes
     };
   }
 
   async login(loginDto: LoginDto): Promise<AuthResponse> {
     const { emailOrUsername, password } = loginDto;
 
-    // Buscar usuario por email o username
+    // Find user by email or username
     const user = await this.userRepository.findOne({
       where: [
         { email: emailOrUsername },
@@ -92,26 +92,26 @@ export class AuthService implements IAuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    // Verificar contraseña
+    // Verify password
     const isPasswordValid = await bcrypt.compare(password, user.password_hash);
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    // Generar tokens
+    // Generate tokens
     const { accessToken, refreshToken } = await this.generateTokens(user);
 
     return {
       user: this.mapUserToResponse(user),
       accessToken,
       refreshToken,
-      expiresIn: 15 * 60, // 15 minutos
+      expiresIn: 15 * 60, // 15 minutes
     };
   }
 
   async refreshToken(refreshToken: string): Promise<AuthResponse> {
     try {
-      // Verificar refresh token
+      // Verify refresh token
       const jwtSecret = this.configService.get<string>('JWT_SECRET');
       if (!jwtSecret) {
         throw new UnauthorizedException('JWT secret not configured');
@@ -122,7 +122,7 @@ export class AuthService implements IAuthService {
         jwtSecret,
       ) as any as RefreshTokenPayload;
 
-      // Buscar el refresh token en la base de datos
+      // Find the refresh token in the database
       const tokenEntity = await this.refreshTokenRepository.findOne({
         where: { id: payload.tokenId },
         relations: ['user'],
@@ -132,23 +132,23 @@ export class AuthService implements IAuthService {
         throw new UnauthorizedException('Invalid refresh token');
       }
 
-      // Verificar que no haya expirado
+      // Check if it has expired
       if (new Date() > tokenEntity.expires_at) {
         await this.refreshTokenRepository.remove(tokenEntity);
         throw new UnauthorizedException('Refresh token expired');
       }
 
-      // TOKEN ROTATION: Invalidar el token actual antes de generar uno nuevo
+      // TOKEN ROTATION: Invalidate current token before generating a new one
       await this.refreshTokenRepository.remove(tokenEntity);
 
-      // Generar nuevos tokens
+      // Generate new tokens
       const { accessToken, refreshToken: newRefreshToken } = await this.generateTokens(tokenEntity.user);
 
       return {
         user: this.mapUserToResponse(tokenEntity.user),
         accessToken,
         refreshToken: newRefreshToken,
-        expiresIn: 15 * 60, // 15 minutos
+        expiresIn: 15 * 60, // 15 minutes
       };
     } catch (error) {
       throw new UnauthorizedException('Invalid refresh token');
@@ -157,7 +157,7 @@ export class AuthService implements IAuthService {
 
   async logout(userId: string, refreshToken: string): Promise<void> {
     try {
-      // Verificar que el token pertenece al usuario
+      // Verify that the token belongs to the user
       const tokenEntity = await this.refreshTokenRepository.findOne({
         where: {
           user_id: userId,
@@ -166,11 +166,11 @@ export class AuthService implements IAuthService {
       });
 
       if (tokenEntity) {
-        // Eliminar el refresh token específico
+        // Remove the specific refresh token
         await this.refreshTokenRepository.remove(tokenEntity);
       }
     } catch (error) {
-      // Si hay error, intentar eliminar directamente
+      // If there's an error, try to delete directly
       await this.refreshTokenRepository.delete({
         user_id: userId,
         token: refreshToken,
@@ -179,19 +179,19 @@ export class AuthService implements IAuthService {
   }
 
   async logoutAll(userId: string): Promise<void> {
-    // Eliminar todos los refresh tokens del usuario
+    // Remove all user refresh tokens
     await this.refreshTokenRepository.delete({ user_id: userId });
   }
 
   async validateUser(emailOrUsername: string, password: string): Promise<any> {
-    // Intentar obtener del cache primero
+    // Try to get from cache first
     let user = await this.cacheService.getUserByEmail(emailOrUsername);
     
     if (!user) {
       user = await this.cacheService.getUserByUsername(emailOrUsername);
     }
 
-    // Si no está en cache, buscar en BD
+    // If not in cache, search in database
     if (!user) {
       user = await this.userRepository.findOne({
         where: [
@@ -200,7 +200,7 @@ export class AuthService implements IAuthService {
         ],
       });
 
-      // Guardar en cache si se encontró
+      // Save to cache if found
       if (user) {
         await this.cacheService.setUser(user);
       }
@@ -215,16 +215,16 @@ export class AuthService implements IAuthService {
   }
 
   async validateUserById(userId: string): Promise<any> {
-    // Intentar obtener del cache primero
+    // Try to get from cache first
     let user = await this.cacheService.getUserById(userId);
 
-    // Si no está en cache, buscar en BD
+    // If not in cache, search in database
     if (!user) {
       user = await this.userRepository.findOne({
         where: { id: userId },
       });
 
-      // Guardar en cache si se encontró
+      // Save to cache if found
       if (user) {
         await this.cacheService.setUser(user);
       }
@@ -247,7 +247,7 @@ export class AuthService implements IAuthService {
     const jwtExpiresIn = this.configService.get<string>('JWT_EXPIRES_IN', '15m');
     const jwtRefreshExpiresIn = this.configService.get<string>('JWT_REFRESH_EXPIRES_IN', '7d');
 
-    // Generar access token
+    // Generate access token
     const accessTokenPayload: TokenPayload = {
       sub: user.id,
       email: user.email,
@@ -258,7 +258,7 @@ export class AuthService implements IAuthService {
       expiresIn: jwtExpiresIn,
     } as any);
 
-    // Generar refresh token
+    // Generate refresh token
     const refreshTokenId = uuidv4();
     const refreshTokenPayload: RefreshTokenPayload = {
       sub: user.id,
@@ -269,12 +269,12 @@ export class AuthService implements IAuthService {
       expiresIn: jwtRefreshExpiresIn,
     } as any);
 
-    // Guardar refresh token en la base de datos
+    // Save refresh token in database
     const refreshTokenEntity = this.refreshTokenRepository.create({
       id: refreshTokenId,
       user_id: user.id,
       token: refreshToken,
-      expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 días
+      expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
     });
 
     await this.refreshTokenRepository.save(refreshTokenEntity);
@@ -340,7 +340,7 @@ export class AuthService implements IAuthService {
       return false;
     }
 
-    // Verificar que el token coincida y no haya expirado
+    // Verify that the token matches and hasn't expired
     return tokenEntity.token === token && new Date() < tokenEntity.expires_at;
   }
 
