@@ -13,13 +13,13 @@ export class ServiceDiscoveryService {
     auth: {
       name: 'auth',
       url: process.env.AUTH_SERVICE_URL || 'http://localhost:3001',
-      healthCheck: '/health',
+      healthCheck: '/api/health',
       timeout: 5000,
     },
     user: {
       name: 'user',
       url: process.env.USER_SERVICE_URL || 'http://localhost:3002',
-      healthCheck: '/health',
+      healthCheck: '/api/health',
       timeout: 5000,
     },
     project: {

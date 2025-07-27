@@ -1,5 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { ServiceDiscoveryService } from '../../common/services/service-discovery.service';
+import { Public } from '../../common/decorators/public.decorator';
 
 @Controller('health')
 export class HealthController {
@@ -9,6 +10,7 @@ export class HealthController {
    * Gateway health check
    */
   @Get()
+  @Public()
   getGatewayHealth() {
     return {
       status: 'ok',
@@ -21,6 +23,7 @@ export class HealthController {
    * Health of all registered microservices
    */
   @Get('services')
+  @Public()
   getServicesHealth() {
     // Simulate health check (in the future, perform real fetch to /health of each service)
     const services = this.serviceDiscovery.listServices();

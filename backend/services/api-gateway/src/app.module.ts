@@ -7,6 +7,7 @@
   import { ServiceDiscoveryService } from './common/services/service-discovery.service';
   import { ProxyMiddleware } from './common/middleware/proxy.middleware';
   import { HealthController } from './gateway/controllers/health.controller';
+  import { AuthProxyController } from './gateway/controllers/auth-proxy.controller';
   import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
   import { RateLimitGuard } from './common/guards/rate-limit.guard';
   import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
@@ -25,7 +26,7 @@
         ],
       }),
     ],
-    controllers: [AppController, HealthController],
+    controllers: [AppController, HealthController, AuthProxyController],
     providers: [
       AppService,
       RoutingService,

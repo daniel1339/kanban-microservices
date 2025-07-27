@@ -917,7 +917,9 @@ JWT_SECRET=test-jwt-secret-key-for-testing-only
 
 ### **✅ Mandatory Unified Error Structure**
 
-All microservices must implement the following error structure:
+All microservices must implement the following error structure with **detailed validation error support**:
+
+> **📋 Related Documentation**: For API Gateway connection troubleshooting and error handling, see [API Gateway Connection Troubleshooting](#-api-gateway-connection-troubleshooting)
 
 #### **Mandatory ErrorResponse Interface**
 ```typescript
@@ -930,10 +932,17 @@ export interface ErrorResponse {
   path: string;
   method: string;
   requestId?: string;
+  errors?: ValidationError[]; // Detailed validation errors
+}
+
+export interface ValidationError {
+  field: string;
+  value: any;
+  constraints: string[];
 }
 ```
 
-#### **Standardized HttpExceptionFilter**
+#### **Standardized HttpExceptionFilter with Validation Details**
 ```typescript
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
@@ -946,10 +955,17 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const status = exception.getStatus();
     const exceptionResponse = exception.getResponse();
 
-    // Extract error message
+    // Extract error message and validation details
     let message: string | string[];
+    let errors: ValidationError[] | undefined;
+
     if (typeof exceptionResponse === 'object' && 'message' in exceptionResponse) {
       message = exceptionResponse.message as string | string[];
+      
+      // Extract validation errors if available
+      if ('errors' in exceptionResponse) {
+        errors = exceptionResponse.errors as ValidationError[];
+      }
     } else {
       message = exception.message;
     }
@@ -964,6 +980,11 @@ export class HttpExceptionFilter implements ExceptionFilter {
       method: request.method,
       requestId: request.headers['x-request-id'] as string,
     };
+
+    // Add validation errors if available
+    if (errors && errors.length > 0) {
+      errorResponse.errors = errors;
+    }
 
     // Log the error
     this.logger.error(
@@ -995,6 +1016,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
 ```typescript
 // main.ts
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -1002,13 +1024,53 @@ async function bootstrap() {
   // Mandatory global exception filter
   app.useGlobalFilters(new HttpExceptionFilter());
   
+  // Mandatory validation pipe for detailed error extraction
+  app.useGlobalPipes(new ValidationPipe({
+    transform: true,
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    errorHttpStatusCode: HttpStatus.BAD_REQUEST,
+  }));
+  
   // ... rest of configuration
 }
 ```
 
 ### **📋 Standardized Error Examples**
 
-#### **Validation Error (400)**
+#### **Validation Error with Field Details (400)**
+```json
+{
+  "statusCode": 400,
+  "message": "Validation failed",
+  "error": "Bad Request",
+  "timestamp": "2024-01-01T12:00:00.000Z",
+  "path": "/auth/register",
+  "method": "POST",
+  "requestId": "req-123",
+  "errors": [
+    {
+      "field": "email",
+      "value": "invalid-email",
+      "constraints": ["Email must be a valid email address"]
+    },
+    {
+      "field": "password",
+      "value": "weakpass",
+      "constraints": [
+        "Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character."
+      ]
+    },
+    {
+      "field": "username",
+      "value": "us",
+      "constraints": ["Username must be at least 3 characters"]
+    }
+  ]
+}
+```
+
+#### **Simple Validation Error (400)**
 ```json
 {
   "statusCode": 400,
@@ -1032,6 +1094,150 @@ async function bootstrap() {
   "method": "GET",
   "requestId": "req-456"
 }
+```
+
+### **🎯 Validation Error Standards**
+
+#### **✅ Mandatory Validation Decorators**
+All DTOs must use proper validation decorators that generate detailed error messages:
+
+```typescript
+// Example: User Registration DTO
+export class RegisterDto {
+  @ApiProperty({
+    example: 'user@example.com',
+    description: 'Valid email address'
+  })
+  @IsEmail({}, { message: 'Email must be a valid email address' })
+  email: string;
+
+  @ApiProperty({
+    example: 'Valid123!',
+    description: 'Password must be at least 8 characters, include uppercase, lowercase, a number, and a special character.'
+  })
+  @IsString({ message: 'Password must be a string' })
+  @MinLength(8, { message: 'Password must be at least 8 characters' })
+  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/, {
+    message: 'Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character.'
+  })
+  password: string;
+
+  @ApiProperty({
+    example: 'john_doe',
+    description: 'Username must be at least 3 characters'
+  })
+  @IsString({ message: 'Username must be a string' })
+  @MinLength(3, { message: 'Username must be at least 3 characters' })
+  @MaxLength(50, { message: 'Username cannot be longer than 50 characters' })
+  username: string;
+}
+```
+
+#### **✅ Swagger Documentation for Validation Errors**
+All endpoints must document validation errors in Swagger:
+
+```typescript
+@Post('register')
+@ApiOperation({ summary: 'Register a new user' })
+@ApiBody({
+  type: RegisterDto,
+  description: 'User registration data',
+  examples: {
+    'Valid Registration': {
+      summary: 'Successful registration',
+      value: {
+        email: 'user@example.com',
+        username: 'john_doe',
+        password: 'Valid123!'
+      }
+    },
+    'Validation Error': {
+      summary: 'Validation error example',
+      value: {
+        email: 'invalid-email',
+        username: 'us',
+        password: 'weakpass'
+      }
+    }
+  }
+})
+@ApiResponse({
+  status: 201,
+  description: 'User registered successfully',
+  type: AuthResponseDto
+})
+@ApiResponse({
+  status: 400,
+  description: 'Validation error with field details',
+  schema: {
+    type: 'object',
+    properties: {
+      statusCode: { type: 'number', example: 400 },
+      message: { type: 'string', example: 'Validation failed' },
+      error: { type: 'string', example: 'Bad Request' },
+      timestamp: { type: 'string', example: '2024-01-01T12:00:00.000Z' },
+      path: { type: 'string', example: '/auth/register' },
+      method: { type: 'string', example: 'POST' },
+      requestId: { type: 'string', example: 'req-123' },
+      errors: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            field: { type: 'string', example: 'email' },
+            value: { type: 'string', example: 'invalid-email' },
+            constraints: {
+              type: 'array',
+              items: { type: 'string' },
+              example: ['Email must be a valid email address']
+            }
+          }
+        }
+      }
+    }
+  }
+})
+async register(@Body() registerDto: RegisterDto): Promise<AuthResponse> {
+  return this.authService.register(registerDto);
+}
+```
+
+#### **✅ Testing Validation Errors**
+All services must include tests for validation error responses:
+
+```typescript
+describe('POST /auth/register', () => {
+  it('should return detailed validation errors for invalid data', async () => {
+    const invalidData = {
+      email: 'invalid-email',
+      username: 'us',
+      password: 'weakpass'
+    };
+
+    const response = await request(app.getHttpServer())
+      .post('/auth/register')
+      .send(invalidData)
+      .expect(400);
+
+    expect(response.body).toHaveProperty('statusCode', 400);
+    expect(response.body).toHaveProperty('message', 'Validation failed');
+    expect(response.body).toHaveProperty('errors');
+    expect(Array.isArray(response.body.errors)).toBe(true);
+    
+    // Verify specific field errors
+    const emailError = response.body.errors.find((e: any) => e.field === 'email');
+    expect(emailError).toBeDefined();
+    expect(emailError.value).toBe('invalid-email');
+    expect(emailError.constraints).toContain('Email must be a valid email address');
+    
+    const passwordError = response.body.errors.find((e: any) => e.field === 'password');
+    expect(passwordError).toBeDefined();
+    expect(passwordError.value).toBe('weakpass');
+    expect(passwordError.constraints).toContain(
+      'Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character.'
+    );
+  });
+});
 ```
 
 ---
@@ -1516,6 +1722,312 @@ npm run test:all
 
 ---
 
+## 🔧 **API GATEWAY CONNECTION TROUBLESHOOTING**
+
+### **📋 Standardized Connection Resolution**
+
+This section documents the **standardized approach** for resolving API Gateway connection issues with microservices, based on our experience with the Auth Service integration.
+
+#### **🎯 Problem Summary**
+When integrating the API Gateway with microservices, we encountered several connection issues:
+- **504 Gateway Timeout**: API Gateway couldn't reach microservices
+- **401 Unauthorized**: Authentication issues with public endpoints
+- **Hanging Requests**: Requests stuck in proxy middleware
+- **Docker Network Issues**: Container-to-container communication problems
+
+#### **✅ Standardized Solution**
+
+##### **1. Docker Compose Configuration**
+```yaml
+# docker-compose.dev.yml
+services:
+  api-gateway:
+    build: ./backend/services/api-gateway
+    ports:
+      - "3000:3000"
+    environment:
+      - AUTH_SERVICE_URL=http://auth-service:3001
+      - USER_SERVICE_URL=http://user-service:3002
+    networks:
+      - kanban-network
+    depends_on:
+      auth-service:
+        condition: service_healthy
+      user-service:
+        condition: service_healthy
+
+  auth-service:
+    build: ./backend/services/auth-service
+    ports:
+      - "3001:3001"
+    networks:
+      - kanban-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  kanban-network:
+    driver: bridge
+```
+
+##### **2. API Gateway Proxy Controller Pattern**
+```typescript
+// src/gateway/controllers/auth-proxy.controller.ts
+@Controller('api/auth')
+@Public()
+export class AuthProxyController {
+  private readonly authServiceUrl = process.env.AUTH_SERVICE_URL || 'http://auth-service:3001';
+
+  @Post('register')
+  async register(@Body() body: any, @Req() req: Request, @Res() res: Response) {
+    try {
+      const response = await axios.post(`${this.authServiceUrl}/api/auth/register`, body, {
+        headers: { 'Content-Type': 'application/json' },
+        timeout: 10000,
+      });
+      return res.status(response.status).json(response.data);
+    } catch (error: any) {
+      // Standardized error handling
+      if (error.response) {
+        return res.status(error.response.status).json(error.response.data);
+      } else if (error.request) {
+        return res.status(HttpStatus.GATEWAY_TIMEOUT).json({
+          statusCode: HttpStatus.GATEWAY_TIMEOUT,
+          message: 'Service is not responding',
+          error: 'Gateway Timeout',
+          timestamp: new Date().toISOString(),
+          path: req.path,
+          method: req.method,
+        });
+      }
+    }
+  }
+}
+```
+
+##### **3. Authentication Guard Configuration**
+```typescript
+// src/common/guards/jwt-auth.guard.ts
+@Injectable()
+export class JwtAuthGuard implements CanActivate {
+  constructor(private reflector: Reflector) {}
+
+  canActivate(context: ExecutionContext): boolean {
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+
+    if (isPublic) {
+      return true;
+    }
+
+    // Allow specific public auth routes
+    const request = context.switchToHttp().getRequest();
+    const publicAuthRoutes = [
+      '/api/auth/register',
+      '/api/auth/login',
+      '/api/auth/refresh',
+      '/api/auth/validate',
+      '/health'
+    ];
+
+    if (publicAuthRoutes.includes(request.path)) {
+      return true;
+    }
+
+    // JWT validation logic
+    return super.canActivate(context);
+  }
+}
+```
+
+##### **4. Proxy Middleware Configuration**
+```typescript
+// src/common/middleware/proxy.middleware.ts
+@Injectable()
+export class ProxyMiddleware implements NestMiddleware {
+  async use(req: Request, res: Response, next: NextFunction) {
+    // Skip /api/auth routes - let AuthProxyController handle them
+    if (req.path.startsWith('/api/auth/')) {
+      return next();
+    }
+
+    // Standard proxy logic for other services
+    const serviceName = this.routingService.resolveServiceByPath(req.path);
+    const target = this.loadBalancerService.getServiceInstanceUrl(serviceName);
+
+    if (!target) {
+      return res.status(503).json({
+        statusCode: 503,
+        message: `No healthy instance available for service '${serviceName}'`,
+        error: 'Service Unavailable',
+        timestamp: new Date().toISOString(),
+        path: req.path,
+        method: req.method,
+      });
+    }
+
+    // Proxy implementation
+  }
+}
+```
+
+#### **🔍 Troubleshooting Steps**
+
+##### **Step 1: Verify Service Health**
+```bash
+# Check if services are running
+docker-compose -f docker-compose.dev.yml ps
+
+# Check service logs
+docker-compose -f docker-compose.dev.yml logs auth-service
+docker-compose -f docker-compose.dev.yml logs api-gateway
+
+# Test direct service access
+curl http://localhost:3001/api/health  # Auth Service
+curl http://localhost:3000/health      # API Gateway
+```
+
+##### **Step 2: Verify Network Connectivity**
+```bash
+# Test container-to-container communication
+docker exec kanban-microservices-api-gateway-1 wget -qO- http://auth-service:3001/api/health
+docker exec kanban-microservices-auth-service-1 wget -qO- http://user-service:3002/api/health
+```
+
+##### **Step 3: Check Environment Variables**
+```bash
+# Verify environment variables in containers
+docker exec kanban-microservices-api-gateway-1 env | grep SERVICE_URL
+```
+
+##### **Step 4: Debug Proxy Issues**
+```bash
+# Check API Gateway logs for proxy errors
+docker-compose -f docker-compose.dev.yml logs -f api-gateway
+
+# Test specific endpoints
+curl -X POST http://localhost:3000/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com","username":"test","password":"Valid123!","passwordConfirmation":"Valid123!"}'
+```
+
+#### **🚨 Common Issues and Solutions**
+
+##### **Issue 1: 504 Gateway Timeout**
+**Symptoms**: API Gateway returns 504 when calling microservices
+**Cause**: Network connectivity issues or service not responding
+**Solution**:
+```yaml
+# Ensure proper network configuration
+networks:
+  kanban-network:
+    driver: bridge
+
+# Add health checks
+healthcheck:
+  test: ["CMD", "curl", "-f", "http://localhost:3001/api/health"]
+  interval: 30s
+  timeout: 10s
+  retries: 3
+```
+
+##### **Issue 2: 401 Unauthorized on Public Routes**
+**Symptoms**: Public endpoints return 401 despite being marked as public
+**Cause**: JWT Guard not properly configured for public routes
+**Solution**:
+```typescript
+// Explicitly allow public auth routes
+const publicAuthRoutes = [
+  '/api/auth/register',
+  '/api/auth/login',
+  '/api/auth/refresh',
+  '/api/auth/validate',
+  '/health'
+];
+
+if (publicAuthRoutes.includes(request.path)) {
+  return true;
+}
+```
+
+##### **Issue 3: Hanging Requests**
+**Symptoms**: Requests hang indefinitely without response
+**Cause**: Proxy middleware conflicts or timeout issues
+**Solution**:
+```typescript
+// Use dedicated proxy controllers for auth routes
+@Controller('api/auth')
+@Public()
+export class AuthProxyController {
+  // Direct axios calls with proper timeout
+  const response = await axios.post(url, body, {
+    timeout: 10000,
+    headers: { 'Content-Type': 'application/json' }
+  });
+}
+```
+
+##### **Issue 4: Docker Network Issues**
+**Symptoms**: Services can't communicate using service names
+**Cause**: Incorrect network configuration or service discovery
+**Solution**:
+```yaml
+# Use explicit network configuration
+services:
+  api-gateway:
+    networks:
+      - kanban-network
+    depends_on:
+      auth-service:
+        condition: service_healthy
+
+networks:
+  kanban-network:
+    driver: bridge
+```
+
+#### **✅ Standardized Implementation Checklist**
+
+For each microservice integration with API Gateway:
+
+- [ ] **Docker Configuration**
+  - [ ] Service defined in `docker-compose.dev.yml`
+  - [ ] Proper network configuration
+  - [ ] Health checks implemented
+  - [ ] Environment variables configured
+
+- [ ] **API Gateway Configuration**
+  - [ ] Proxy controller created for service routes
+  - [ ] Authentication guard configured for public routes
+  - [ ] Error handling standardized
+  - [ ] Timeout configuration set
+
+- [ ] **Testing**
+  - [ ] Direct service access works
+  - [ ] API Gateway proxy works
+  - [ ] Error responses standardized
+  - [ ] Health checks functional
+
+- [ ] **Documentation**
+  - [ ] Connection troubleshooting documented
+  - [ ] Common issues and solutions listed
+  - [ ] Standardized configuration examples provided
+
+#### **🎯 Benefits of This Approach**
+
+1. **Consistency**: All microservices follow the same connection pattern
+2. **Reliability**: Robust error handling and timeout management
+3. **Debugging**: Clear logging and error messages
+4. **Maintainability**: Standardized configuration across services
+5. **Scalability**: Easy to add new services following the same pattern
+
+---
+
 ## 📊 **PROGRESS METRICS**
 
 ### **General Progress: 60%**
@@ -1567,6 +2079,7 @@ npm run test:all
 2. Run `npm run test:all` to verify functionality
 3. Check logs in `logs/` directory
 4. Review troubleshooting guides
+5. **For API Gateway connection issues**: See [API Gateway Connection Troubleshooting](#-api-gateway-connection-troubleshooting)
 
 ### **For Contributions**
 1. Fork the repository
@@ -1766,6 +2279,7 @@ A microservice is **fully standardized** when:
 - [ ] **Scripts**: All standardized commands working
 - [ ] **Variables**: Environment configuration complete
 - [ ] **Logging**: Standardized logging implemented
+- [ ] **API Gateway Integration**: Connection troubleshooting documented and tested
 
 ### **🚨 Critical Points**
 
@@ -1786,6 +2300,7 @@ A microservice is **fully standardized** when:
 - ✅ E2E tests with real JWTs and fallback
 - ✅ Unified error structure
 - ✅ Standardized testing scripts
+- ✅ API Gateway connection troubleshooting documented
 
 ---
 

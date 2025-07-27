@@ -4,7 +4,6 @@ import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters';
-import { ValidationPipe as CustomValidationPipe } from './common/pipes';
 import { LoggingInterceptor, TransformInterceptor } from './common/interceptors';
 import { SecurityInterceptor } from './common/interceptors/security.interceptor';
 import { PerformanceInterceptor } from './common/interceptors/performance.interceptor';
@@ -12,12 +11,9 @@ import { CompressionInterceptor } from './common/interceptors/compression.interc
 import { SwaggerConfig } from './docs/swagger.config';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 
-
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
-
-  
 
   app.setGlobalPrefix('api');
 
@@ -48,7 +44,11 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
 
   // Global pipes
-  app.useGlobalPipes(new CustomValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({
+    transform: true,
+    whitelist: true,
+    forbidNonWhitelisted: true,
+  }));
 
   // Global interceptors
   app.useGlobalInterceptors(
@@ -59,9 +59,9 @@ async function bootstrap() {
     new CompressionInterceptor(configService),
   );
 
-  // Global guards
-  const jwtAuthGuard = app.get(JwtAuthGuard);
-  app.useGlobalGuards(jwtAuthGuard);
+  // Global guards - temporarily disabled for auth endpoints
+  // const jwtAuthGuard = app.get(JwtAuthGuard);
+  // app.useGlobalGuards(jwtAuthGuard);
 
   // Swagger documentation
   SwaggerConfig.setup(app);

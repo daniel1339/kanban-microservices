@@ -1,6 +1,5 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
-import { createProxyMiddleware, RequestHandler, Options } from 'http-proxy-middleware';
 import { RoutingService } from '../../gateway/services/routing.service';
 import { LoadBalancerService } from '../../gateway/services/load-balancer.service';
 import { CircuitBreakerService } from '../services/circuit-breaker.service';
@@ -13,14 +12,26 @@ export class ProxyMiddleware implements NestMiddleware {
     private readonly circuitBreakerService: CircuitBreakerService,
   ) {}
 
-  use(req: Request, res: Response, next: NextFunction) {
+  async use(req: Request, res: Response, next: NextFunction) {
     // Only proxy for /api/* routes
     if (!req.path.startsWith('/api/')) {
       return next();
     }
+
+    // Skip /api/auth routes - let AuthProxyController handle them
+    if (req.path.startsWith('/api/auth/')) {
+      console.log(`🔍 ProxyMiddleware: Skipping /api/auth route - letting AuthProxyController handle: ${req.path}`);
+      return next();
+    }
+
+    console.log(`🔍 ProxyMiddleware: Processing ${req.method} ${req.path}`);
+
     // Determine the target service
     const serviceName = this.routingService.resolveServiceByPath(req.path);
+    console.log(`🔍 ProxyMiddleware: Resolved service: ${serviceName}`);
+
     if (!serviceName) {
+      console.log(`❌ ProxyMiddleware: No service found for path: ${req.path}`);
       return res.status(502).json({
         statusCode: 502,
         message: 'No route found for this path',
@@ -30,9 +41,13 @@ export class ProxyMiddleware implements NestMiddleware {
         method: req.method,
       });
     }
-    // Advanced load balancer: round-robin and health check
-    const instances = this.loadBalancerService.getInstances(serviceName);
-    if (!instances || instances.length === 0) {
+
+    // Get service URL directly from load balancer
+    const target = this.loadBalancerService.getServiceInstanceUrl(serviceName);
+    console.log(`🔍 ProxyMiddleware: Target URL: ${target}`);
+
+    if (!target) {
+      console.log(`❌ ProxyMiddleware: No target URL found for service: ${serviceName}`);
       return res.status(503).json({
         statusCode: 503,
         message: `No healthy instance available for service '${serviceName}'`,
@@ -42,57 +57,18 @@ export class ProxyMiddleware implements NestMiddleware {
         method: req.method,
       });
     }
-    // Find the next healthy and closed-circuit instance
-    let target: string | undefined;
-    let selectedInstanceUrl: string | undefined;
-    for (let i = 0; i < instances.length; i++) {
-      const url = this.loadBalancerService.getServiceInstanceUrl(serviceName);
-      if (!url) break;
-      const isOpen = this.circuitBreakerService.isOpen(serviceName, url);
-      if (!isOpen) {
-        target = url;
-        selectedInstanceUrl = url;
-        break;
-      }
-    }
-    if (!target) {
-      return res.status(503).json({
-        statusCode: 503,
-        message: `All instances for service '${serviceName}' are unavailable (circuit open or unhealthy)`,
-        error: 'Service Unavailable',
-        timestamp: new Date().toISOString(),
-        path: req.path,
-        method: req.method,
-      });
-    }
-    // Create and execute the proxy
-    return createProxyMiddleware({
-      target,
-      changeOrigin: true,
-      pathRewrite: (path: string) => path, // Do not rewrite the path
-      onProxyReq: (proxyReq: any, req: Request, res: Response) => {
-        // You can add custom headers here if needed
-      },
-      onError: (err: Error, req: Request, res: Response) => {
-        // Record failure in circuit breaker
-        if (selectedInstanceUrl) {
-          this.circuitBreakerService.recordFailure(serviceName, selectedInstanceUrl);
-        }
-        res.status(500).json({
-          statusCode: 500,
-          message: err.message,
-          error: 'Proxy Error',
-          timestamp: new Date().toISOString(),
-          path: req.path,
-          method: req.method,
-        });
-      },
-      onProxyRes: (proxyRes: any, req: Request, res: Response) => {
-        // Record success in circuit breaker
-        if (selectedInstanceUrl) {
-          this.circuitBreakerService.recordSuccess(serviceName, selectedInstanceUrl);
-        }
-      },
-    } as Options)(req, res, next);
+
+    console.log(`🔍 ProxyMiddleware: TEMPORARILY DISABLED - Would proxy to ${target}`);
+    
+    // TEMPORARILY DISABLED - Just pass through
+    return res.status(501).json({
+      statusCode: 501,
+      message: 'Proxy temporarily disabled for debugging',
+      error: 'Not Implemented',
+      timestamp: new Date().toISOString(),
+      path: req.path,
+      method: req.method,
+      target: target,
+    });
   }
 } 

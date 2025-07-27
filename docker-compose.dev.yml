@@ -65,12 +65,25 @@ services:
       - AWS_REGION=us-east-1
       - AWS_ACCESS_KEY_ID=test
       - AWS_SECRET_ACCESS_KEY=test
+      # Service URLs for API Gateway routing (Docker services)
+      - AUTH_SERVICE_URL=http://auth-service:3001
+      - USER_SERVICE_URL=http://user-service:3002
+      - PROJECT_SERVICE_URL=http://project-service:3003
+      - BOARD_SERVICE_URL=http://board-service:3004
+      - CARD_SERVICE_URL=http://card-service:3005
+      - LIST_SERVICE_URL=http://list-service:3006
+      - NOTIFICATION_SERVICE_URL=http://notification-service:3007
+      - FILE_SERVICE_URL=http://file-service:3008
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
       localstack:
+        condition: service_started
+      auth-service:
+        condition: service_started
+      user-service:
         condition: service_started
     networks:
       - kanban-network
