@@ -187,6 +187,13 @@ export class ErrorResponseSchema {
     type: 'string',
   })
   path: string;
+
+  @ApiProperty({
+    description: 'HTTP method',
+    example: 'GET',
+    type: 'string',
+  })
+  method: string;
 }
 
 export class ValidationErrorSchema {
@@ -205,14 +212,11 @@ export class ValidationErrorSchema {
   message: string;
 
   @ApiProperty({
-    description: 'Validation details',
-    example: ['displayName should not be empty', 'bio must be a string'],
-    type: 'array',
-    items: {
-      type: 'string',
-    },
+    description: 'Error type',
+    example: 'Bad Request',
+    type: 'string',
   })
-  errors: string[];
+  error: string;
 
   @ApiProperty({
     description: 'Error timestamp',
@@ -228,4 +232,40 @@ export class ValidationErrorSchema {
     type: 'string',
   })
   path: string;
+
+  @ApiProperty({
+    description: 'HTTP method',
+    example: 'PUT',
+    type: 'string',
+  })
+  method: string;
+
+  @ApiProperty({
+    description: 'Detailed validation errors',
+    type: 'array',
+    items: {
+      type: 'object',
+      properties: {
+        field: {
+          type: 'string',
+          example: 'displayName',
+        },
+        value: {
+          type: 'string',
+          example: '',
+        },
+        constraints: {
+          type: 'object',
+          example: {
+            minLength: 'Display name cannot be empty',
+          },
+        },
+      },
+    },
+  })
+  errors: Array<{
+    field: string;
+    value: any;
+    constraints: Record<string, string>;
+  }>;
 } 

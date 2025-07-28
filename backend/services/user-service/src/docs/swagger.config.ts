@@ -26,6 +26,11 @@ export class SwaggerConfig {
         Authorization: Bearer <your-jwt-token>
         \`\`\`
         
+        ### Rate Limiting
+        - **Profile updates**: 20 requests per 15 minutes
+        - **Avatar uploads**: 10 requests per 15 minutes
+        - **Other endpoints**: 100 requests per 15 minutes
+        
         ### Error Codes
         | Code | Description |
         |------|-------------|
@@ -35,6 +40,8 @@ export class SwaggerConfig {
         | 404 | Not Found - User not found |
         | 413 | Payload Too Large - File too large |
         | 415 | Unsupported Media Type - File type not supported |
+        | 422 | Unprocessable Entity - Validation failed |
+        | 429 | Too Many Requests - Rate limit exceeded |
         | 500 | Internal Server Error - Server error |
         
         ### Error Structure
@@ -80,6 +87,15 @@ export class SwaggerConfig {
           in: 'header',
         },
         'JWT-auth',
+      )
+      .addApiKey(
+        {
+          type: 'apiKey',
+          name: 'X-API-Key',
+          description: 'API key for premium endpoint access',
+          in: 'header',
+        },
+        'API-Key',
       )
       .build();
 

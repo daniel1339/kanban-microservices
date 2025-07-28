@@ -73,6 +73,8 @@ export class ErrorResponseSchema {
   message: string | string[];
   @ApiProperty({ example: '/auth/login' })
   path: string;
+  @ApiProperty({ example: 'POST' })
+  method: string;
   @ApiProperty({ example: '2024-01-01T00:00:00.000Z' })
   timestamp: string;
 }
@@ -86,6 +88,8 @@ export class ValidationErrorSchema {
   error: string;
   @ApiProperty({ example: '/api/auth/register' })
   path: string;
+  @ApiProperty({ example: 'POST' })
+  method: string;
   @ApiProperty({ example: '2024-01-01T00:00:00.000Z' })
   timestamp: string;
   @ApiProperty({
@@ -119,6 +123,8 @@ export class RateLimitErrorSchema {
   message: string;
   @ApiProperty({ example: '/auth/login' })
   path: string;
+  @ApiProperty({ example: 'POST' })
+  method: string;
   @ApiProperty({ example: '2024-01-01T00:00:00.000Z' })
   timestamp: string;
 } 

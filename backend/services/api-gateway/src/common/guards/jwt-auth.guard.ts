@@ -31,8 +31,17 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       '/api/auth/refresh',
       '/api/auth/validate'
     ];
+
+    // Public user routes that don't require JWT
+    const publicUserRoutes = [
+      '/api/users/health'
+    ];
     
     if (publicAuthRoutes.some(route => path.startsWith(route))) {
+      return true;
+    }
+
+    if (publicUserRoutes.some(route => path.startsWith(route))) {
       return true;
     }
     

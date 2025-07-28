@@ -393,6 +393,7 @@ curl -X POST http://localhost:3002/api/avatar/upload \
 
 All User Service endpoints return errors with the following structure to facilitate handling and debugging:
 
+### **Standard Error Response**
 ```json
 {
   "statusCode": 400,
@@ -405,6 +406,34 @@ All User Service endpoints return errors with the following structure to facilit
 }
 ```
 
+### **Validation Error Response (with field details)**
+```json
+{
+  "statusCode": 400,
+  "message": "Validation failed",
+  "error": "Bad Request",
+  "timestamp": "2024-01-01T12:00:00.000Z",
+  "path": "/api/users/profile",
+  "method": "PUT",
+  "errors": [
+    {
+      "field": "displayName",
+      "value": "",
+      "constraints": {
+        "minLength": "Display name cannot be empty"
+      }
+    },
+    {
+      "field": "avatarUrl",
+      "value": "invalid-url",
+      "constraints": {
+        "isUrl": "Avatar URL must be a valid URL"
+      }
+    }
+  ]
+}
+```
+
 - `statusCode`: HTTP status code of the error (400, 401, 404, 409, 422, 429, 500, etc.)
 - `message`: Descriptive error message (can be string or array of strings for validations)
 - `error`: Error type ("Bad Request", "Unauthorized", etc.)
@@ -412,6 +441,10 @@ All User Service endpoints return errors with the following structure to facilit
 - `path`: Endpoint path where the error occurred
 - `method`: HTTP method used
 - `requestId`: Optional request ID for tracking
+- `errors`: Array of specific validation errors (only present for validation failures)
+  - `field`: Name of the field that failed validation
+  - `value`: The invalid value that was provided
+  - `constraints`: Object with validation rule names and their error messages
 
 This structure is standard and documented in Swagger for all endpoints.
 

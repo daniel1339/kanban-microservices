@@ -1,7 +1,120 @@
-/**
- * Detailed error examples for User Service documentation
- */
+// Error examples for Swagger (User Service)
 
+export const ValidationErrorExample = {
+  summary: 'Validation error',
+  description: 'Error when data does not meet validations. The response includes specific field errors with details.',
+  value: {
+    statusCode: 400,
+    message: "Validation failed",
+    error: 'Bad Request',
+    path: '/api/users/profile',
+    method: 'PUT',
+    timestamp: '2024-01-01T00:00:00.000Z',
+    errors: [
+      {
+        field: 'displayName',
+        value: '',
+        constraints: {
+          minLength: 'Display name cannot be empty'
+        }
+      },
+      {
+        field: 'bio',
+        value: 123,
+        constraints: {
+          isString: 'Biography must be a string'
+        }
+      },
+      {
+        field: 'avatarUrl',
+        value: 'invalid-url',
+        constraints: {
+          isUrl: 'Avatar URL must be a valid URL'
+        }
+      }
+    ]
+  },
+};
+
+export const UnauthorizedErrorExample = {
+  summary: 'Unauthorized',
+  description: 'Error when credentials are invalid or token is incorrect.',
+  value: {
+    statusCode: 401,
+    message: 'Unauthorized',
+    error: 'Unauthorized',
+    path: '/api/users/profile',
+    method: 'GET',
+    timestamp: '2024-01-01T00:00:00.000Z',
+  },
+};
+
+export const NotFoundErrorExample = {
+  summary: 'Not found',
+  description: 'Error when the requested user does not exist.',
+  value: {
+    statusCode: 404,
+    message: 'User not found',
+    error: 'Not Found',
+    path: '/api/users/123e4567-e89b-12d3-a456-426614174000',
+    method: 'GET',
+    timestamp: '2024-01-01T00:00:00.000Z',
+  },
+};
+
+export const FileTooLargeErrorExample = {
+  summary: 'File too large',
+  description: 'Error when uploaded file exceeds the maximum allowed size.',
+  value: {
+    statusCode: 413,
+    message: 'File too large',
+    error: 'Payload Too Large',
+    path: '/api/users/avatar/upload',
+    method: 'POST',
+    timestamp: '2024-01-01T00:00:00.000Z',
+  },
+};
+
+export const UnsupportedMediaTypeErrorExample = {
+  summary: 'Unsupported media type',
+  description: 'Error when uploaded file type is not supported.',
+  value: {
+    statusCode: 415,
+    message: 'Unsupported media type',
+    error: 'Unsupported Media Type',
+    path: '/api/users/avatar/upload',
+    method: 'POST',
+    timestamp: '2024-01-01T00:00:00.000Z',
+  },
+};
+
+export const RateLimitErrorExample = {
+  summary: 'Rate limit exceeded',
+  description: 'Error when the allowed request limit is exceeded.',
+  value: {
+    statusCode: 429,
+    message: 'ThrottlerException: Too Many Requests',
+    error: 'Too Many Requests',
+    path: '/api/users/profile',
+    method: 'PUT',
+    timestamp: '2024-01-01T00:00:00.000Z',
+  },
+};
+
+export const InternalServerErrorExample = {
+  summary: 'Internal server error',
+  description: 'Error when an unexpected server error occurs.',
+  value: {
+    statusCode: 500,
+    message: 'Internal server error',
+    error: 'Internal Server Error',
+    path: '/api/users/avatar/upload',
+    method: 'POST',
+    timestamp: '2024-01-01T00:00:00.000Z',
+  },
+};
+
+// Legacy error examples for backward compatibility
 export const ErrorExamples = {
   // Authentication errors
   authentication: {
@@ -11,8 +124,7 @@ export const ErrorExamples = {
       error: 'Unauthorized',
       timestamp: '2024-01-15T10:30:00.000Z',
       path: '/api/users/profile',
-      details: 'Invalid or expired JWT token',
-      solution: 'Get a new token from the Auth Service',
+      method: 'GET',
     },
     tokenExpired: {
       statusCode: 401,
@@ -20,8 +132,7 @@ export const ErrorExamples = {
       error: 'Unauthorized',
       timestamp: '2024-01-15T10:30:00.000Z',
       path: '/api/users/profile',
-      details: 'The JWT token has expired',
-      solution: 'Renew your authentication token',
+      method: 'GET',
     },
     noToken: {
       statusCode: 401,
@@ -29,8 +140,7 @@ export const ErrorExamples = {
       error: 'Unauthorized',
       timestamp: '2024-01-15T10:30:00.000Z',
       path: '/api/users/profile',
-      details: 'No authorization token provided',
-      solution: 'Include the Authorization header: Bearer <token>',
+      method: 'GET',
     },
     invalidToken: {
       statusCode: 401,
@@ -38,8 +148,7 @@ export const ErrorExamples = {
       error: 'Unauthorized',
       timestamp: '2024-01-15T10:30:00.000Z',
       path: '/api/users/profile',
-      details: 'Invalid token format',
-      solution: 'Use the correct format: Bearer <jwt-token>',
+      method: 'GET',
     },
   },
 
@@ -51,8 +160,7 @@ export const ErrorExamples = {
       error: 'Forbidden',
       timestamp: '2024-01-15T10:30:00.000Z',
       path: '/api/users/profile',
-      details: 'You do not have permission to access this resource',
-      solution: 'Verify that your token has the necessary permissions',
+      method: 'GET',
     },
     insufficientPermissions: {
       statusCode: 403,
@@ -60,8 +168,7 @@ export const ErrorExamples = {
       error: 'Forbidden',
       timestamp: '2024-01-15T10:30:00.000Z',
       path: '/api/users/profile',
-      details: 'Your token does not have the required permissions',
-      solution: 'Contact the administrator to get additional permissions',
+      method: 'GET',
     },
   },
 
@@ -70,51 +177,105 @@ export const ErrorExamples = {
     badRequest: {
       statusCode: 400,
       message: 'Validation failed',
-      errors: [
-        'displayName should not be empty',
-        'bio must be a string',
-        'avatarUrl must be a valid URL',
-      ],
+      error: 'Bad Request',
       timestamp: '2024-01-15T10:30:00.000Z',
       path: '/api/users/profile',
-      details: 'Input data does not meet validation requirements',
-      solution: 'Correct validation errors and try again',
+      method: 'PUT',
+      errors: [
+        {
+          field: 'displayName',
+          value: '',
+          constraints: {
+            minLength: 'Display name cannot be empty'
+          }
+        },
+        {
+          field: 'bio',
+          value: 123,
+          constraints: {
+            isString: 'Biography must be a string'
+          }
+        },
+        {
+          field: 'avatarUrl',
+          value: 'invalid-url',
+          constraints: {
+            isUrl: 'Avatar URL must be a valid URL'
+          }
+        }
+      ]
     },
     invalidDisplayName: {
       statusCode: 400,
       message: 'Validation failed',
-      errors: [
-        'displayName should not be empty',
-        'displayName must be between 1 and 100 characters',
-      ],
+      error: 'Bad Request',
       timestamp: '2024-01-15T10:30:00.000Z',
       path: '/api/users/profile',
-      details: 'Display name does not meet requirements',
-      solution: 'Provide a valid name between 1 and 100 characters',
+      method: 'PUT',
+      errors: [
+        {
+          field: 'displayName',
+          value: '',
+          constraints: {
+            minLength: 'Display name cannot be empty'
+          }
+        },
+        {
+          field: 'displayName',
+          value: 'a'.repeat(101),
+          constraints: {
+            maxLength: 'Display name cannot exceed 100 characters'
+          }
+        }
+      ]
     },
     invalidBio: {
       statusCode: 400,
       message: 'Validation failed',
-      errors: [
-        'bio must be a string',
-        'bio must be between 0 and 500 characters',
-      ],
+      error: 'Bad Request',
       timestamp: '2024-01-15T10:30:00.000Z',
       path: '/api/users/profile',
-      details: 'Bio does not meet requirements',
-      solution: 'Provide a valid bio of maximum 500 characters',
+      method: 'PUT',
+      errors: [
+        {
+          field: 'bio',
+          value: 123,
+          constraints: {
+            isString: 'Biography must be a string'
+          }
+        },
+        {
+          field: 'bio',
+          value: 'a'.repeat(1001),
+          constraints: {
+            maxLength: 'Biography cannot exceed 1000 characters'
+          }
+        }
+      ]
     },
     invalidAvatarUrl: {
       statusCode: 400,
       message: 'Validation failed',
-      errors: [
-        'avatarUrl must be a valid URL',
-        'avatarUrl must be a valid image URL',
-      ],
+      error: 'Bad Request',
       timestamp: '2024-01-15T10:30:00.000Z',
       path: '/api/users/profile',
-      details: 'Avatar URL is not valid',
-      solution: 'Provide a valid image URL (PNG, JPG, JPEG, GIF)',
+      method: 'PUT',
+      errors: [
+        {
+          field: 'avatarUrl',
+          value: 'invalid-url',
+          constraints: {
+            isUrl: 'Avatar URL must be a valid URL'
+          }
+        },
+        {
+          field: 'avatarUrl',
+          value: 'https://example.com/file.txt',
+          constraints: {
+            isImageUrl: 'Avatar URL must be a valid image URL'
+          }
+        }
+      ]
     },
   },
 
@@ -126,8 +287,7 @@ export const ErrorExamples = {
       error: 'Payload Too Large',
       timestamp: '2024-01-15T10:30:00.000Z',
       path: '/api/users/avatar/upload',
-      details: 'File exceeds maximum allowed size (5MB)',
-      solution: 'Compress the image or use a lower resolution',
+      method: 'POST',
     },
     unsupportedMediaType: {
       statusCode: 415,
@@ -135,8 +295,7 @@ export const ErrorExamples = {
       error: 'Unsupported Media Type',
       timestamp: '2024-01-15T10:30:00.000Z',
       path: '/api/users/avatar/upload',
-      details: 'File type is not supported',
-      solution: 'Use supported formats: PNG, JPG, JPEG, GIF',
+      method: 'POST',
     },
     noFileProvided: {
       statusCode: 400,
@@ -144,8 +303,7 @@ export const ErrorExamples = {
       error: 'Bad Request',
       timestamp: '2024-01-15T10:30:00.000Z',
       path: '/api/users/avatar/upload',
-      details: 'No file was provided',
-      solution: 'Include a file in the multipart/form-data request',
+      method: 'POST',
     },
     fileUploadFailed: {
       statusCode: 500,
@@ -153,8 +311,7 @@ export const ErrorExamples = {
       error: 'Internal Server Error',
       timestamp: '2024-01-15T10:30:00.000Z',
       path: '/api/users/avatar/upload',
-      details: 'Internal error during file upload',
-      solution: 'Try again or contact technical support',
+      method: 'POST',
     },
   },
 
@@ -166,8 +323,7 @@ export const ErrorExamples = {
       error: 'Not Found',
       timestamp: '2024-01-15T10:30:00.000Z',
       path: '/api/users/123e4567-e89b-12d3-a456-426614174000',
-      details: 'The specified user does not exist',
-      solution: 'Verify the user ID or contact the administrator',
+      method: 'GET',
     },
     profileNotFound: {
       statusCode: 404,
@@ -175,8 +331,7 @@ export const ErrorExamples = {
       error: 'Not Found',
       timestamp: '2024-01-15T10:30:00.000Z',
       path: '/api/users/profile',
-      details: 'The user profile does not exist',
-      solution: 'Create a profile for the user or contact the administrator',
+      method: 'GET',
     },
     avatarNotFound: {
       statusCode: 404,
@@ -184,8 +339,7 @@ export const ErrorExamples = {
       error: 'Not Found',
       timestamp: '2024-01-15T10:30:00.000Z',
       path: '/api/users/avatar/123',
-      details: 'The specified avatar does not exist',
-      solution: 'Verify the avatar URL or upload a new image',
+      method: 'GET',
     },
   },
 
